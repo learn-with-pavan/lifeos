@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/documents";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -14,7 +14,7 @@ const getAuthHeaders = () => {
 // Get all documents
 export const getDocuments = async () => {
     const response = await axios.get(
-        API_URL,
+        `${API_URL}/documents`,
         {
             headers: getAuthHeaders(),
         }
@@ -37,7 +37,7 @@ export const createDocument = async (
         : assetOrDocumentData;
 
     const response = await axios.post(
-        API_URL,
+        `${API_URL}/documents`,
         documentData,
         {
             headers: getAuthHeaders(),
@@ -53,7 +53,7 @@ export const getDocumentById = async (
     documentId
 ) => {
     const response = await axios.get(
-        `${API_URL}/${documentId}`,
+        `${API_URL}/documents/${documentId}`,
         {
             headers: getAuthHeaders(),
         }
@@ -69,7 +69,7 @@ export const updateDocument = async (
     documentData
 ) => {
     const response = await axios.put(
-        `${API_URL}/${documentId}`,
+        `${API_URL}/documents/${documentId}`,
         documentData,
         {
             headers: getAuthHeaders(),
@@ -85,7 +85,7 @@ export const deleteDocument = async (
     documentId
 ) => {
     const response = await axios.delete(
-        `${API_URL}/${documentId}`,
+        `${API_URL}/documents/${documentId}`,
         {
             headers: getAuthHeaders(),
         }
@@ -100,7 +100,7 @@ export const getDocumentsByAsset = async (
     assetId
 ) => {
     const response = await axios.get(
-        `${API_URL}/assets/${assetId}`,
+        `${API_URL}/documents/assets/${assetId}`,
         {
             headers: getAuthHeaders(),
         }

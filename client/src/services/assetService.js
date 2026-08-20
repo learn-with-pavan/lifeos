@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/assets";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const createAsset = async (assetData) => {
     const token = localStorage.getItem("token");
 
     const response = await axios.post(
-        API_URL,
+        `${API_URL}/assets`,
         assetData,
         {
             headers: {
@@ -21,7 +21,7 @@ export const createAsset = async (assetData) => {
 export const getAssets = async () => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.get(API_URL, {
+    const response = await axios.get(`${API_URL}/assets`, {
         headers: {
             Authorization: `Bearer ${token}`,
         }
@@ -33,7 +33,7 @@ export const getAssets = async () => {
 export const getAssetById = async (assetId) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.get(`${API_URL}/${assetId}`, {
+    const response = await axios.get(`${API_URL}/assets/${assetId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         }
@@ -45,7 +45,7 @@ export const getAssetById = async (assetId) => {
 export const updateAsset = async (assetId, assetData) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.put(`${API_URL}/${assetId}`, assetData, {
+    const response = await axios.put(`${API_URL}/assets/${assetId}`, assetData, {
         headers: {
             Authorization: `Bearer ${token}`,
         }
@@ -57,7 +57,7 @@ export const updateAsset = async (assetId, assetData) => {
 export const deleteAsset = async (assetId) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.delete(`${API_URL}/${assetId}`, {
+    const response = await axios.delete(`${API_URL}/assets/${assetId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         }
@@ -69,7 +69,7 @@ export const deleteAsset = async (assetId) => {
 export const getWarrantyByAsset = async (assetId) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.get(`${API_URL}/${assetId}/warranty`, {
+    const response = await axios.get(`${API_URL}/assets/${assetId}/warranty`, {
         headers: {
             Authorization: `Bearer ${token}`,
         }
@@ -85,7 +85,7 @@ export const createWarranty = async (
     const token = localStorage.getItem("token");
 
     const response = await axios.post(
-        `${API_URL}/${assetId}/warranty`,
+        `${API_URL}/assets/${assetId}/warranty`,
         warrantyData,
         {
             headers: {
@@ -104,7 +104,7 @@ export const updateWarranty = async (
     const token = localStorage.getItem("token");
 
     const response = await axios.put(
-        `${API_URL}/${assetId}/warranty`,
+        `${API_URL}/assets/${assetId}/warranty`,
         warrantyData,
         {
             headers: {
@@ -120,7 +120,7 @@ export const deleteWarranty = async (assetId) => {
     const token = localStorage.getItem("token");
 
     const response = await axios.delete(
-        `${API_URL}/${assetId}/warranty`,
+        `${API_URL}/assets/${assetId}/warranty`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -138,7 +138,7 @@ export const createWarrantyReminder = async (
     const token = localStorage.getItem("token");
 
     const response = await axios.post(
-        `${API_URL}/${assetId}/reminder`,
+        `${API_URL}/assets/${assetId}/reminder`,
         {
             remindBeforeDays,
         },
@@ -158,7 +158,7 @@ export const getWarrantyReminder = async (
     const token = localStorage.getItem("token");
 
     const response = await axios.get(
-        `${API_URL}/${assetId}/reminder`,
+        `${API_URL}/assets/${assetId}/reminder`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -176,7 +176,7 @@ export const updateWarrantyReminder = async (
     const token = localStorage.getItem("token");
 
     const response = await axios.put(
-        `${API_URL}/${assetId}/reminder`,
+        `${API_URL}/assets/${assetId}/reminder`,
         {
             remindBeforeDays,
         },
@@ -196,7 +196,7 @@ export const deleteWarrantyReminder = async (
     const token = localStorage.getItem("token");
 
     const response = await axios.delete(
-        `${API_URL}/${assetId}/reminder`,
+        `${API_URL}/assets/${assetId}/reminder`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,

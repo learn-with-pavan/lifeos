@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_URL =
-    "http://localhost:5000/api/maintenance";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -17,7 +16,7 @@ const getAuthHeaders = () => {
 
 export const getMaintenances = async () => {
     const response = await axios.get(
-        API_URL,
+        `${API_URL}/maintenance`,
         {
             headers: getAuthHeaders(),
         }
@@ -34,7 +33,7 @@ export const getMaintenanceByAsset = async (
     assetId
 ) => {
     const response = await axios.get(
-        `${API_URL}/assets/${assetId}/maintenance`,
+        `${API_URL}/maintenance/assets/${assetId}/maintenance`,
         {
             headers: getAuthHeaders(),
         }
@@ -51,7 +50,7 @@ export const getMaintenanceById = async (
     maintenanceId
 ) => {
     const response = await axios.get(
-        `${API_URL}/${maintenanceId}`,
+        `${API_URL}/maintenance/${maintenanceId}`,
         {
             headers: getAuthHeaders(),
         }
@@ -69,7 +68,7 @@ export const createMaintenance = async (
     maintenanceData
 ) => {
     const response = await axios.post(
-        `${API_URL}/assets/${assetId}/maintenance`,
+        `${API_URL}/maintenance/assets/${assetId}/maintenance`,
         maintenanceData,
         {
             headers: getAuthHeaders(),
@@ -88,7 +87,7 @@ export const updateMaintenance = async (
     maintenanceData
 ) => {
     const response = await axios.put(
-        `${API_URL}/${maintenanceId}`,
+        `${API_URL}/maintenance/${maintenanceId}`,
         maintenanceData,
         {
             headers: getAuthHeaders(),
@@ -106,7 +105,7 @@ export const deleteMaintenance = async (
     maintenanceId
 ) => {
     const response = await axios.delete(
-        `${API_URL}/${maintenanceId}`,
+        `${API_URL}/maintenance/${maintenanceId}`,
         {
             headers: getAuthHeaders(),
         }
