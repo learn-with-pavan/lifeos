@@ -1,0 +1,503 @@
+/* =========================================================
+   SERVICE HISTORY PAGE
+   ========================================================= */
+
+.service-history-page {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+/* Keep the modal chrome fixed while the form body scrolls. */
+.service-history-modal {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+}
+
+.service-history-modal .modal-header {
+    flex-shrink: 0;
+    padding: 24px 24px 0;
+}
+
+.service-history-modal .asset-form {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.service-history-form-body {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 24px 6px;
+}
+
+.service-history-modal .modal-actions {
+    flex-shrink: 0;
+    padding: 16px 24px 24px;
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.service-history-page .page-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.service-history-page .page-title-row h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #111827;
+}
+
+.service-history-page .page-title-row p {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.service-history-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    width: 100%;
+    margin-bottom: 22px;
+
+    border-radius: 12px;
+
+    box-sizing: border-box;
+}
+
+
+/* Search */
+
+.service-history-search {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    flex: 1;
+    max-width: 520px;
+
+    height: 42px;
+
+    color: #9ca3af;
+}
+
+.service-history-search svg {
+    position: absolute;
+    left: 13px;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+.service-history-search input {
+    width: 100%;
+    height: 100%;
+
+    padding: 0 14px 0 40px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #111827;
+    font-size: 14px;
+
+    outline: none;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.service-history-search input::placeholder {
+    color: #9ca3af;
+}
+
+.service-history-search input:focus {
+    background: #ffffff;
+    border-color: #c7d2fe;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+
+/* Filters */
+
+.service-history-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.service-history-filters select {
+    height: 42px;
+
+    min-width: 150px;
+
+    padding: 0 34px 0 12px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+
+    background-color: #ffffff;
+
+    color: #374151;
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.service-history-filters select:focus {
+    border-color: #c7d2fe;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.service-history-page .maintenance-error {
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   SERVICE HISTORY LIST
+   ========================================================= */
+
+.service-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* =========================================================
+   SERVICE HISTORY CARD
+   ========================================================= */
+
+.service-history-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    width: 100%;
+
+    padding: 18px 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.service-history-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+
+/* =========================================================
+   CARD LEFT
+   ========================================================= */
+
+.service-history-card-main {
+    display: flex;
+    align-items: flex-start;
+
+    min-width: 0;
+    flex: 1;
+
+    gap: 14px;
+}
+
+.service-history-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.service-history-info {
+    min-width: 0;
+    padding-top: 1px;
+}
+
+
+/* Title */
+
+.service-history-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 0;
+}
+
+.service-history-title-row h3 {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    color: #111827;
+
+    line-height: 1.4;
+}
+
+
+/* Asset */
+
+.service-history-asset {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-top: 7px;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #4f46e5;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.service-history-asset:hover {
+    text-decoration: underline;
+}
+
+
+/* Description / provider */
+
+.service-history-info p {
+    margin: 6px 0 0;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    max-width: 700px;
+}
+
+
+/* =========================================================
+   CARD RIGHT
+   ========================================================= */
+
+.service-history-card-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+
+    flex-shrink: 0;
+}
+
+.service-history-meta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.service-history-meta > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    white-space: nowrap;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+.service-history-meta svg {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.service-history-cost{
+  display: flex;
+  align-items: center;
+  font-size: 14px !important;
+  margin: 0px !important;
+  gap: 3px !important;
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.service-history-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding-left: 18px;
+
+    border-left: 1px solid #e5e7eb;
+}
+
+
+/* =========================================================
+   EMPTY STATES
+   ========================================================= */
+
+.service-history-page .assets-empty-state {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .service-history-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .service-history-search {
+        max-width: none;
+    }
+
+    .service-history-filters {
+        width: 100%;
+    }
+
+    .service-history-filters select {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .service-history-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .service-history-card-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .service-history-actions {
+        padding-left: 16px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .service-history-page .page-title-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .service-history-page .page-title-row .primary-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .service-history-toolbar {
+        padding: 12px;
+    }
+
+    .service-history-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .service-history-filters select {
+        width: 100%;
+    }
+
+    .service-history-card {
+        padding: 16px;
+    }
+
+    .service-history-card-main {
+        width: 100%;
+    }
+
+    .service-history-card-right {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .service-history-meta {
+        justify-content: space-between;
+    }
+
+    .service-history-actions {
+        justify-content: flex-end;
+
+        padding-left: 0;
+        padding-top: 12px;
+
+        border-left: 0;
+        border-top: 1px solid #e5e7eb;
+    }
+}
