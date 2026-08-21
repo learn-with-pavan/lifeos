@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard,
     Package,
@@ -17,6 +17,7 @@ import { getNotificationIcon } from "../utils/notificationUtils";
 import { useNotifications } from "../context/NotificationContext";
 
 function AppLayout() {
+    const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user"));
 
     const {
@@ -122,7 +123,7 @@ function AppLayout() {
                         onClick={() => {
                             localStorage.removeItem("token");
                             localStorage.removeItem("user");
-                            window.location.href = "/login";
+                            navigate("/login", { replace: true });
                         }}
                     >
                         <LogOut size={18} />
