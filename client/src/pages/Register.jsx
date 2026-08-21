@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
-import { registerUser } from "../services/authService";
+import { loginUser, registerUser } from "../services/authService";
 
 function Register() {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -26,13 +28,21 @@ function Register() {
             setLoading(true);
             setMessage("");
 
-            const data = await registerUser({
+            await registerUser({
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,
             });
 
-            setMessage(data.message);
+            const data = await loginUser({
+                email: formData.email,
+                password: formData.password,
+            });
+
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            navigate("/dashboard");
         } catch (error) {
             setMessage(
                 error.response?.data?.message ||

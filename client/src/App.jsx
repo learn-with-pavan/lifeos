@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import { NotificationProvider } from "./context/NotificationContext";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -22,7 +23,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+        <Route element={<ProtectedRoute><NotificationProvider><AppLayout /></NotificationProvider></ProtectedRoute>}>
           <Route path="/homes" element={<Homes />} />
           <Route path="/homes/:id" element={<HomeDetails />} />
           <Route path="/dashboard" element={<Dashboard />} />
