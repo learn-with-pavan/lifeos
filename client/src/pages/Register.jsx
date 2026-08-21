@@ -2,9 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { loginUser, registerUser } from "../services/authService";
+import { useToast } from "../context/ToastContext";
 
 function Register() {
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -20,7 +22,7 @@ function Register() {
         event.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
-            setMessage("Passwords do not match");
+            toast.warning("Passwords do not match");
             return;
         }
 
@@ -42,12 +44,14 @@ function Register() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
 
+            toast.success("Account created successfully");
             navigate("/dashboard");
         } catch (error) {
-            setMessage(
+            toast.error(
                 error.response?.data?.message ||
                 "Registration failed"
             );
+            setMessage("");
         } finally {
             setLoading(false);
         }

@@ -6,8 +6,10 @@ import {
     markNotificationAsRead,
 } from "../services/notificationService";
 import { getNotificationIcon } from "../utils/notificationUtils";
+import { useToast } from "../context/ToastContext";
 
 const Notifications = () => {
+    const toast = useToast();
     const [notifications, setNotifications] =
         useState([]);
 
@@ -60,12 +62,14 @@ const Notifications = () => {
                                 : item
                         )
                     );
+                    toast.success("Notification marked as read");
                 }
             } catch (error) {
                 console.error(
                     "Failed to mark notification as read",
                     error
                 );
+                toast.error(error.response?.data?.message || "Failed to mark notification as read");
             }
         };
 
@@ -89,11 +93,13 @@ const Notifications = () => {
                         readAt: new Date(),
                     }))
                 );
+                toast.success("All notifications marked as read");
             } catch (error) {
                 console.error(
                     "Failed to mark all notifications as read",
                     error
                 );
+                toast.error(error.response?.data?.message || "Failed to mark all notifications as read");
             }
         };
 

@@ -21,11 +21,13 @@ import {
 } from "../services/serviceHistoryService";
 
 import { getAssets } from "../services/assetService";
+import { useToast } from "../context/ToastContext";
 
 import "../styles/serviceHistory.css";
 
 function ServiceHistory() {
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [serviceHistories, setServiceHistories] =
         useState([]);
@@ -173,6 +175,7 @@ function ServiceHistory() {
             );
 
             closeForm();
+            toast.success("Service history created successfully");
 
         } catch (error) {
             console.error(
@@ -180,7 +183,7 @@ function ServiceHistory() {
                 error
             );
 
-            setError(
+            toast.error(
                 "Unable to create service history."
             );
         } finally {
@@ -260,6 +263,7 @@ function ServiceHistory() {
             );
 
             closeForm();
+            toast.success("Service history updated successfully");
 
         } catch (error) {
             console.error(
@@ -267,7 +271,7 @@ function ServiceHistory() {
                 error
             );
 
-            setError(
+            toast.error(
                 "Unable to update service history."
             );
         } finally {
@@ -298,6 +302,7 @@ function ServiceHistory() {
             );
 
             setDeletingService(null);
+            toast.success("Service history deleted successfully");
 
         } catch (error) {
             console.error(
@@ -305,7 +310,7 @@ function ServiceHistory() {
                 error
             );
 
-            setError(
+            toast.error(
                 "Unable to delete service history."
             );
         } finally {

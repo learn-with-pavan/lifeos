@@ -20,12 +20,14 @@ import {
     updateHome,
     deleteHome,
 } from "../services/homeService";
+import { useToast } from "../context/ToastContext";
 
 import "../styles/homeDetails.css";
 
 const HomeDetails = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const toast = useToast();
 
     const [home, setHome] = useState(null);
     const [assets, setAssets] = useState([]);
@@ -173,6 +175,7 @@ const HomeDetails = () => {
              */
             setHome(response.home);
 
+            toast.success("Home updated successfully");
             closeEditForm();
         } catch (err) {
             console.error(
@@ -184,6 +187,7 @@ const HomeDetails = () => {
                 err.response?.data?.message ||
                 "Unable to update home."
             );
+            toast.error(err.response?.data?.message || "Unable to update home.");
         } finally {
             setSaving(false);
         }
@@ -201,6 +205,7 @@ const HomeDetails = () => {
             setError("");
 
             await deleteHome(home._id);
+            toast.success("Home deleted successfully");
 
             /*
              * After deleting the home,
@@ -217,6 +222,7 @@ const HomeDetails = () => {
                 err.response?.data?.message ||
                 "Unable to delete home."
             );
+            toast.error(err.response?.data?.message || "Unable to delete home.");
 
             setShowDeleteConfirm(false);
         } finally {

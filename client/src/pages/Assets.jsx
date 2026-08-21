@@ -18,9 +18,11 @@ import {
 } from "../services/homeService";
 
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 
 function Assets() {
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [showForm, setShowForm] = useState(false);
 
@@ -142,7 +144,7 @@ function Assets() {
                 ...currentAssets,
             ]);
 
-            setMessage(data.message);
+            toast.success(data.message || "Asset created successfully");
 
             resetForm();
             setShowForm(false);
@@ -153,7 +155,7 @@ function Assets() {
                 error
             );
 
-            setMessage(
+            toast.error(
                 error.response?.data?.message ||
                 "Failed to create asset"
             );

@@ -2,10 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { loginUser } from "../services/authService";
+import { useToast } from "../context/ToastContext";
 
 function Login() {
 
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -31,12 +33,14 @@ function Login() {
                 JSON.stringify(data.user)
             );
 
+            toast.success("Login successful");
             navigate("/dashboard");
         } catch (error) {
-            setMessage(
+            const message =
                 error.response?.data?.message ||
-                "Login failed"
-            );
+                "Login failed";
+            toast.error(message);
+            setMessage("");
         } finally {
             setLoading(false);
         }

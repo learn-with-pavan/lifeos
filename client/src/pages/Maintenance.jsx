@@ -23,9 +23,11 @@ import {
 import {
     getAssets,
 } from "../services/assetService";
+import { useToast } from "../context/ToastContext";
 
 function Maintenance() {
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [maintenances, setMaintenances] =
         useState([]);
@@ -153,9 +155,10 @@ function Maintenance() {
                 ...current,
             ]);
 
+            toast.success("Maintenance created successfully");
             closeForm();
         } catch (error) {
-            setError(
+            toast.error(
                 error.response?.data?.message ||
                 "Failed to create maintenance"
             );
@@ -233,9 +236,10 @@ function Maintenance() {
                     )
             );
 
+            toast.success("Maintenance updated successfully");
             closeForm();
         } catch (error) {
-            setError(
+            toast.error(
                 error.response?.data?.message ||
                 "Failed to update maintenance"
             );
@@ -261,11 +265,12 @@ function Maintenance() {
                     )
             );
 
+            toast.success("Maintenance deleted successfully");
             setDeletingMaintenance(
                 null
             );
         } catch (error) {
-            setError(
+            toast.error(
                 error.response?.data?.message ||
                 "Failed to delete maintenance"
             );

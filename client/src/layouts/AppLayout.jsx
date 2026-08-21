@@ -15,9 +15,11 @@ import { useState } from "react";
 import { getNotifications, getUnreadNotificationCount, markNotificationAsRead } from "../services/notificationService";
 import { getNotificationIcon } from "../utils/notificationUtils";
 import { useNotifications } from "../context/NotificationContext";
+import { useToast } from "../context/ToastContext";
 
 function AppLayout() {
     const navigate = useNavigate();
+    const toast = useToast();
     const user = JSON.parse(localStorage.getItem("user"));
 
     const {
@@ -123,6 +125,7 @@ function AppLayout() {
                         onClick={() => {
                             localStorage.removeItem("token");
                             localStorage.removeItem("user");
+                            toast.success("Logged out successfully");
                             navigate("/login", { replace: true });
                         }}
                     >

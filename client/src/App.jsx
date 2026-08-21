@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import { NotificationProvider } from "./context/NotificationContext";
+import { ToastProvider } from "./context/ToastContext";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -18,8 +19,9 @@ import Insights from "./pages/Insights";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -35,8 +37,9 @@ function App() {
           <Route path="/service-history" element={<ServiceHistory />} />
           <Route path="/insights" element={<Insights />} />
         </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   )
 }
 

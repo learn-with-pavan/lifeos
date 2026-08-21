@@ -12,10 +12,12 @@ import { createWarranty, createWarrantyReminder, deleteAsset, deleteWarrantyRemi
 import { getWarrantyStatus } from "../utils/warrantyUtils";
 import DocumentSection from "../components/DocumentSection";
 import { getHomes } from "../services/homeService";
+import { useToast } from "../context/ToastContext";
 
 function AssetDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [asset, setAsset] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -227,11 +229,13 @@ function AssetDetails() {
             setAsset(data.asset);
 
             setShowEditForm(false);
+            toast.success("Asset updated successfully");
         } catch (error) {
             console.error(
                 "Failed to update asset",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to update asset");
         } finally {
             setSaving(false);
         }
@@ -243,12 +247,14 @@ function AssetDetails() {
 
             await deleteAsset(id);
 
+            toast.success("Asset deleted successfully");
             navigate("/assets");
         } catch (error) {
             console.error(
                 "Failed to delete asset",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to delete asset");
         } finally {
             setDeleting(false);
         }
@@ -276,11 +282,13 @@ function AssetDetails() {
                 endDate: "",
                 notes: "",
             });
+            toast.success("Warranty created successfully");
         } catch (error) {
             console.error(
                 "Failed to create warranty",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to create warranty");
         } finally {
             setSavingWarranty(false);
         }
@@ -314,11 +322,13 @@ function AssetDetails() {
             );
             setWarranty(data.warranty);
             setShowEditWarranty(false);
+            toast.success("Warranty updated successfully");
         } catch (error) {
             console.error(
                 "Failed to update warranty",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to update warranty");
         } finally {
             setSavingWarranty(false);
         }
@@ -333,11 +343,13 @@ function AssetDetails() {
             setWarranty(null);
 
             setShowDeleteWarranty(false);
+            toast.success("Warranty deleted successfully");
         } catch (error) {
             console.error(
                 "Failed to delete warranty",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to delete warranty");
         } finally {
             setDeletingWarranty(false);
         }
@@ -357,11 +369,13 @@ function AssetDetails() {
             setReminder(data.reminder);
 
             setShowReminderForm(false);
+            toast.success("Warranty reminder created successfully");
         } catch (error) {
             console.error(
                 "Failed to create reminder",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to create reminder");
         } finally {
             setSavingReminder(false);
         }
@@ -381,11 +395,13 @@ function AssetDetails() {
             setReminder(data.reminder);
 
             setShowEditReminder(false);
+            toast.success("Warranty reminder updated successfully");
         } catch (error) {
             console.error(
                 "Failed to update reminder",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to update reminder");
         } finally {
             setSavingReminder(false);
         }
@@ -398,11 +414,13 @@ function AssetDetails() {
             await deleteWarrantyReminder(id);
 
             setReminder(null);
+            toast.success("Warranty reminder deleted successfully");
         } catch (error) {
             console.error(
                 "Failed to delete reminder",
                 error
             );
+            toast.error(error.response?.data?.message || "Failed to delete reminder");
         } finally {
             setDeletingReminder(false);
         }

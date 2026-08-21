@@ -18,8 +18,10 @@ import {
 } from "../services/documentService";
 
 import { getAssets } from "../services/assetService";
+import { useToast } from "../context/ToastContext";
 
 function Documents() {
+    const toast = useToast();
 
     const [documents, setDocuments] = useState([]);
     const [assets, setAssets] = useState([]);
@@ -109,11 +111,12 @@ function Documents() {
 
             resetForm();
             setShowForm(false);
+            toast.success("Document created successfully");
 
         } catch (error) {
-            console.error(
-                "Failed to create document",
-                error
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to create document"
             );
         } finally {
             setSaving(false);
@@ -163,11 +166,12 @@ function Documents() {
 
             setEditingDocument(null);
             resetForm();
+            toast.success("Document updated successfully");
 
         } catch (error) {
-            console.error(
-                "Failed to update document",
-                error
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to update document"
             );
         } finally {
             setSaving(false);
@@ -192,11 +196,12 @@ function Documents() {
             );
 
             setDeletingDocument(null);
+            toast.success("Document deleted successfully");
 
         } catch (error) {
-            console.error(
-                "Failed to delete document",
-                error
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to delete document"
             );
         } finally {
             setDeleting(false);

@@ -16,11 +16,13 @@ import {
     updateHome,
     deleteHome,
 } from "../services/homeService";
+import { useToast } from "../context/ToastContext";
 
 import "../styles/homes.css";
 
 function Home() {
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [homes, setHomes] = useState([]);
 
@@ -124,6 +126,7 @@ function Home() {
                 ]
             );
 
+            toast.success("Home created successfully");
             closeForm();
         } catch (error) {
             console.error(
@@ -131,7 +134,8 @@ function Home() {
                 error
             );
 
-            setError(
+            toast.error(
+                error.response?.data?.message ||
                 "Unable to create home."
             );
         } finally {
@@ -187,6 +191,7 @@ function Home() {
                     )
             );
 
+            toast.success("Home updated successfully");
             closeForm();
         } catch (error) {
             console.error(
@@ -194,7 +199,8 @@ function Home() {
                 error
             );
 
-            setError(
+            toast.error(
+                error.response?.data?.message ||
                 "Unable to update home."
             );
         } finally {
@@ -220,6 +226,7 @@ function Home() {
                     )
             );
 
+            toast.success("Home deleted successfully");
             setDeletingHome(null);
         } catch (error) {
             console.error(
@@ -227,7 +234,8 @@ function Home() {
                 error
             );
 
-            setError(
+            toast.error(
+                error.response?.data?.message ||
                 "Unable to delete home."
             );
         } finally {
