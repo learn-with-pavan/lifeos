@@ -4,9 +4,8 @@
 
 .home-details-page {
     width: 100%;
-    max-width: 1180px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 32px 28px 60px;
     box-sizing: border-box;
 }
 
@@ -22,8 +21,6 @@
 
     border: none;
     background: transparent;
-
-    color: #64748b;
 
     font-size: 14px;
     font-weight: 500;

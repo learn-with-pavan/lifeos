@@ -36,7 +36,7 @@ const getAssetById = async (userId, assetId) => {
         user: userId,
     }).populate(
         "home",
-        "name type address"
+        "name type address purchaseDate"
     );
 
     if (!asset) {

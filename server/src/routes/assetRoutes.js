@@ -9,19 +9,19 @@ const {
 } = require("../controllers/assetController");
 
 const authMiddleware = require("../middleware/authMiddleware");
-
+const authorizeRoles = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 router.use(authMiddleware);
 
-router.post("/", create);
+router.post("/", authorizeRoles("CUSTOMER"), create);
 
-router.get("/", getAll);
+router.get("/", authorizeRoles("CUSTOMER"), getAll);
 
-router.get("/:id", getOne);
+router.get("/:id", authorizeRoles("CUSTOMER"), getOne);
 
-router.put("/:id", update);
+router.put("/:id", authorizeRoles("CUSTOMER"), update);
 
-router.delete("/:id", remove);
+router.delete("/:id", authorizeRoles("CUSTOMER"), remove);
 
 module.exports = router;

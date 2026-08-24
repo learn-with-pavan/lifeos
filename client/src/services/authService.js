@@ -11,6 +11,17 @@ export const registerUser = async (userData) => {
     return response.data;
 };
 
+export const registerProviderUser = async (providerData) => {
+
+    const response =
+        await axios.post(
+            `${API_URL}/auth/provider/register`,
+            providerData
+        );
+
+    return response.data;
+};
+
 export const loginUser = async (credentials) => {
     const response = await axios.post(
         `${API_URL}/auth/login`,

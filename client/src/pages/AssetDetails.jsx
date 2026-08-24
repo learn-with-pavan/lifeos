@@ -5,7 +5,8 @@ import {
     Package,
     X,
     Pencil,
-    Trash2
+    Trash2,
+    Wrench
 } from "lucide-react";
 
 import { createWarranty, createWarrantyReminder, deleteAsset, deleteWarrantyReminder, getAssetById, getWarrantyByAsset, getWarrantyReminder, updateAsset, updateWarranty, updateWarrantyReminder } from "../services/assetService";
@@ -474,6 +475,16 @@ function AssetDetails() {
                 </div>
 
                 <div className="asset-header-actions">
+
+                    <button
+                        className="primary-button"
+                        onClick={() =>
+                            navigate(`/assets/${asset._id}/service`)
+                        }
+                    >
+                        <Wrench size={18} />
+                        Get Service
+                    </button>
 
                     <button
                         className="icon-button secondary-icon-button"

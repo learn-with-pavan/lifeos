@@ -1,0 +1,251 @@
+.provider-services-page {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.provider-services-header {
+    margin-bottom: 28px;
+}
+
+.provider-services-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.provider-services-title-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef4ff;
+    color: #2563eb;
+}
+
+.provider-services-title h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #172033;
+}
+
+.provider-services-title p {
+    margin: 6px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.provider-services-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+
+.provider-services-card-heading {
+    margin-bottom: 22px;
+}
+
+.provider-services-card-heading h2 {
+    margin: 0;
+    font-size: 19px;
+    color: #172033;
+}
+
+.provider-services-card-heading p {
+    margin: 7px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.provider-services-list {
+    display: grid;
+    gap: 12px;
+}
+
+.provider-service-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 17px;
+    text-align: left;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.provider-service-option:hover {
+    border-color: #c7d2fe;
+    background: #fafbff;
+}
+
+.provider-service-option-selected {
+    border-color: #93c5fd;
+    background: #f5f8ff;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.07);
+}
+
+.provider-service-checkbox {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    color: #ffffff;
+}
+
+.provider-service-checkbox-selected {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.provider-service-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.provider-service-option-content strong {
+    font-size: 15px;
+    color: #172033;
+}
+
+.provider-service-option-content span {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+.provider-services-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #eef0f3;
+}
+
+.provider-services-footer > span {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.provider-services-save-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.provider-services-save-button:hover {
+    background: #1d4ed8;
+}
+
+.provider-services-save-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.provider-services-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.provider-services-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.provider-services-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+}
+
+.provider-services-state {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.provider-services-state h2 {
+    margin: 14px 0 5px;
+    font-size: 20px;
+    color: #172033;
+}
+
+.provider-services-state p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.provider-services-spin {
+    animation: provider-services-spin 1s linear infinite;
+}
+
+@keyframes provider-services-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 700px) {
+
+    .provider-services-page {
+        padding: 20px 16px;
+    }
+
+    .provider-services-title h1 {
+        font-size: 24px;
+    }
+
+    .provider-services-card {
+        padding: 20px;
+    }
+
+    .provider-services-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .provider-services-save-button {
+        width: 100%;
+    }
+}

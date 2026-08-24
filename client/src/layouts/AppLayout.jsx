@@ -1,4 +1,10 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+    Link,
+    NavLink,
+    Outlet,
+    useLocation,
+    useNavigate,
+} from "react-router-dom";
 import {
     LayoutDashboard,
     Package,
@@ -9,7 +15,8 @@ import {
     Bell,
     History,
     HomeIcon,
-    TrendingUp
+    TrendingUp,
+    ClipboardList
 } from "lucide-react";
 import { useState } from "react";
 import { getNotifications, getUnreadNotificationCount, markNotificationAsRead } from "../services/notificationService";
@@ -19,8 +26,80 @@ import { useToast } from "../context/ToastContext";
 
 function AppLayout() {
     const navigate = useNavigate();
+    const location = useLocation();
     const toast = useToast();
     const user = JSON.parse(localStorage.getItem("user"));
+
+    const pageTitles = [
+        {
+            path: "/assets/:assetId/service",
+            title: "Find a Technician",
+            subtitle: "Get professional help for your asset.",
+        },
+        {
+            path: "/homes/:id",
+            title: "Home Details",
+            subtitle: "View and manage everything in this home.",
+        },
+        {
+            path: "/assets/:id",
+            title: "Asset Details",
+            subtitle: "View and manage this asset.",
+        },
+        {
+            path: "/dashboard",
+            title: "Dashboard",
+            subtitle: "Here's what's happening with your life.",
+        },
+        {
+            path: "/homes",
+            title: "Homes",
+            subtitle: "Manage the places that matter to you.",
+        },
+        {
+            path: "/assets",
+            title: "Assets",
+            subtitle: "Keep track of the things you own.",
+        },
+        {
+            path: "/maintenance",
+            title: "Maintenance",
+            subtitle: "Stay on top of repaiars and upkeep.",
+        },
+        {
+            path: "/documents",
+            title: "Documents",
+            subtitle: "Keep important records organized.",
+        },
+        {
+            path: "/service-history",
+            title: "Service History",
+            subtitle: "Review completed services and repairs.",
+        },
+        {
+            path: "/service-requests",
+            title: "Service Requests",
+            subtitle: "Review completed services and repairs.",
+        },
+        {
+            path: "/notifications",
+            title: "Notifications",
+            subtitle: "Stay up to date with your life admin.",
+        },
+        {
+            path: "/insights",
+            title: "Insights",
+            subtitle: "See patterns across your life data.",
+        },
+    ];
+
+    const currentPage = pageTitles.find((page) => {
+        const route = page.path.replace(/:[^/]+/g, "[^/]+");
+
+        return new RegExp(`^${route}(?:/|$)`).test(
+            location.pathname
+        );
+    }) || pageTitles[0];
 
     const {
         notifications,
@@ -93,6 +172,14 @@ function AppLayout() {
                     </NavLink>
 
                     <NavLink
+                        to="/service-requests"
+                        className="nav-link"
+                    >
+                        <ClipboardList size={18} />
+                        <span>Service Requests</span>
+                    </NavLink>
+
+                    <NavLink
                         to="/notifications"
                         className="nav-link"
                     >
@@ -141,8 +228,8 @@ function AppLayout() {
 
                 <header className="app-header">
                     <div>
-                        <h2>Dashboard</h2>
-                        <p>Here's what's happening with your life.</p>
+                        <h2>{currentPage.title}</h2>
+                        <p>{currentPage.subtitle}</p>
                     </div>
                 </header>
 

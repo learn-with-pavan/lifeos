@@ -34,7 +34,24 @@ function Login() {
             );
 
             toast.success("Login successful");
-            navigate("/dashboard");
+            if (data.user.role === "PROVIDER") {
+
+                navigate(
+                    "/provider/dashboard",
+                    {
+                        replace: true,
+                    }
+                );
+
+            } else {
+
+                navigate(
+                    "/dashboard",
+                    {
+                        replace: true,
+                    }
+                );
+            }
         } catch (error) {
             const message =
                 error.response?.data?.message ||
@@ -115,13 +132,24 @@ function Login() {
                         {message}
                     </p>
                 )}
+
                 <div className="auth-footer">
+
                     <p>
                         Don't have an account?{" "}
-                        <Link to="/register">Create one</Link>
+                        <Link to="/register">
+                            Create a customer account
+                        </Link>
                     </p>
-                </div>
 
+                    <p>
+                        Are you a service provider?{" "}
+                        <Link to="/provider/register">
+                            Register as a provider
+                        </Link>
+                    </p>
+
+                </div>
             </div>
         </div>
     );

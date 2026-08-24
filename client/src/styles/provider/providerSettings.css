@@ -1,0 +1,330 @@
+.provider-settings-page {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.provider-settings-header {
+    margin-bottom: 28px;
+}
+
+.provider-settings-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.provider-settings-title-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #334155;
+    flex-shrink: 0;
+}
+
+.provider-settings-title h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.provider-settings-title p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.provider-settings-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 26px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.provider-settings-card-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.provider-settings-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    color: #475569;
+    flex-shrink: 0;
+}
+
+.provider-settings-card-heading h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 650;
+    color: #0f172a;
+}
+
+.provider-settings-card-heading p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.provider-settings-options {
+    margin-top: 4px;
+}
+
+.provider-settings-option {
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+}
+
+.provider-settings-option:last-child {
+    border-bottom: none;
+}
+
+.provider-settings-option > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.provider-settings-option strong {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.provider-settings-option span {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.provider-settings-option input[type="checkbox"] {
+    appearance: none;
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    background: #cbd5e1;
+    position: relative;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+    flex-shrink: 0;
+}
+
+.provider-settings-option input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 3px;
+    left: 3px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+    transition: transform 0.2s ease;
+}
+
+.provider-settings-option input[type="checkbox"]:checked {
+    background: #2563eb;
+}
+
+.provider-settings-option input[type="checkbox"]:checked::after {
+    transform: translateX(20px);
+}
+
+.provider-settings-option input[type="checkbox"]:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.18);
+    outline-offset: 2px;
+}
+
+.provider-settings-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.provider-settings-save-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        background 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.provider-settings-save-button:hover:not(:disabled) {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+
+.provider-settings-save-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.provider-settings-save-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.provider-settings-message {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.provider-settings-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.provider-settings-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+}
+
+.provider-settings-state {
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.provider-settings-state svg {
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.provider-settings-state h2 {
+    margin: 0 0 6px;
+    color: #0f172a;
+    font-size: 20px;
+}
+
+.provider-settings-state p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.provider-settings-spin {
+    animation: provider-settings-spin 1s linear infinite;
+}
+
+@keyframes provider-settings-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .provider-settings-page {
+        padding: 24px 18px;
+    }
+
+    .provider-settings-card {
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .provider-settings-title h1 {
+        font-size: 24px;
+    }
+
+    .provider-settings-option {
+        align-items: flex-start;
+    }
+
+    .provider-settings-option input[type="checkbox"] {
+        margin-top: 2px;
+    }
+}
+
+@media (max-width: 480px) {
+    .provider-settings-page {
+        padding: 20px 14px;
+    }
+
+    .provider-settings-card {
+        padding: 17px;
+    }
+
+    .provider-settings-title-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .provider-settings-title h1 {
+        font-size: 21px;
+    }
+
+    .provider-settings-card-heading h2 {
+        font-size: 16px;
+    }
+
+    .provider-settings-option {
+        gap: 14px;
+        padding: 16px 0;
+    }
+
+    .provider-settings-option strong {
+        font-size: 13px;
+    }
+
+    .provider-settings-option span {
+        font-size: 12px;
+    }
+
+    .provider-settings-save-button {
+        width: 100%;
+    }
+
+    .provider-settings-footer {
+        display: block;
+    }
+}

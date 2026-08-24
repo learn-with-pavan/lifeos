@@ -1,4 +1,4 @@
-const { registerUser, loginUser } = require("../services/authService");
+const { registerUser, loginUser, registerProviderUser } = require("../services/authService");
 const { createDefaultAutomations } = require("../services/automationDefaults");
 
 const register = async (req, res, next) => {
@@ -34,6 +34,66 @@ const register = async (req, res, next) => {
     }
 };
 
+const registerProvider = async (
+    req,
+    res,
+    next
+) => {
+
+    try {
+
+        const {
+            name,
+            email,
+            password,
+            businessName,
+        } = req.body;
+
+
+        if (
+            !name ||
+            !email ||
+            !password ||
+            !businessName
+        ) {
+
+            const error =
+                new Error(
+                    "Name, business name, email and password are required"
+                );
+
+            error.statusCode = 400;
+
+            throw error;
+        }
+
+
+        const result =
+            await registerProviderUser({
+                name,
+                email,
+                password,
+                businessName,
+            });
+
+
+        return res.status(201).json({
+
+            success: true,
+
+            message:
+                "Provider account created successfully.",
+
+            ...result,
+
+        });
+
+    } catch (error) {
+
+        next(error);
+    }
+};
+
 const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -65,5 +125,6 @@ const login = async (req, res, next) => {
 
 module.exports = {
     register,
+    registerProvider,
     login
 };
