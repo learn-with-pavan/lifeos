@@ -428,8 +428,7 @@ const ProviderRequestDetails = () => {
         };
 
 
-    const handleSchedule =
-        async (event) => {
+    const handleSchedule = async (event) => {
 
             event.preventDefault();
 
@@ -494,7 +493,6 @@ const ProviderRequestDetails = () => {
                 await loadRequest();
 
             } catch (requestError) {
-                console.log(requestError, "Error")
                 setActionError(
                     requestError
                         ?.response

@@ -11,6 +11,7 @@ const {
     getProviderDashboard,
     getProviderScheduleController,
     updateProviderSettingsController,
+    updateLocation,
 } = require("../controllers/serviceProviderController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -102,6 +103,12 @@ router.patch(
     "/me/settings",
     authorizeRoles("PROVIDER"),
     updateProviderSettingsController
+);
+
+router.patch(
+    "/me/location",
+    authorizeRoles("PROVIDER"),
+    updateLocation
 );
 
 module.exports = router;

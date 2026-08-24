@@ -9,6 +9,7 @@ const {
     getProviderByUserId,
     getProviderDashboardData,
     getProviderSchedule,
+    updateProviderLocation,
 } = require("../services/serviceProviderService");
 
 
@@ -213,7 +214,6 @@ const startProviderServices = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error, "error")
         return res.status(500).json({
             message:
                 "Unable to start service.",
@@ -429,6 +429,92 @@ const updateProviderSettingsController = async (req, res, next) => {
     }
 };
 
+const updateLocation = async (req, res, next) => {
+
+    try {
+
+        const {
+            latitude,
+            longitude,
+        } = req.body;
+
+        if (
+            latitude === undefined ||
+            longitude === undefined
+        ) {
+
+            const error =
+                new Error(
+                    "Latitude and longitude are required."
+                );
+
+            error.statusCode = 400;
+
+            throw error;
+        }
+
+        const latitudeNumber =
+            Number(latitude);
+
+        const longitudeNumber =
+            Number(longitude);
+
+        if (
+            !Number.isFinite(latitudeNumber) ||
+            !Number.isFinite(longitudeNumber)
+        ) {
+
+            const error =
+                new Error(
+                    "Invalid latitude or longitude."
+                );
+
+            error.statusCode = 400;
+
+            throw error;
+        }
+
+        if (
+            latitudeNumber < -90 ||
+            latitudeNumber > 90 ||
+            longitudeNumber < -180 ||
+            longitudeNumber > 180
+        ) {
+
+            const error =
+                new Error(
+                    "Latitude or longitude is outside valid range."
+                );
+
+            error.statusCode = 400;
+
+            throw error;
+        }
+
+        const provider =
+            await updateProviderLocation(
+                req.userId,
+                latitudeNumber,
+                longitudeNumber
+            );
+
+        return res.status(200).json({
+
+            success: true,
+
+            message:
+                "Provider location updated successfully.",
+
+            data: provider,
+
+        });
+
+    } catch (error) {
+
+        next(error);
+    }
+};
+
 module.exports = {
     createProvider,
     getMyProvider,
@@ -439,5 +525,6 @@ module.exports = {
     completeProviderServices,
     getProviderDashboard,
     getProviderScheduleController,
-    updateProviderSettingsController
+    updateProviderSettingsController,
+    updateLocation
 };

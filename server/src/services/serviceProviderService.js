@@ -680,6 +680,43 @@ const updateProviderSettings = async (userId, settings) => {
     return provider;
 };
 
+const updateProviderLocation = async (
+    userId,
+    latitude,
+    longitude
+) => {
+
+    const provider =
+        await ServiceProvider.findOne({
+            user: userId,
+        });
+
+    if (!provider) {
+
+        const error =
+            new Error(
+                "Service provider profile not found."
+            );
+
+        error.statusCode = 404;
+
+        throw error;
+    }
+
+    provider.location = {
+        ...provider.location?.toObject?.(),
+        type: "Point",
+        coordinates: [
+            Number(longitude),
+            Number(latitude),
+        ],
+    };
+
+    await provider.save();
+
+    return provider;
+};
+
 module.exports = {
     createServiceProvider,
     getMyServiceProvider,
@@ -690,5 +727,6 @@ module.exports = {
     completeProviderService,
     getProviderDashboardData,
     getProviderSchedule,
-    updateProviderSettings
+    updateProviderSettings,
+    updateProviderLocation
 };

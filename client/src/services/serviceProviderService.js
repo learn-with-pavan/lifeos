@@ -200,3 +200,24 @@ export const updateProviderSettings = async (settings) => {
 
     return response;
 };
+
+export const updateProviderLocation = async (latitude, longitude) => {
+    const token =
+        localStorage.getItem("token");
+
+    const response = await axios.patch(
+        `${API_URL}/service-providers/me/location`,
+        {
+            latitude,
+            longitude,
+        },
+        {
+            headers: {
+                Authorization:
+                    `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response
+};

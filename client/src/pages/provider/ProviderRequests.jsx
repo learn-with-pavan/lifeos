@@ -170,15 +170,7 @@ const ProviderRequests = () => {
 
             setActionLoading(requestId);
 
-            const response =
-                await acceptProviderRequest(
-                    requestId
-                );
-
-            console.log(
-                "Request accepted:",
-                response.data
-            );
+            await acceptProviderRequest(requestId);
 
             await loadRequests();
 
@@ -212,15 +204,7 @@ const ProviderRequests = () => {
 
             setActionLoading(requestId);
 
-            const response =
-                await rejectProviderRequest(
-                    requestId
-                );
-
-            console.log(
-                "Request rejected:",
-                response.data
-            );
+            await rejectProviderRequest(requestId);
 
             await loadRequests();
 

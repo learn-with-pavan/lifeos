@@ -94,6 +94,7 @@ const serviceRequestSchema = new mongoose.Schema(
                 trim: true,
             },
         },
+        
         completion: {
             completedAt: {
                 type: Date,

@@ -1,8 +1,8 @@
 .toast-container {
     position: fixed;
-    top: 24px;
+    top: max(24px, env(safe-area-inset-top));
     right: 24px;
-    z-index: 1000;
+    z-index: 2000;
     display: flex;
     width: min(380px, calc(100vw - 32px));
     flex-direction: column;
@@ -82,7 +82,7 @@
 
 @media (max-width: 600px) {
     .toast-container {
-        top: 16px;
+        top: max(16px, env(safe-area-inset-top));
         right: 16px;
         left: 16px;
         width: auto;

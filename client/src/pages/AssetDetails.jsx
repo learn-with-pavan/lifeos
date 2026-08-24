@@ -223,8 +223,6 @@ function AssetDetails() {
                 notes: formData.notes,
             };
 
-            console.log("Updating asset payload:", payload);
-
             const data = await updateAsset(id, payload);
 
             setAsset(data.asset);

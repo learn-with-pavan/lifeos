@@ -200,35 +200,34 @@ const cancelServiceRequest =
     };
 
 // Provider Incoming Requests
-const getProviderIncomingRequests =
-    async (req, res) => {
+const getProviderIncomingRequests = async (req, res) => {
 
-        try {
+    try {
 
-            const result =
-                await loadProviderIncomingRequests(
-                    req.userId
-                );
-
-            return res.status(200).json(result);
-
-        } catch (error) {
-
-            console.error(
-                "Get provider incoming requests error:",
-                error
+        const result =
+            await loadProviderIncomingRequests(
+                req.userId
             );
 
+        return res.status(200).json(result);
 
-            return res.status(error.statusCode || 500).json({
-                message:
-                    error.statusCode
-                        ? error.message
-                        : "Unable to load incoming service requests.",
-            });
+    } catch (error) {
 
-        }
-    };
+        console.error(
+            "Get provider incoming requests error:",
+            error
+        );
+
+
+        return res.status(error.statusCode || 500).json({
+            message:
+                error.statusCode
+                    ? error.message
+                    : "Unable to load incoming service requests.",
+        });
+
+    }
+};
 
 const getProviderRequest = async (req, res) => {
     try {

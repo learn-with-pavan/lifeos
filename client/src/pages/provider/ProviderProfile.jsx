@@ -23,6 +23,7 @@ import {
     getMyProvider,
     updateProvider,
     updateProviderAvailability,
+    updateProviderLocation,
 } from "../../services/serviceProviderService";
 
 
@@ -77,6 +78,16 @@ const CATEGORY_OPTIONS = [
 
 
 const ProviderProfile = () => {
+
+    const [
+        locationSaving,
+        setLocationSaving,
+    ] = useState(false);
+
+    const [
+        locationMessage,
+        setLocationMessage,
+    ] = useState("");
 
     const [
         provider,
@@ -486,6 +497,112 @@ const ProviderProfile = () => {
     }
 
 
+    const handleUseCurrentLocation = () => {
+
+        setError("");
+        setSuccessMessage("");
+        setLocationMessage("");
+
+        if (!navigator.geolocation) {
+
+            setError(
+                "Location services are not supported by your browser."
+            );
+
+            return;
+        }
+
+        setLocationSaving(true);
+
+        navigator.geolocation.getCurrentPosition(
+
+            async (position) => {
+
+                try {
+
+                    const {
+                        latitude,
+                        longitude,
+                    } = position.coords;
+
+                    await updateProviderLocation(
+                        latitude,
+                        longitude
+                    );
+
+                    setLocationMessage(
+                        "Your service location has been saved successfully."
+                    );
+
+                } catch (requestError) {
+
+                    console.error(
+                        "Failed to update provider location:",
+                        requestError
+                    );
+
+                    setError(
+                        requestError
+                            ?.response
+                            ?.data
+                            ?.message ||
+                        "Unable to save your location."
+                    );
+
+                } finally {
+
+                    setLocationSaving(false);
+                }
+            },
+
+            (locationError) => {
+
+                console.error(
+                    "Browser location error:",
+                    locationError
+                );
+
+                let message =
+                    "Unable to get your current location.";
+
+                if (
+                    locationError.code ===
+                    locationError.PERMISSION_DENIED
+                ) {
+
+                    message =
+                        "Location permission was denied. Please allow location access in your browser.";
+
+                } else if (
+                    locationError.code ===
+                    locationError.POSITION_UNAVAILABLE
+                ) {
+
+                    message =
+                        "Your current location could not be determined.";
+
+                } else if (
+                    locationError.code ===
+                    locationError.TIMEOUT
+                ) {
+
+                    message =
+                        "Location request timed out. Please try again.";
+                }
+
+                setError(message);
+
+                setLocationSaving(false);
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000,
+            }
+        );
+    };
+
     if (error && !provider) {
 
         return (
@@ -794,8 +911,8 @@ const ProviderProfile = () => {
                                         }
                                         type="button"
                                         className={`provider-category-option ${selected
-                                                ? "provider-category-option-selected"
-                                                : ""
+                                            ? "provider-category-option-selected"
+                                            : ""
                                             }`}
                                         onClick={() =>
                                             toggleCategory(
@@ -806,8 +923,8 @@ const ProviderProfile = () => {
 
                                         <div
                                             className={`provider-category-checkbox ${selected
-                                                    ? "provider-category-checkbox-selected"
-                                                    : ""
+                                                ? "provider-category-checkbox-selected"
+                                                : ""
                                                 }`}
                                         >
 
@@ -1085,6 +1202,65 @@ const ProviderProfile = () => {
                                     handleChange
                                 }
                             />
+
+                        </div>
+
+                        <div className="provider-location-capture">
+
+                            <div className="provider-location-capture-content">
+
+                                <div className="provider-location-capture-icon">
+                                    <MapPin size={18} />
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Service Location
+                                    </strong>
+
+                                    <p>
+                                        Allow LifeOS to use your current location
+                                        to find nearby customer service requests.
+                                    </p>
+
+                                    {provider?.location?.coordinates?.length === 2 &&
+                                        provider.location.coordinates.some(
+                                            (coordinate) => Number(coordinate) !== 0
+                                        ) && (
+
+                                            <span className="provider-location-saved">
+                                                <CheckCircle2 size={15} />
+                                                Location saved
+                                            </span>
+                                        )}
+
+                                    {locationMessage && (
+
+                                        <span className="provider-location-message">
+                                            {locationMessage}
+                                        </span>
+                                    )}
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                className="provider-location-button"
+                                onClick={handleUseCurrentLocation}
+                                disabled={locationSaving}
+                            >
+
+                                <MapPin size={16} />
+
+                                {locationSaving
+                                    ? "Getting location..."
+                                    : "Use my current location"}
+
+                            </button>
 
                         </div>
 

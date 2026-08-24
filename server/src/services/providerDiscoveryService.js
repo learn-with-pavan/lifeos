@@ -1,6 +1,7 @@
 const ServiceProvider = require("../models/ServiceProvider");
 const Asset = require("../models/Asset");
 
+
 const findProvidersForAsset = async (
     userId,
     assetId,
@@ -8,254 +9,312 @@ const findProvidersForAsset = async (
     latitude
 ) => {
 
-    const asset = await Asset.findOne({
-        _id: assetId,
-        user: userId,
-    });
+    // 1. Validate customer coordinates
+    const customerLongitude = Number(longitude);
+    const customerLatitude = Number(latitude);
 
+    if (!Number.isFinite(customerLongitude) || !Number.isFinite(customerLatitude)) {
+        const error = new Error("Valid customer latitude and longitude are required.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+
+    if (customerLatitude < -90 || customerLatitude > 90) {
+        const error = new Error("Invalid customer latitude.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+
+    if (customerLongitude < -180 || customerLongitude > 180) {
+        const error = new Error("Invalid customer longitude.");
+        error.statusCode = 400;
+        throw error;
+    }
+
+
+    // 2. Get customer's asset
+    const asset = await Asset.findOne({ _id: assetId, user: userId });
     if (!asset) {
-        const error = new Error(
-            "Asset not found"
-        );
-
+        const error = new Error("Asset not found.");
         error.statusCode = 404;
+        throw error;
+    }
+
+
+    const assetCategory =
+        String(
+            asset.category || ""
+        ).trim();
+
+
+    if (!assetCategory) {
+
+        const error =
+            new Error(
+                "Asset category is required to find technicians."
+            );
+
+        error.statusCode = 400;
 
         throw error;
     }
 
-    const assetCategory = String(
-        asset.category || ""
-    ).trim();
-
-    const providers =
-        await ServiceProvider.find({
-            verificationStatus: "VERIFIED",
-            isActive: true,
-            availability: "AVAILABLE",
-
-            supportedCategories: {
-                $regex: `^${assetCategory.replace(
-                    /[.*+?^${}()|[\]\\]/g,
-                    "\\$&"
-                )}$`,
-                $options: "i",
-            },
-
-            "location.coordinates": {
-                $exists: true,
-            },
-        })
-            .select(
-                "businessName description phone email services supportedCategories location serviceRadiusKm experienceYears availability rating"
-            )
-            .lean();
 
     /*
-     * Calculate distance from customer
-     * to each provider.
+     * ---------------------------------------------------------
+     * 3. Find geographically nearby providers
      *
-     * MongoDB stores coordinates as:
+     * MongoDB expects:
      *
      * [longitude, latitude]
+     *
+     * distanceField is returned in meters.
+     * ---------------------------------------------------------
      */
 
-    const EARTH_RADIUS_KM = 6371;
+    const providers =
+        await ServiceProvider.aggregate([
 
+            {
+                $geoNear: {
 
-    const calculateDistance = (
-        providerLongitude,
-        providerLatitude
-    ) => {
+                    near: {
+                        type: "Point",
 
-        const customerLat =
-            Number(latitude) *
-            Math.PI / 180;
-
-        const customerLon =
-            Number(longitude) *
-            Math.PI / 180;
-
-        const providerLatRad =
-            Number(providerLatitude) *
-            Math.PI / 180;
-
-        const providerLonRad =
-            Number(providerLongitude) *
-            Math.PI / 180;
-
-
-        const deltaLat =
-            providerLatRad -
-            customerLat;
-
-        const deltaLon =
-            providerLonRad -
-            customerLon;
-
-
-        const a =
-            Math.sin(deltaLat / 2) *
-            Math.sin(deltaLat / 2) +
-
-            Math.cos(customerLat) *
-            Math.cos(providerLatRad) *
-            Math.sin(deltaLon / 2) *
-            Math.sin(deltaLon / 2);
-
-
-        const c =
-            2 *
-            Math.atan2(
-                Math.sqrt(a),
-                Math.sqrt(1 - a)
-            );
-
-
-        return EARTH_RADIUS_KM * c;
-    };
-
-
-    const matchingProviders =
-        providers
-            .map((provider) => {
-
-                const coordinates =
-                    provider.location
-                        ?.coordinates || [];
-
-                const providerLongitude =
-                    coordinates[0];
-
-                const providerLatitude =
-                    coordinates[1];
-
-
-                if (
-                    typeof providerLongitude !==
-                    "number" ||
-                    typeof providerLatitude !==
-                    "number"
-                ) {
-                    console.warn(
-                        "Provider excluded: invalid coordinates",
-                        provider._id,
-                        provider.businessName,
-                        coordinates
-                    );
-
-                    return null;
-                }
-
-
-                const distance =
-                    calculateDistance(
-                        providerLongitude,
-                        providerLatitude
-                    );
-
-
-                /*
-                 * Provider's own service radius.
-                 */
-                if (
-                    distance >
-                    provider.serviceRadiusKm
-                ) {
-                    console.log(
-                        "Provider excluded: outside service radius",
-                        {
-                            provider: provider.businessName,
-                            distanceKm: Number(distance.toFixed(1)),
-                            serviceRadiusKm: provider.serviceRadiusKm,
-                            customerLocation: {
-                                longitude,
-                                latitude,
-                            },
-                        }
-                    );
-
-                    return null;
-                }
-
-
-                return {
-                    _id:
-                        provider._id,
-
-                    businessName:
-                        provider.businessName,
-
-                    description:
-                        provider.description,
-
-                    services:
-                        provider.services,
-
-                    supportedCategories:
-                        provider.supportedCategories,
-
-                    experienceYears:
-                        provider.experienceYears,
-
-                    availability:
-                        provider.availability,
-
-                    rating:
-                        provider.rating,
-
-                    location: {
-                        city:
-                            provider.location?.city ||
-                            "",
-
-                        state:
-                            provider.location?.state ||
-                            "",
+                        coordinates: [
+                            customerLongitude,
+                            customerLatitude,
+                        ],
                     },
 
-                    serviceRadiusKm:
-                        provider.serviceRadiusKm,
+                    key:
+                        "location",
 
-                    distanceKm:
-                        Number(
-                            distance.toFixed(1)
-                        ),
-                };
-            })
-            .filter(Boolean)
-            .sort(
-                (a, b) =>
-                    a.distanceKm -
-                    b.distanceKm
-            );
+                    distanceField:
+                        "distanceFromCustomerMeters",
 
-    console.log("Provider discovery", {
-        asset: asset.name,
-        assetCategory,
-        candidateCount: providers.length,
-        matchingCount: matchingProviders.length,
-        customerLocation: {
-            longitude,
-            latitude,
-        },
-    });
+                    spherical:
+                        true,
+
+                    distanceMultiplier:
+                        1,
+
+                    query: {
+
+                        verificationStatus:
+                            "VERIFIED",
+
+                        isActive:
+                            true,
+
+                        availability:
+                            "AVAILABLE",
+
+                        supportedCategories: {
+                            $regex:
+                                `^${assetCategory.replace(
+                                    /[.*+?^${}()|[\]\\]/g,
+                                    "\\$&"
+                                )}$`,
+
+                            $options:
+                                "i",
+                        },
+
+                        "location.coordinates": {
+                            $exists: true,
+
+                            $ne: [
+                                0,
+                                0,
+                            ],
+                        },
+                    },
+                },
+            },
+
+
+            /*
+             * -------------------------------------------------
+             * 4. Convert meters → kilometers
+             * -------------------------------------------------
+             */
+
+            {
+                $addFields: {
+
+                    distanceKm: {
+                        $divide: [
+                            "$distanceFromCustomerMeters",
+                            1000,
+                        ],
+                    },
+
+                },
+            },
+
+
+            /*
+             * -------------------------------------------------
+             * 5. Respect provider's service radius
+             *
+             * Example:
+             *
+             * Provider A → 5 km radius
+             * Provider B → 15 km radius
+             *
+             * Customer is 8 km away:
+             *
+             * A → excluded
+             * B → included
+             * -------------------------------------------------
+             */
+
+            {
+                $match: {
+
+                    $expr: {
+
+                        $lte: [
+                            "$distanceKm",
+                            "$serviceRadiusKm",
+                        ],
+
+                    },
+
+                },
+            },
+
+
+            /*
+             * -------------------------------------------------
+             * 6. Return only fields customer needs
+             * -------------------------------------------------
+             */
+
+            {
+                $project: {
+
+                    _id: 1,
+
+                    businessName: 1,
+
+                    description: 1,
+
+                    services: 1,
+
+                    supportedCategories: 1,
+
+                    experienceYears: 1,
+
+                    availability: 1,
+
+                    rating: 1,
+
+                    serviceRadiusKm: 1,
+
+                    location: {
+
+                        city:
+                            "$location.city",
+
+                        state:
+                            "$location.state",
+
+                    },
+
+                    distanceKm: {
+
+                        $round: [
+                            "$distanceKm",
+                            1,
+                        ],
+
+                    },
+
+                },
+
+            },
+
+
+            /*
+             * -------------------------------------------------
+             * 7. Nearest provider first
+             * -------------------------------------------------
+             */
+
+            {
+                $sort: {
+                    distanceKm: 1,
+                },
+            },
+
+        ]);
+
+
+    /*
+     * ---------------------------------------------------------
+     * 8. Logging
+     * ---------------------------------------------------------
+     */
+
+    console.log(
+        "Provider discovery",
+        {
+            asset:
+                asset.name,
+
+            assetCategory,
+
+            customerLocation: {
+                longitude:
+                    customerLongitude,
+
+                latitude:
+                    customerLatitude,
+            },
+
+            matchingCount:
+                providers.length,
+        }
+    );
+
+
+    /*
+     * ---------------------------------------------------------
+     * 9. Response
+     * ---------------------------------------------------------
+     */
+
     return {
+
         asset: {
-            _id: asset._id,
-            name: asset.name,
-            category: asset.category,
+
+            _id:
+                asset._id,
+
+            name:
+                asset.name,
+
+            category:
+                asset.category,
+
         },
 
         customerLocation: {
+
             longitude:
-                Number(longitude),
+                customerLongitude,
 
             latitude:
-                Number(latitude),
+                customerLatitude,
+
         },
 
-        providers:
-            matchingProviders,
+        providers,
+
     };
 };
 
