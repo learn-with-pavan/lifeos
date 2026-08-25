@@ -43,7 +43,7 @@ button {
 
 .auth-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 450px;
   padding: 40px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -97,7 +97,7 @@ button {
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 
   .form-group {
     margin: 0px !important;
@@ -590,7 +590,7 @@ button {
 }
 
 .form-group label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #334155;
 }
@@ -1705,13 +1705,8 @@ button {
 
 .empty-state {
   padding: 42px 24px;
-
   text-align: center;
-
   border: 1px dashed #dbe2ea;
-
-  border-radius: 12px;
-
   background: #fafafa;
 }
 
@@ -2442,4 +2437,14 @@ button {
         width: 100%;
     }
 
+}
+
+.form-error {
+    margin: 0;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+input[aria-invalid="true"] {
+    border-color: #dc2626;
 }

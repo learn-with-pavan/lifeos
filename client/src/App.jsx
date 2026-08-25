@@ -1,4 +1,11 @@
-import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import { useEffect } from "react";
 
 import { NotificationProvider } from "./context/NotificationContext";
 import { ToastProvider } from "./context/ToastContext";
@@ -33,11 +40,25 @@ import ProviderServices from "./pages/provider/ProviderServices";
 import ProviderSettings from "./pages/provider/ProviderSettings";
 import ProviderRegister from "./pages/provider/ProviderRegister";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    document
+      .querySelector(".page-content, .provider-page-content")
+      ?.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
 
           {/* PUBLIC */}

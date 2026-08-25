@@ -4,60 +4,106 @@ import { useState } from "react";
 import { loginUser } from "../services/authService";
 import { useToast } from "../context/ToastContext";
 
-function Login() {
+const INITIAL_FORM_DATA = {
+    email: "",
+    password: "",
+};
 
+const INITIAL_ERRORS = {
+    email: "",
+    password: "",
+};
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function Login() {
     const navigate = useNavigate();
     const toast = useToast();
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-    });
-
-    const [message, setMessage] = useState("");
+    const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+    const [errors, setErrors] = useState(INITIAL_ERRORS);
     const [loading, setLoading] = useState(false);
+
+    const validateForm = () => {
+        const newErrors = {};
+        const email = formData.email.trim();
+        const password = formData.password;
+
+        if (!email) {
+            newErrors.email = "Email address is required.";
+        } else if (!EMAIL_REGEX.test(email)) {
+            newErrors.email = "Please enter a valid email address.";
+        }
+
+        if (!password) {
+            newErrors.password = "Password is required.";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+
+        setFormData((previousData) => ({
+            ...previousData,
+            [name]: value,
+        }));
+
+        // Clear the field error when the user starts correcting it.
+        setErrors((previousErrors) => ({
+            ...previousErrors,
+            [name]: "",
+        }));
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        if (loading) {
+            return;
+        }
+
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             setLoading(true);
-            setMessage("");
 
-            const data = await loginUser(formData);
+            const loginData = {
+                email: formData.email.trim(),
+                password: formData.password,
+            };
+
+            const data = await loginUser(loginData);
+
+            if (!data?.token || !data?.user) {
+                throw new Error("Invalid login response.");
+            }
 
             localStorage.setItem("token", data.token);
-
-            localStorage.setItem(
-                "user",
-                JSON.stringify(data.user)
-            );
+            localStorage.setItem("user", JSON.stringify(data.user));
 
             toast.success("Login successful");
+
             if (data.user.role === "PROVIDER") {
-
-                navigate(
-                    "/provider/dashboard",
-                    {
-                        replace: true,
-                    }
-                );
-
+                navigate("/provider/dashboard", {
+                    replace: true,
+                });
             } else {
-
-                navigate(
-                    "/dashboard",
-                    {
-                        replace: true,
-                    }
-                );
+                navigate("/dashboard", {
+                    replace: true,
+                });
             }
         } catch (error) {
-            const message =
+            const errorMessage =
                 error.response?.data?.message ||
-                "Login failed";
-            toast.error(message);
-            setMessage("");
+                "Login failed. Please check your credentials.";
+
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -66,7 +112,6 @@ function Login() {
     return (
         <div className="auth-page">
             <div className="auth-card">
-
                 <div className="auth-brand">
                     <div className="brand-icon">
                         <ShieldCheck size={24} />
@@ -83,22 +128,38 @@ function Login() {
                     <p>Sign in to continue managing your life.</p>
                 </div>
 
-                <form className="auth-form" onSubmit={handleSubmit}>
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
+                    noValidate
+                >
                     <div className="form-group">
                         <label htmlFor="email">Email address</label>
 
                         <input
                             id="email"
+                            name="email"
                             type="email"
                             placeholder="you@example.com"
                             value={formData.email}
-                            onChange={(event) =>
-                                setFormData({
-                                    ...formData,
-                                    email: event.target.value,
-                                })
+                            onChange={handleChange}
+                            autoComplete="email"
+                            disabled={loading}
+                            aria-invalid={Boolean(errors.email)}
+                            aria-describedby={
+                                errors.email ? "email-error" : undefined
                             }
                         />
+
+                        {errors.email && (
+                            <p
+                                id="email-error"
+                                className="form-error"
+                                role="alert"
+                            >
+                                {errors.email}
+                            </p>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -106,16 +167,30 @@ function Login() {
 
                         <input
                             id="password"
+                            name="password"
                             type="password"
                             placeholder="Enter your password"
                             value={formData.password}
-                            onChange={(event) =>
-                                setFormData({
-                                    ...formData,
-                                    password: event.target.value,
-                                })
+                            onChange={handleChange}
+                            autoComplete="current-password"
+                            disabled={loading}
+                            aria-invalid={Boolean(errors.password)}
+                            aria-describedby={
+                                errors.password
+                                    ? "password-error"
+                                    : undefined
                             }
                         />
+
+                        {errors.password && (
+                            <p
+                                id="password-error"
+                                className="form-error"
+                                role="alert"
+                            >
+                                {errors.password}
+                            </p>
+                        )}
                     </div>
 
                     <button
@@ -127,14 +202,7 @@ function Login() {
                     </button>
                 </form>
 
-                {message && (
-                    <p style={{ marginTop: "16px", textAlign: "center" }}>
-                        {message}
-                    </p>
-                )}
-
                 <div className="auth-footer">
-
                     <p>
                         Don't have an account?{" "}
                         <Link to="/register">
@@ -148,7 +216,6 @@ function Login() {
                             Register as a provider
                         </Link>
                     </p>
-
                 </div>
             </div>
         </div>
