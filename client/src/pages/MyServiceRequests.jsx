@@ -6,6 +6,7 @@ import {
     FileText,
     RefreshCw,
     Wrench,
+    XCircle
 } from "lucide-react";
 
 import {
@@ -103,7 +104,7 @@ const getStatusConfig = (
 
     return (
         STATUS_CONFIG[
-            status
+        status
         ] || {
             label:
                 status ||
@@ -184,7 +185,7 @@ const MyServiceRequests = () => {
                 );
 
             } catch (
-                requestError
+            requestError
             ) {
 
                 console.error(
@@ -276,44 +277,44 @@ const MyServiceRequests = () => {
             {!loading &&
                 error && (
 
-                <div className="my-requests-state-card">
+                    <div className="my-requests-state-card">
 
-                    <div className="my-requests-state-icon error-icon">
+                        <div className="my-requests-state-icon error-icon">
 
-                        <FileText
-                            size={27}
-                        />
+                            <FileText
+                                size={27}
+                            />
+
+                        </div>
+
+                        <h2>
+                            Unable to load requests
+                        </h2>
+
+                        <p>
+                            {error}
+                        </p>
+
+
+                        <button
+                            type="button"
+                            className="my-requests-secondary-button"
+                            onClick={
+                                loadRequests
+                            }
+                        >
+
+                            <RefreshCw
+                                size={16}
+                            />
+
+                            Try Again
+
+                        </button>
 
                     </div>
 
-                    <h2>
-                        Unable to load requests
-                    </h2>
-
-                    <p>
-                        {error}
-                    </p>
-
-
-                    <button
-                        type="button"
-                        className="my-requests-secondary-button"
-                        onClick={
-                            loadRequests
-                        }
-                    >
-
-                        <RefreshCw
-                            size={16}
-                        />
-
-                        Try Again
-
-                    </button>
-
-                </div>
-
-            )}
+                )}
 
 
             {/* EMPTY */}
@@ -322,44 +323,44 @@ const MyServiceRequests = () => {
                 !error &&
                 requests.length === 0 && (
 
-                <div className="my-requests-state-card">
+                    <div className="my-requests-state-card">
 
-                    <div className="my-requests-state-icon">
+                        <div className="my-requests-state-icon">
 
-                        <Wrench
-                            size={28}
-                        />
+                            <Wrench
+                                size={28}
+                            />
+
+                        </div>
+
+
+                        <h2>
+                            No service requests yet
+                        </h2>
+
+
+                        <p>
+                            When you request a service
+                            from a technician, your
+                            requests will appear here.
+                        </p>
+
+
+                        <button
+                            type="button"
+                            className="my-requests-primary-button"
+                            onClick={() =>
+                                navigate(
+                                    "/assets"
+                                )
+                            }
+                        >
+                            Find a Service
+                        </button>
 
                     </div>
 
-
-                    <h2>
-                        No service requests yet
-                    </h2>
-
-
-                    <p>
-                        When you request a service
-                        from a technician, your
-                        requests will appear here.
-                    </p>
-
-
-                    <button
-                        type="button"
-                        className="my-requests-primary-button"
-                        onClick={() =>
-                            navigate(
-                                "/assets"
-                            )
-                        }
-                    >
-                        Find a Service
-                    </button>
-
-                </div>
-
-            )}
+                )}
 
 
             {/* REQUEST LIST */}
@@ -368,209 +369,223 @@ const MyServiceRequests = () => {
                 !error &&
                 requests.length > 0 && (
 
-                <div className="my-requests-content">
+                    <div className="my-requests-content">
 
-                    <div className="my-requests-list-header">
+                        <div className="my-requests-list-header">
 
-                        <div>
+                            <div>
 
-                            <h2>
-                                Service requests
-                            </h2>
+                                <h2>
+                                    Service requests
+                                </h2>
 
-                            <p>
-                                {requests.length}
-                                {" "}
-                                {requests.length === 1
-                                    ? "request"
-                                    : "requests"}
-                            </p>
+                                <p>
+                                    {requests.length}
+                                    {" "}
+                                    {requests.length === 1
+                                        ? "request"
+                                        : "requests"}
+                                </p>
+
+                            </div>
 
                         </div>
 
-                    </div>
+
+                        <div className="my-requests-list">
+
+                            {requests.map(
+                                (request) => {
+
+                                    const status =
+                                        getStatusConfig(
+                                            request.status
+                                        );
 
 
-                    <div className="my-requests-list">
-
-                        {requests.map(
-                            (request) => {
-
-                                const status =
-                                    getStatusConfig(
-                                        request.status
-                                    );
+                                    const asset =
+                                        request.asset;
 
 
-                                const asset =
-                                    request.asset;
+                                    const provider =
+                                        request.serviceProvider;
 
 
-                                const provider =
-                                    request.serviceProvider;
+                                    const assetName =
+                                        asset?.name ||
+                                        "Asset";
 
 
-                                const assetName =
-                                    asset?.name ||
-                                    "Asset";
+                                    const providerName =
+                                        provider
+                                            ?.businessName ||
+                                        provider
+                                            ?.name ||
+                                        "Service Provider";
 
 
-                                const providerName =
-                                    provider
-                                        ?.businessName ||
-                                    provider
-                                        ?.name ||
-                                    "Service Provider";
+                                    const serviceType =
+                                        request.serviceType ||
+                                        "SERVICE";
 
 
-                                const serviceType =
-                                    request.serviceType ||
-                                    "SERVICE";
+                                    return (
 
+                                        <button
+                                            type="button"
+                                            key={
+                                                request._id
+                                            }
+                                            className="service-request-card"
+                                            onClick={() =>
+                                                navigate(
+                                                    `/service-requests/${request._id}`
+                                                )
+                                            }
+                                        >
 
-                                return (
+                                            {/* ICON */}
 
-                                    <button
-                                        type="button"
-                                        key={
-                                            request._id
-                                        }
-                                        className="service-request-card"
-                                        onClick={() =>
-                                            navigate(
-                                                `/service-requests/${request._id}`
-                                            )
-                                        }
-                                    >
+                                            <div className="service-request-icon">
 
-                                        {/* ICON */}
-
-                                        <div className="service-request-icon">
-
-                                            <Wrench
-                                                size={22}
-                                            />
-
-                                        </div>
-
-
-                                        {/* CONTENT */}
-
-                                        <div className="service-request-content">
-
-                                            <div className="service-request-title-row">
-
-                                                <div>
-
-                                                    <h3>
-                                                        {assetName}
-                                                    </h3>
-
-                                                    <p>
-                                                        {
-                                                            providerName
-                                                        }
-                                                    </p>
-
-                                                </div>
-
-
-                                                <span
-                                                    className={`service-request-status ${status.className}`}
-                                                >
-                                                    {
-                                                        status.label
-                                                    }
-                                                </span>
+                                                <Wrench
+                                                    size={22}
+                                                />
 
                                             </div>
 
 
-                                            <div className="service-request-meta">
+                                            {/* CONTENT */}
 
-                                                <span>
+                                            <div className="service-request-content">
 
-                                                    <Wrench
-                                                        size={14}
-                                                    />
+                                                <div className="service-request-title-row">
 
-                                                    {
-                                                        serviceType
-                                                    }
+                                                    <div>
 
-                                                </span>
+                                                        <h3>
+                                                            {assetName}
+                                                        </h3>
 
+                                                        <p>
+                                                            {
+                                                                providerName
+                                                            }
+                                                        </p>
 
-                                                <span>
-
-                                                    <CalendarDays
-                                                        size={14}
-                                                    />
-
-                                                    {
-                                                        formatDate(
-                                                            request.date
-                                                        )
-                                                    }
-
-                                                </span>
+                                                    </div>
 
 
-                                                {request.time && (
+                                                    <span
+                                                        className={`service-request-status ${status.className}`}
+                                                    >
+                                                        {
+                                                            status.label
+                                                        }
+                                                    </span>
+
+                                                </div>
+
+
+                                                <div className="service-request-meta">
 
                                                     <span>
 
-                                                        <Clock
+                                                        <Wrench
                                                             size={14}
                                                         />
 
                                                         {
-                                                            request.time
+                                                            serviceType
                                                         }
 
                                                     </span>
+
+
+                                                    <span>
+
+                                                        <CalendarDays
+                                                            size={14}
+                                                        />
+
+                                                        {
+                                                            formatDate(
+                                                                request.preferredDate
+                                                            )
+                                                        }
+
+                                                    </span>
+
+
+                                                    {request.preferredTime && (
+
+                                                        <span>
+
+                                                            <Clock
+                                                                size={14}
+                                                            />
+
+                                                            {
+                                                                request.preferredTime
+                                                            }
+
+                                                        </span>
+
+                                                    )}
+
+                                                </div>
+
+                                                {request.description && (
+
+                                                    <p className="service-request-description">
+
+                                                        {
+                                                            request.description
+                                                        }
+
+                                                    </p>
+
+                                                )}
+
+                                                {request.status === "CANCELLED" && (
+
+                                                    <div className="service-request-cancelled-note">
+
+                                                        <XCircle
+                                                            size={14}
+                                                        />
+
+                                                        <span>
+                                                            Appointment cancelled
+                                                        </span>
+
+                                                    </div>
 
                                                 )}
 
                                             </div>
 
+                                            {/* ARROW */}
 
-                                            {request.description && (
+                                            <div className="service-request-arrow">
 
-                                                <p className="service-request-description">
+                                                <ChevronRight
+                                                    size={20}
+                                                />
 
-                                                    {
-                                                        request.description
-                                                    }
+                                            </div>
 
-                                                </p>
+                                        </button>
 
-                                            )}
+                                    );
+                                }
+                            )}
 
-                                        </div>
-
-
-                                        {/* ARROW */}
-
-                                        <div className="service-request-arrow">
-
-                                            <ChevronRight
-                                                size={20}
-                                            />
-
-                                        </div>
-
-                                    </button>
-
-                                );
-                            }
-                        )}
+                        </div>
 
                     </div>
 
-                </div>
-
-            )}
+                )}
 
         </div>
     );

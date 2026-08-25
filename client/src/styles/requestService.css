@@ -603,7 +603,7 @@
 
     border-radius: 10px;
 
-    background: #4f46e5;
+    background: #0f172a;
 
     color: #ffffff;
 
@@ -622,17 +622,7 @@
 
 
 .request-primary-button:hover:not(:disabled) {
-    background: #4338ca;
-
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 5px 14px rgba(
-            79,
-            70,
-            229,
-            0.20
-        );
+    opacity: 0.9;
 }
 
 

@@ -71,7 +71,7 @@ router.patch(
 
 
 router.patch(
-    "/:requestId/schedule",
+    "/provider/:requestId/schedule",
     authorizeRoles("PROVIDER"),
     scheduleServiceRequestController
 );

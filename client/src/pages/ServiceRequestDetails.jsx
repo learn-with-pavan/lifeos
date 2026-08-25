@@ -235,34 +235,33 @@ const ServiceRequestDetails = () => {
     }, [loadRequest]);
 
 
-    const handleCancelRequest =
-        async () => {
+    const handleCancelRequest = async () => {
 
-            try {
+        try {
 
-                setCancelling(true);
-
-
-                await cancelServiceRequest(
-                    requestId
-                );
+            setCancelling(true);
 
 
-                await loadRequest();
+            await cancelServiceRequest(
+                requestId
+            );
 
-            } catch (error) {
 
-                console.error(
-                    "Failed to cancel service request:",
-                    error
-                );
+            await loadRequest();
 
-            } finally {
+        } catch (error) {
 
-                setCancelling(false);
+            console.error(
+                "Failed to cancel service request:",
+                error
+            );
 
-            }
-        };
+        } finally {
+
+            setCancelling(false);
+
+        }
+    };
 
     if (loading) {
 
@@ -728,28 +727,153 @@ const ServiceRequestDetails = () => {
 
                     </div>
 
+                    <div className="request-information-item">
 
-                    {request.time && (
+                        <div className="request-information-icon">
 
-                        <div className="request-information-item">
+                            <Clock
+                                size={17}
+                            />
 
-                            <div className="request-information-icon">
+                        </div>
 
-                                <Clock
-                                    size={17}
-                                />
+                        <div>
 
-                            </div>
+                            <span>
+                                Requested time
+                            </span>
+
+                            <strong>
+                                {
+                                    formatDate(
+                                        request.preferredTime
+                                    )
+                                }
+                            </strong>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            {/* DESCRIPTION */}
+
+            {(request.description || request.notes) && (
+
+                <section className="request-details-card">
+
+                    <div className="request-section-heading">
+
+                        <div>
+
+                            <h2>
+                                Problem Description
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="request-description-box">
+
+                        <FileText
+                            size={18}
+                        />
+
+                        <p>
+                            {
+                                request.description ||
+                                request.notes
+                            }
+                        </p>
+
+                    </div>
+
+                </section>
+
+            )}
+
+            {/* APPOINTMENT */}
+
+            {request.status === "SCHEDULED" && request.scheduling && (
+
+                <section className="request-appointment-card">
+
+                    <div className="request-appointment-header">
+
+                        <div>
+
+                            <span className="request-appointment-eyebrow">
+                                Appointment
+                            </span>
+
+                            <h2>
+                                Confirmed Appointment
+                            </h2>
+
+                            <p>
+                                Your service provider has scheduled
+                                an appointment for this request.
+                            </p>
+
+                        </div>
+
+                        <div className="request-appointment-icon">
+
+                            <CalendarDays
+                                size={22}
+                            />
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="request-appointment-grid">
+
+                        <div className="request-appointment-item">
+
+                            <CalendarDays
+                                size={17}
+                            />
 
                             <div>
 
                                 <span>
-                                    Preferred time
+                                    Scheduled date
+                                </span>
+
+                                <strong>
+                                    {formatDate(
+                                        request.scheduling.scheduledDate
+                                    )}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="request-appointment-item">
+
+                            <Clock
+                                size={17}
+                            />
+
+                            <div>
+
+                                <span>
+                                    Scheduled time
                                 </span>
 
                                 <strong>
                                     {
-                                        request.time
+                                        request.scheduling
+                                            .scheduledTime ||
+                                        "Not specified"
                                     }
                                 </strong>
 
@@ -757,11 +881,77 @@ const ServiceRequestDetails = () => {
 
                         </div>
 
-                    )}
 
-                </div>
+                        {request.scheduling.durationMinutes && (
 
-            </section>
+                            <div className="request-appointment-item">
+
+                                <Clock
+                                    size={17}
+                                />
+
+                                <div>
+
+                                    <span>
+                                        Duration
+                                    </span>
+
+                                    <strong>
+                                        {
+                                            request.scheduling
+                                                .durationMinutes
+                                        }{" "}
+                                        minutes
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        )}
+
+                    </div>
+
+
+                    <div className="request-appointment-actions">
+
+                        <button
+                            type="button"
+                            className="request-cancel-button"
+                            disabled={cancelling}
+                            onClick={
+                                handleCancelRequest
+                            }
+                        >
+
+                            {cancelling ? (
+                                <>
+                                    <RefreshCw
+                                        size={16}
+                                        className="request-loading-icon"
+                                    />
+
+                                    Cancelling...
+                                </>
+                            ) : (
+                                <>
+                                    <XCircle
+                                        size={16}
+                                    />
+
+                                    Cancel Appointment
+                                </>
+                            )}
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+            )}
+
+            {/* PENDING CANCELLATION */}
 
             {request.status === "PENDING" && (
 
@@ -815,44 +1005,42 @@ const ServiceRequestDetails = () => {
 
             )}
 
-            {/* DESCRIPTION */}
 
-            {(request.description ||
-                request.notes) && (
+            {/* CANCELLED APPOINTMENT */}
 
-                    <section className="request-details-card">
+            {request.status === "CANCELLED" && (
 
-                        <div className="request-section-heading">
+                <section className="request-cancelled-appointment-card">
 
-                            <div>
+                    <div className="request-cancelled-appointment-icon">
 
-                                <h2>
-                                    Problem Description
-                                </h2>
+                        <XCircle
+                            size={22}
+                        />
 
-                            </div>
-
-                        </div>
+                    </div>
 
 
-                        <div className="request-description-box">
+                    <div>
 
-                            <FileText
-                                size={18}
-                            />
+                        <span className="request-cancelled-appointment-eyebrow">
+                            Appointment status
+                        </span>
 
-                            <p>
-                                {
-                                    request.description ||
-                                    request.notes
-                                }
-                            </p>
+                        <h2>
+                            Appointment Cancelled
+                        </h2>
 
-                        </div>
+                        <p>
+                            This service appointment has been cancelled.
+                            No further action is required.
+                        </p>
 
-                    </section>
+                    </div>
 
-                )}
+                </section>
+
+            )}
 
 
             {/* COMPLETION DETAILS */}
@@ -1036,324 +1224,326 @@ const ServiceRequestDetails = () => {
 
             {/* TIMELINE */}
 
-            <section className="request-details-card">
+            {request.status !== 'CANCELLED' && (
+                <section className="request-details-card">
 
-                <div className="request-section-heading">
-
-                    <div>
-
-                        <h2>
-                            Request Timeline
-                        </h2>
-
-                        <p>
-                            Track the progress of
-                            your service request.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                {/* CANCELLED */}
-
-                {request.status === "CANCELLED" && (
-
-                    <div className="request-terminal-message cancelled">
-
-                        <XCircle
-                            size={20}
-                        />
+                    <div className="request-section-heading">
 
                         <div>
 
-                            <strong>
-                                Request cancelled
-                            </strong>
+                            <h2>
+                                Request Timeline
+                            </h2>
 
-                            <span>
-                                This service request was cancelled.
-                            </span>
+                            <p>
+                                Track the progress of
+                                your service request.
+                            </p>
 
                         </div>
 
                     </div>
 
-                )}
 
+                    {/* CANCELLED */}
 
-                {/* REJECTED */}
+                    {request.status === "CANCELLED" && (
 
-                {request.status === "REJECTED" && (
+                        <div className="request-terminal-message cancelled">
 
-                    <div className="request-terminal-message rejected">
+                            <XCircle
+                                size={20}
+                            />
 
-                        <XCircle
-                            size={20}
-                        />
+                            <div>
 
-                        <div>
+                                <strong>
+                                    Request cancelled
+                                </strong>
 
-                            <strong>
-                                Request declined
-                            </strong>
-
-                            <span>
-                                The service provider was unable
-                                to accept this request.
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                )}
-
-
-                {/* NORMAL SERVICE TIMELINE */}
-
-                {![
-                    "CANCELLED",
-                    "REJECTED",
-                ].includes(request.status) && (
-
-                        <div className="request-timeline">
-
-
-                            {/* REQUEST SUBMITTED */}
-
-                            <div className="timeline-item active">
-
-                                <div className="timeline-marker">
-
-                                    <CheckCircle2
-                                        size={17}
-                                    />
-
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Request submitted
-                                    </strong>
-
-                                    <span>
-                                        Your service request
-                                        has been submitted.
-                                    </span>
-
-                                </div>
+                                <span>
+                                    This service request was cancelled.
+                                </span>
 
                             </div>
-
-
-                            {/* PROVIDER RESPONSE */}
-
-                            <div
-                                className={`timeline-item ${[
-                                    "ACCEPTED",
-                                    "SCHEDULED",
-                                    "IN_PROGRESS",
-                                    "COMPLETED",
-                                ].includes(request.status)
-                                    ? "active"
-                                    : ""
-                                    }`}
-                            >
-
-                                <div className="timeline-marker">
-
-                                    {request.status === "REJECTED" ? (
-
-                                        <XCircle
-                                            size={17}
-                                        />
-
-                                    ) : (
-
-                                        <CheckCircle2
-                                            size={17}
-                                        />
-
-                                    )}
-
-                                </div>
-
-
-                                <div>
-
-                                    <strong>
-                                        Provider response
-                                    </strong>
-
-
-                                    <span>
-
-                                        {request.status === "PENDING" && (
-                                            "Waiting for the provider to respond."
-                                        )}
-
-
-                                        {[
-                                            "ACCEPTED",
-                                            "SCHEDULED",
-                                            "IN_PROGRESS",
-                                            "COMPLETED",
-                                        ].includes(request.status) && (
-                                                "The provider has accepted your request."
-                                            )}
-
-
-                                        {request.status === "REJECTED" && (
-                                            "The provider was unable to accept your request."
-                                        )}
-
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* SERVICE SCHEDULED */}
-
-                            <div
-                                className={`timeline-item ${[
-                                    "SCHEDULED",
-                                    "IN_PROGRESS",
-                                    "COMPLETED",
-                                ].includes(
-                                    request.status
-                                )
-                                    ? "active"
-                                    : ""
-                                    }`}
-                            >
-
-                                <div className="timeline-marker">
-
-                                    <CalendarDays
-                                        size={17}
-                                    />
-
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Service scheduled
-                                    </strong>
-
-                                    <span>
-                                        {[
-                                            "SCHEDULED",
-                                            "IN_PROGRESS",
-                                            "COMPLETED",
-                                        ].includes(
-                                            request.status
-                                        )
-                                            ? "Your service appointment has been scheduled."
-                                            : "The service appointment will appear here."
-                                        }
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* SERVICE IN PROGRESS */}
-
-                            <div
-                                className={`timeline-item ${[
-                                    "IN_PROGRESS",
-                                    "COMPLETED",
-                                ].includes(
-                                    request.status
-                                )
-                                    ? "active"
-                                    : ""
-                                    }`}
-                            >
-
-                                <div className="timeline-marker">
-
-                                    <Wrench
-                                        size={17}
-                                    />
-
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Service in progress
-                                    </strong>
-
-                                    <span>
-                                        {[
-                                            "IN_PROGRESS",
-                                            "COMPLETED",
-                                        ].includes(
-                                            request.status
-                                        )
-                                            ? "The technician is working on your asset."
-                                            : "The technician will start working on your asset here."
-                                        }
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* SERVICE COMPLETED */}
-
-                            <div
-                                className={`timeline-item ${request.status ===
-                                    "COMPLETED"
-                                    ? "active"
-                                    : ""
-                                    }`}
-                            >
-
-                                <div className="timeline-marker">
-
-                                    <CheckCircle2
-                                        size={17}
-                                    />
-
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Service completed
-                                    </strong>
-
-                                    <span>
-                                        {request.status === "COMPLETED"
-                                            ? request.completion?.completedAt
-                                                ? `Service completed on ${formatDate(
-                                                    request.completion.completedAt
-                                                )}.`
-                                                : "The service has been completed successfully."
-                                            : "The completion of your service will appear here."
-                                        }
-                                    </span>
-
-                                </div>
-
-                            </div>
-
 
                         </div>
 
                     )}
 
-            </section>
+
+                    {/* REJECTED */}
+
+                    {request.status === "REJECTED" && (
+
+                        <div className="request-terminal-message rejected">
+
+                            <XCircle
+                                size={20}
+                            />
+
+                            <div>
+
+                                <strong>
+                                    Request declined
+                                </strong>
+
+                                <span>
+                                    The service provider was unable
+                                    to accept this request.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+
+                    {/* NORMAL SERVICE TIMELINE */}
+
+                    {![
+                        "CANCELLED",
+                        "REJECTED",
+                    ].includes(request.status) && (
+
+                            <div className="request-timeline">
+
+
+                                {/* REQUEST SUBMITTED */}
+
+                                <div className="timeline-item active">
+
+                                    <div className="timeline-marker">
+
+                                        <CheckCircle2
+                                            size={17}
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Request submitted
+                                        </strong>
+
+                                        <span>
+                                            Your service request
+                                            has been submitted.
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* PROVIDER RESPONSE */}
+
+                                <div
+                                    className={`timeline-item ${[
+                                        "ACCEPTED",
+                                        "SCHEDULED",
+                                        "IN_PROGRESS",
+                                        "COMPLETED",
+                                    ].includes(request.status)
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                >
+
+                                    <div className="timeline-marker">
+
+                                        {request.status === "REJECTED" ? (
+
+                                            <XCircle
+                                                size={17}
+                                            />
+
+                                        ) : (
+
+                                            <CheckCircle2
+                                                size={17}
+                                            />
+
+                                        )}
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong>
+                                            Provider response
+                                        </strong>
+
+
+                                        <span>
+
+                                            {request.status === "PENDING" && (
+                                                "Waiting for the provider to respond."
+                                            )}
+
+
+                                            {[
+                                                "ACCEPTED",
+                                                "SCHEDULED",
+                                                "IN_PROGRESS",
+                                                "COMPLETED",
+                                            ].includes(request.status) && (
+                                                    "The provider has accepted your request."
+                                                )}
+
+
+                                            {request.status === "REJECTED" && (
+                                                "The provider was unable to accept your request."
+                                            )}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* SERVICE SCHEDULED */}
+
+                                <div
+                                    className={`timeline-item ${[
+                                        "SCHEDULED",
+                                        "IN_PROGRESS",
+                                        "COMPLETED",
+                                    ].includes(
+                                        request.status
+                                    )
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                >
+
+                                    <div className="timeline-marker">
+
+                                        <CalendarDays
+                                            size={17}
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Service scheduled
+                                        </strong>
+
+                                        <span>
+                                            {[
+                                                "SCHEDULED",
+                                                "IN_PROGRESS",
+                                                "COMPLETED",
+                                            ].includes(
+                                                request.status
+                                            )
+                                                ? "Your service appointment has been scheduled."
+                                                : "The service appointment will appear here."
+                                            }
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* SERVICE IN PROGRESS */}
+
+                                <div
+                                    className={`timeline-item ${[
+                                        "IN_PROGRESS",
+                                        "COMPLETED",
+                                    ].includes(
+                                        request.status
+                                    )
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                >
+
+                                    <div className="timeline-marker">
+
+                                        <Wrench
+                                            size={17}
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Service in progress
+                                        </strong>
+
+                                        <span>
+                                            {[
+                                                "IN_PROGRESS",
+                                                "COMPLETED",
+                                            ].includes(
+                                                request.status
+                                            )
+                                                ? "The technician is working on your asset."
+                                                : "The technician will start working on your asset here."
+                                            }
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* SERVICE COMPLETED */}
+
+                                <div
+                                    className={`timeline-item ${request.status ===
+                                        "COMPLETED"
+                                        ? "active"
+                                        : ""
+                                        }`}
+                                >
+
+                                    <div className="timeline-marker">
+
+                                        <CheckCircle2
+                                            size={17}
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Service completed
+                                        </strong>
+
+                                        <span>
+                                            {request.status === "COMPLETED"
+                                                ? request.completion?.completedAt
+                                                    ? `Service completed on ${formatDate(
+                                                        request.completion.completedAt
+                                                    )}.`
+                                                    : "The service has been completed successfully."
+                                                : "The completion of your service will appear here."
+                                            }
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                        )}
+
+                </section>
+            )}
 
         </div>
     );

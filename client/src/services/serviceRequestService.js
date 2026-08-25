@@ -118,7 +118,7 @@ export const scheduleServiceRequest = async (
 
     const response =
         await axios.patch(
-            `${API_URL}/service-requests/${requestId}/schedule`,
+            `${API_URL}/service-requests/provider/${requestId}/schedule`,
             payload,
             {
                 headers:

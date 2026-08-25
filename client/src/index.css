@@ -1706,8 +1706,7 @@ button {
 .empty-state {
   padding: 42px 24px;
   text-align: center;
-  border: 1px dashed #dbe2ea;
-  background: #fafafa;
+  background: #ffffff;
 }
 
 .empty-state h3 {

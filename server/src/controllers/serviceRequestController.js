@@ -122,82 +122,80 @@ const getById = async (
     }
 };
 
-const cancelServiceRequest =
-    async (req, res) => {
+const cancelServiceRequest = async (req, res) => {
 
-        try {
+    try {
 
-            const {
-                requestId,
-            } = req.params;
-
-
-            const request =
-                await ServiceRequest.findOne({
-                    _id: requestId,
-                    user: req.userId,
-                });
+        const {
+            requestId,
+        } = req.params;
 
 
-            if (!request) {
-
-                return res.status(404).json({
-                    message:
-                        "Service request not found.",
-                });
-
-            }
-
-
-            /*
-             * Customer can only cancel
-             * requests that are still pending.
-             */
-
-            if (
-                request.status !==
-                "PENDING"
-            ) {
-
-                return res.status(400).json({
-                    message:
-                        "Only pending service requests can be cancelled.",
-                });
-
-            }
-
-
-            request.status =
-                "CANCELLED";
-
-
-            await request.save();
-
-
-            return res.status(200).json({
-
-                message:
-                    "Service request cancelled successfully.",
-
-                request,
-
+        const request =
+            await ServiceRequest.findOne({
+                _id: requestId,
+                user: req.userId,
             });
 
-        } catch (error) {
 
-            console.error(
-                "Cancel service request error:",
-                error
-            );
+        if (!request) {
 
-
-            return res.status(500).json({
+            return res.status(404).json({
                 message:
-                    "Unable to cancel service request.",
+                    "Service request not found.",
             });
 
         }
-    };
+
+        const cancellableStatuses = [
+            "PENDING",
+            "ACCEPTED",
+            "SCHEDULED",
+        ];
+
+        if (
+            !cancellableStatuses.includes(
+                request.status
+            )
+        ) {
+
+            return res.status(400).json({
+                message:
+                    `Service request cannot be cancelled when it is ${request.status.toLowerCase()}.`,
+            });
+        }
+
+        request.status =
+            "CANCELLED";
+
+
+        await request.save();
+
+
+        return res.status(200).json({
+
+            message:
+                "Service request cancelled successfully.",
+
+            request,
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Cancel service request error:",
+            error
+        );
+
+
+        return res.status(500).json({
+            message:
+                "Unable to cancel service request.",
+        });
+
+    }
+};
 
 // Provider Incoming Requests
 const getProviderIncomingRequests = async (req, res) => {

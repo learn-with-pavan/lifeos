@@ -430,52 +430,52 @@ const ProviderRequestDetails = () => {
 
     const handleSchedule = async (event) => {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            try {
+        try {
 
-                setScheduling(true);
-                setActionError("");
+            setScheduling(true);
+            setActionError("");
 
-                await scheduleServiceRequest(
-                    requestId,
-                    {
-                        scheduledDate:
-                            form.scheduledDate,
+            await scheduleServiceRequest(
+                requestId,
+                {
+                    scheduledDate:
+                        form.scheduledDate,
 
-                        scheduledTime:
-                            form.scheduledTime,
+                    scheduledTime:
+                        form.scheduledTime,
 
-                        durationMinutes:
-                            Number(
-                                form.durationMinutes
-                            ),
+                    durationMinutes:
+                        Number(
+                            form.durationMinutes
+                        ),
 
-                        notes:
-                            form.notes,
-                    }
-                );
+                    notes:
+                        form.notes,
+                }
+            );
 
-                await loadRequest();
+            await loadRequest();
 
-            } catch (
-            requestError
-            ) {
+        } catch (
+        requestError
+        ) {
 
-                setActionError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to schedule this service."
-                );
+            setActionError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to schedule this service."
+            );
 
-            } finally {
+        } finally {
 
-                setScheduling(false);
+            setScheduling(false);
 
-            }
-        };
+        }
+    };
 
 
     const handleStartService =
@@ -1047,9 +1047,36 @@ const ProviderRequestDetails = () => {
                             <strong>
                                 {
                                     formatDate(
-                                        request.date ||
+                                        request.preferredDate ||
                                         request.createdAt
                                     )
+                                }
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div className="provider-information-item">
+
+                        <div className="provider-information-icon">
+
+                            <Clock
+                                size={17}
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Requested time
+                            </span>
+
+                            <strong>
+                                {
+                                    request.preferredTime
+                                    
                                 }
                             </strong>
 
@@ -1589,7 +1616,7 @@ const ProviderRequestDetails = () => {
                     </div>
 
 
-                    {scheduling.notes && (
+                    {request.scheduling.notes && (
 
                         <div className="request-appointment-notes">
 
@@ -1599,7 +1626,7 @@ const ProviderRequestDetails = () => {
 
                             <p>
                                 {
-                                    scheduling.notes
+                                    request.scheduling.notes
                                 }
                             </p>
 

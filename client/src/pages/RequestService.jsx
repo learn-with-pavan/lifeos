@@ -475,7 +475,7 @@ const RequestService = () => {
                                         undefined && (
 
                                             <span>
-                                                (
+                                                
                                                 {reviewCount}
                                                 {" reviews)"}
                                             </span>
