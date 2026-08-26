@@ -8,6 +8,7 @@ import {
     Wrench,
     Menu,
     X,
+    Bell,
 } from "lucide-react";
 
 import {
@@ -19,9 +20,13 @@ import {
 
 import {
     useState,
+    useEffect,
+    useRef,
 } from "react";
 
 import "../../styles/provider/providerLayout.css";
+import { getNotificationIcon } from "../../utils/notificationUtils";
+import { useNotifications } from "../../context/NotificationContext";
 
 
 const ProviderLayout = () => {
@@ -65,10 +70,15 @@ const ProviderLayout = () => {
             subtitle: "Manage your provider profile.",
         },
         {
+            path: "/provider/notifications",
+            title: "Notifications",
+            subtitle: "Stay up to date with your service activity.",
+        },
+        {
             path: "/provider/settings",
             title: "Settings",
             subtitle: "Configure your provider account.",
-        },
+        }
     ];
 
 
@@ -82,6 +92,48 @@ const ProviderLayout = () => {
         mobileMenuOpen,
         setMobileMenuOpen,
     ] = useState(false);
+
+    const [showNotifications, setShowNotifications] = useState(false);
+    const notificationRef = useRef(null);
+
+    useEffect(() => {
+        if (!showNotifications) {
+            return undefined;
+        }
+
+        const handlePointerDown = (event) => {
+            if (!notificationRef.current?.contains(event.target)) {
+                setShowNotifications(false);
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setShowNotifications(false);
+            }
+        };
+
+        document.addEventListener("pointerdown", handlePointerDown);
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("pointerdown", handlePointerDown);
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [showNotifications]);
+
+    const {
+        notifications,
+        unreadCount,
+        markAsRead,
+        loadNotifications,
+    } = useNotifications();
+
+    const handleNotificationClick = async (notification) => {
+        if (!notification.isRead) {
+            await markAsRead(notification._id);
+        }
+    };
 
 
     const navigationItems = [
@@ -111,21 +163,16 @@ const ProviderLayout = () => {
             icon: UserRound,
         },
         {
+            label: "Notifications",
+            path: "/provider/notifications",
+            icon: Bell,
+        },
+        {
             label: "Settings",
             path: "/provider/settings",
             icon: Settings,
-        },
+        }
     ];
-
-
-    const handleNavigation =
-        (path) => {
-
-            navigate(path);
-
-            setMobileMenuOpen(false);
-        };
-
 
     const handleLogout =
         () => {
@@ -185,8 +232,8 @@ const ProviderLayout = () => {
 
             <aside
                 className={`provider-sidebar ${mobileMenuOpen
-                        ? "provider-sidebar-open"
-                        : ""
+                    ? "provider-sidebar-open"
+                    : ""
                     }`}
             >
 
@@ -330,6 +377,81 @@ const ProviderLayout = () => {
                     </div>
 
                 </header>
+
+                <div className="provider-notification-wrapper" ref={notificationRef}>
+                    <button
+                        type="button"
+                        className="notification-button"
+                        onClick={() =>
+                            setShowNotifications((current) => {
+                                const next = !current;
+
+                                if (next) {
+                                    loadNotifications();
+                                }
+
+                                return next;
+                            })
+                        }
+                        aria-label="Notifications"
+                    >
+                        <Bell size={20} />
+
+                        {unreadCount > 0 && (
+                            <span className="notification-badge">
+                                {unreadCount > 99 ? "99+" : unreadCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {showNotifications && (
+                        <div className="notification-dropdown">
+                            <div className="notification-dropdown-header">
+                                <strong>Notifications</strong>
+                            </div>
+
+                            {notifications.length === 0 ? (
+                                <div className="notification-empty">
+                                    <div>🔔</div>
+                                    <p>You're all caught up.</p>
+                                </div>
+                            ) : (
+                                <div className="notification-list">
+                                    {notifications.slice(0, 5).map((notification) => {
+                                        const Icon = getNotificationIcon(notification.type);
+
+                                        return (
+                                            <div
+                                                key={notification._id}
+                                                className={`notification-item ${!notification.isRead ? "notification-unread" : ""}`}
+                                                onClick={() => handleNotificationClick(notification)}
+                                            >
+                                                <div className="notification-icon">
+                                                    <Icon size={17} />
+                                                </div>
+                                                <div className="notification-content">
+                                                    <strong>{notification.title}</strong>
+                                                    <p>{notification.message}</p>
+                                                    <small>
+                                                        {new Date(notification.createdAt).toLocaleDateString()}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            <NavLink
+                                to="/provider/notifications"
+                                className="view-all-notifications"
+                                onClick={() => setShowNotifications(false)}
+                            >
+                                View all notifications →
+                            </NavLink>
+                        </div>
+                    )}
+                </div>
 
                 <section className="provider-page-content">
                     <Outlet />

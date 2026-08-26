@@ -22,6 +22,8 @@ import {
     getMyServiceRequests,
 } from "../services/serviceRequestService";
 
+import LoadingState from "../components/LoadingState";
+
 import "../styles/myServiceRequests.css";
 
 
@@ -248,26 +250,10 @@ const MyServiceRequests = () => {
 
             {loading && (
 
-                <div className="my-requests-state-card">
-
-                    <div className="my-requests-loading-icon">
-
-                        <RefreshCw
-                            size={27}
-                        />
-
-                    </div>
-
-                    <h2>
-                        Loading your requests
-                    </h2>
-
-                    <p>
-                        We're retrieving your
-                        service request history.
-                    </p>
-
-                </div>
+                <LoadingState
+                    title="Loading requests"
+                    message="We're checking for your latest service requests."
+                />
 
             )}
 

@@ -21,6 +21,7 @@ import {
     deleteHome,
 } from "../services/homeService";
 import { useToast } from "../context/ToastContext";
+import LoadingState from "../components/LoadingState";
 
 import "../styles/homeDetails.css";
 
@@ -267,23 +268,10 @@ const HomeDetails = () => {
     if (loading) {
         return (
             <div className="home-details-page">
-
-                <div className="home-details-loading">
-
-                    <div className="home-loading-icon">
-                        <HomeIcon size={26} />
-                    </div>
-
-                    <h2>
-                        Loading home...
-                    </h2>
-
-                    <p>
-                        Getting your home information
-                        and related assets.
-                    </p>
-
-                </div>
+                <LoadingState
+                    title="Loading home"
+                    message="Getting your home information and related assets."
+                />
 
             </div>
         );

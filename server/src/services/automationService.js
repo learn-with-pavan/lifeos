@@ -13,14 +13,12 @@ const EXECUTION_LEASE_MS = 5 * 60 * 1000;
 const RETRY_BASE_DELAY_MS = 60 * 1000;
 
 
-const matchesConditions = (
-    eventData,
-    conditions
-) => {
+const matchesConditions = (eventData, conditions) => {
 
     if (!conditions) {
         return true;
     }
+
 
     if (
         conditions.daysBefore !== undefined &&
@@ -30,6 +28,7 @@ const matchesConditions = (
         return false;
     }
 
+
     if (
         conditions.assetCategory &&
         eventData.assetCategory !==
@@ -38,9 +37,18 @@ const matchesConditions = (
         return false;
     }
 
+
+    if (
+        conditions.recipientRole &&
+        eventData.recipientRole !==
+        conditions.recipientRole
+    ) {
+        return false;
+    }
+
+
     return true;
 };
-
 
 const executeAction = async (
     automation,
@@ -88,6 +96,12 @@ const executeAction = async (
                 assetId:
                     eventData.assetId,
 
+                serviceRequestId:
+                    eventData.serviceRequestId || null,
+
+                paymentId:
+                    eventData.paymentId || null,
+
                 title:
                     action.config?.title ||
                     automation.name,
@@ -99,6 +113,9 @@ const executeAction = async (
 
                 eventType:
                     automation.event,
+
+                notificationType:
+                    action.config?.notificationType,
 
                 automationKey,
             });
@@ -308,12 +325,6 @@ const processEvent = async (
         }
 
     } catch (error) {
-
-        console.error(
-            "Automation event processing failed:",
-            error
-        );
-
         throw error;
     }
 };

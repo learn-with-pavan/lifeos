@@ -19,6 +19,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import LoadingState from "../components/LoadingState";
 
 function Assets() {
     const navigate = useNavigate();
@@ -382,13 +383,10 @@ function Assets() {
 
             {loadingAssets ? (
 
-                <div className="assets-empty-state">
-
-                    <p>
-                        Loading your assets...
-                    </p>
-
-                </div>
+                <LoadingState
+                    title="Loading assets"
+                    message="We're retrieving your assets."
+                />
 
             ) : assets.length === 0 ? (
 

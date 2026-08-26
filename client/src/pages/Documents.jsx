@@ -19,6 +19,7 @@ import {
 
 import { getAssets } from "../services/assetService";
 import { useToast } from "../context/ToastContext";
+import LoadingState from "../components/LoadingState";
 
 function Documents() {
     const toast = useToast();
@@ -330,13 +331,10 @@ function Documents() {
 
             {loading ? (
 
-                <div className="documents-empty-state">
-
-                    <p>
-                        Loading documents...
-                    </p>
-
-                </div>
+                <LoadingState
+                    title="Loading documents"
+                    message="We're retrieving your important records."
+                />
 
             ) : documents.length === 0 ? (
 

@@ -1,6 +1,7 @@
 const Asset = require("../models/Asset");
 const ServiceProvider = require("../models/ServiceProvider");
 const ServiceRequest = require("../models/ServiceRequest");
+const { emitServiceRequestEvent } = require("./serviceRequestAutomationService.js");
 
 
 const createServiceRequest = async (
@@ -79,6 +80,31 @@ const createServiceRequest = async (
             notes,
             status: "PENDING",
         });
+
+    const populatedRequest =
+        await ServiceRequest
+            .findById(serviceRequest._id)
+            .populate("asset")
+            .populate("user", "name email")
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
+
+
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_REQUEST_CREATED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service request has been created successfully.",
+
+        providerMessage:
+            "You have received a new service request.",
+    });
 
 
     return serviceRequest;
@@ -197,7 +223,8 @@ const getProviderRequest = async (
             serviceProvider: provider._id,
         })
         .populate("asset")
-        .populate("user", "name email");
+        .populate("user", "name email")
+        .populate("serviceProvider", "user businessName");
 
     if (!request) {
         const error = new Error(
@@ -252,32 +279,79 @@ const updateProviderRequestStatus = async (
 };
 
 
-const acceptProviderRequest = async (
-    userId,
-    requestId
-) => updateProviderRequestStatus(
-    userId,
-    requestId,
-    "ACCEPTED"
-);
+const acceptProviderRequest = async (userId, requestId) => {
+    const request =
+        await updateProviderRequestStatus(
+            userId,
+            requestId,
+            "ACCEPTED"
+        );
 
 
-const rejectProviderRequest = async (
-    userId,
-    requestId
-) => updateProviderRequestStatus(
-    userId,
-    requestId,
-    "REJECTED"
-);
+    const populatedRequest =
+        await ServiceRequest
+            .findById(request._id)
+            .populate("asset")
+            .populate("user", "name email")
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
 
+
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_REQUEST_ACCEPTED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service request has been accepted by the provider.",
+    });
+
+
+    return request;
+};
+
+
+const rejectProviderRequest = async (userId, requestId) => {
+    const request =
+        await updateProviderRequestStatus(
+            userId,
+            requestId,
+            "REJECTED"
+        );
+
+
+    const populatedRequest =
+        await ServiceRequest
+            .findById(request._id)
+            .populate("asset")
+            .populate("user", "name email")
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
+
+
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_REQUEST_REJECTED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service request was rejected by the provider.",
+    });
+
+
+    return request;
+};
 
 //Schedling Service
-const scheduleServiceRequest = async (
-    requestId,
-    userId,
-    schedulingData
-) => {
+const scheduleServiceRequest = async (requestId, userId, schedulingData) => {
 
     const provider =
         await ServiceProvider.findOne({
@@ -401,6 +475,177 @@ const scheduleServiceRequest = async (
         throw error;
     }
 
+    const populatedRequest =
+        await ServiceRequest
+            .findById(request._id)
+            .populate("asset")
+            .populate("user", "name email")
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
+
+
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_REQUEST_SCHEDULED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service appointment has been scheduled.",
+    });
+
+    return request;
+};
+
+// Reschedule Service
+const rescheduleServiceRequest = async (requestId, userId, schedulingData) => {
+
+    const provider =
+        await ServiceProvider.findOne({
+            user: userId,
+            isActive: true,
+        });
+
+
+    if (!provider) {
+
+        const error =
+            new Error(
+                "Service provider profile not found."
+            );
+
+        error.statusCode = 404;
+
+        throw error;
+    }
+
+
+    const {
+        scheduledDate,
+        scheduledTime,
+        durationMinutes,
+        notes,
+    } = schedulingData;
+
+
+    if (!scheduledDate) {
+
+        const error =
+            new Error(
+                "Scheduled date is required."
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+
+    if (!scheduledTime) {
+
+        const error =
+            new Error(
+                "Scheduled time is required."
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+
+    const parsedDate =
+        new Date(scheduledDate);
+
+
+    if (
+        Number.isNaN(
+            parsedDate.getTime()
+        )
+    ) {
+
+        const error =
+            new Error(
+                "Invalid scheduled date."
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+
+    const request =
+        await ServiceRequest.findOneAndUpdate(
+            {
+                _id: requestId,
+
+                serviceProvider:
+                    provider._id,
+
+                status: "SCHEDULED",
+            },
+
+            {
+                $set: {
+
+                    "scheduling.scheduledDate":
+                        parsedDate,
+
+                    "scheduling.scheduledTime":
+                        scheduledTime,
+
+                    "scheduling.durationMinutes":
+                        durationMinutes || 0,
+
+                    "scheduling.notes":
+                        notes || "",
+                },
+            },
+
+            {
+                new: true,
+            }
+        );
+
+
+    if (!request) {
+
+        const error =
+            new Error(
+                "Only scheduled service requests can be rescheduled."
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+    const populatedRequest =
+        await ServiceRequest
+            .findById(request._id)
+            .populate("asset")
+            .populate("user", "name email")
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
+
+
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_REQUEST_RESCHEDULED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service appointment has been rescheduled.",
+    });
+
 
     return request;
 };
@@ -413,5 +658,6 @@ module.exports = {
     getProviderRequest,
     acceptProviderRequest,
     rejectProviderRequest,
-    scheduleServiceRequest
+    scheduleServiceRequest,
+    rescheduleServiceRequest
 };

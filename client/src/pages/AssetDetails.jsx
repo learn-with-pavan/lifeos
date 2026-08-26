@@ -14,6 +14,7 @@ import { getWarrantyStatus } from "../utils/warrantyUtils";
 import DocumentSection from "../components/DocumentSection";
 import { getHomes } from "../services/homeService";
 import { useToast } from "../context/ToastContext";
+import LoadingState from "../components/LoadingState";
 
 function AssetDetails() {
     const { id } = useParams();
@@ -152,9 +153,10 @@ function AssetDetails() {
 
     if (loading) {
         return (
-            <div className="asset-details-page">
-                <p>Loading asset...</p>
-            </div>
+            <LoadingState
+                title="Loading asset"
+                message="We're retrieving your asset details."
+            />
         );
     }
 

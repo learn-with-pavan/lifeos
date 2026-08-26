@@ -182,7 +182,9 @@ function App() {
             path="/provider"
             element={
               <ProtectedRoute>
-                <ProviderLayout />
+                  <NotificationProvider>
+                    <ProviderLayout />
+                  </NotificationProvider>
               </ProtectedRoute>
             }
           >
@@ -240,6 +242,11 @@ function App() {
             <Route
               path="/provider/settings"
               element={<ProviderSettings />}
+            />
+
+            <Route
+              path="notifications"
+              element={<Notifications />}
             />
 
           </Route>

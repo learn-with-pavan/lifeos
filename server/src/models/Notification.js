@@ -15,6 +15,20 @@ const notificationSchema = new mongoose.Schema(
             default: null,
         },
 
+        serviceRequest: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "ServiceRequest",
+            default: null,
+            index: true,
+        },
+
+        payment: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Payment",
+            default: null,
+            index: true,
+        },
+
         /*
          * Warranty reminder notifications
          * will have this value.
@@ -34,13 +48,36 @@ const notificationSchema = new mongoose.Schema(
 
         type: {
             type: String,
+
             enum: [
+                // Asset / Warranty
                 "WARRANTY_EXPIRY",
+                "ASSET_NEEDS_REPAIR",
+
+                // Maintenance
                 "MAINTENANCE_DUE_SOON",
                 "MAINTENANCE_OVERDUE",
+
+                // Service
                 "SERVICE_COMPLETED",
-                "ASSET_NEEDS_REPAIR",
+
+                // Service Request
+                "SERVICE_REQUEST_CREATED",
+                "SERVICE_REQUEST_ACCEPTED",
+                "SERVICE_REQUEST_REJECTED",
+                "SERVICE_REQUEST_SCHEDULED",
+                "SERVICE_REQUEST_RESCHEDULED",
+                "SERVICE_REQUEST_CANCELLED",
+                "SERVICE_REQUEST_STARTED",
+                "SERVICE_REVIEW_REQUEST",
+
+                // Payment
+                "PAYMENT_CREATED",
+                "PAYMENT_SUCCESS",
+                "PAYMENT_FAILED",
+                "PAYMENT_REFUNDED",
             ],
+
             required: true,
         },
 

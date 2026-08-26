@@ -13,6 +13,8 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
+
 import {
     createServiceHistory,
     getServiceHistories,
@@ -574,11 +576,10 @@ function ServiceHistory() {
 
             {loading ? (
 
-                <div className="assets-empty-state">
-                    <p>
-                        Loading service history...
-                    </p>
-                </div>
+                <LoadingState
+                    title="Loading service history"
+                    message="We're retrieving your completed services."
+                />
 
             ) : serviceHistories.length === 0 ? (
 

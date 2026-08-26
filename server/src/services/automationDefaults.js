@@ -73,19 +73,29 @@ const DEFAULT_AUTOMATIONS = [
 
     {
         name: "Service Completed",
+
         description:
-            "Notify after a service or repair is recorded.",
+            "Notify the customer when a service is completed and invite them to review the provider.",
+
         event: "SERVICE_COMPLETED",
 
-        conditions: {},
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
 
         actions: [
             {
                 type: "SEND_NOTIFICATION",
+
                 config: {
-                    title: "Service completed",
+                    notificationType:
+                        "SERVICE_REVIEW_REQUEST",
+
+                    title:
+                        "⭐ Rate your service",
+
                     message:
-                        "A service or repair has been recorded for your asset.",
+                        "Your service has been completed. How was your experience? Tap here to rate your service.",
                 },
             },
         ],
@@ -109,16 +119,235 @@ const DEFAULT_AUTOMATIONS = [
                 },
             },
         ],
+    }
+];
+
+const SERVICE_REQUEST_AUTOMATIONS = [
+
+    /*
+     * CUSTOMER
+     */
+
+    {
+        name: "Service Request Accepted",
+        description:
+            "Notify the customer when a provider accepts the service request.",
+        event: "SERVICE_REQUEST_ACCEPTED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "Service request accepted",
+                    message:
+                        "Your service request has been accepted by the provider.",
+                },
+            },
+        ],
+    },
+
+    {
+        name: "Service Request Rejected",
+        description:
+            "Notify the customer when a provider rejects the service request.",
+        event: "SERVICE_REQUEST_REJECTED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "Service request rejected",
+                    message:
+                        "Your service request was rejected by the provider.",
+                },
+            },
+        ],
+    },
+
+    {
+        name: "Service Appointment Scheduled",
+        description:
+            "Notify the customer when the provider schedules the service.",
+        event: "SERVICE_REQUEST_SCHEDULED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "Service appointment scheduled",
+                    message:
+                        "Your service appointment has been scheduled.",
+                },
+            },
+        ],
+    },
+
+    {
+        name: "Service Appointment Rescheduled",
+        description:
+            "Notify the customer when the provider changes the appointment.",
+        event: "SERVICE_REQUEST_RESCHEDULED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "Service appointment rescheduled",
+                    message:
+                        "Your service appointment has been rescheduled.",
+                },
+            },
+        ],
+    },
+
+    {
+        name: "Service Request Cancelled",
+        description:
+            "Notify the provider when the customer cancels a service request.",
+        event: "SERVICE_REQUEST_CANCELLED",
+
+        conditions: {
+            recipientRole: "PROVIDER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "Service request cancelled",
+                    message:
+                        "The customer cancelled this service request.",
+                },
+            },
+        ],
+    },
+
+    {
+        name: "Service Started",
+        description:
+            "Notify the customer when the provider starts the service.",
+        event: "SERVICE_STARTED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "Service started",
+                    message:
+                        "The service work has started.",
+                },
+            },
+        ],
+    },
+
+    {
+        name: "Service Completed",
+        description:
+            "Notify the customer when a service is completed and invite them to review the provider.",
+        event: "SERVICE_COMPLETED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "⭐ Rate your service",
+                    message:
+                        "Your service has been completed. How was your experience? Tap here to rate your service.",
+                },
+            },
+        ],
+    },
+
+    /*
+     * PROVIDER
+     */
+
+    {
+        name: "New Service Request",
+        description:
+            "Notify the provider when a customer creates a service request.",
+        event: "SERVICE_REQUEST_CREATED",
+
+        conditions: {
+            recipientRole: "PROVIDER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+                config: {
+                    title: "New service request",
+                    message:
+                        "You have received a new service request from a customer.",
+                },
+            },
+        ],
+    },
+
+    // Payment
+    {
+        name: "Payment Required",
+
+        description:
+            "Notify the customer when payment is required after service completion.",
+
+        event: "PAYMENT_CREATED",
+
+        conditions: {
+            recipientRole: "CUSTOMER",
+        },
+
+        actions: [
+            {
+                type: "SEND_NOTIFICATION",
+
+                config: {
+                    title: "Payment required",
+
+                    message:
+                        "Your service has been completed and payment is now due.",
+                },
+            },
+        ],
     },
 ];
 
+const ALL_DEFAULT_AUTOMATIONS = [
+    ...DEFAULT_AUTOMATIONS,
+    ...SERVICE_REQUEST_AUTOMATIONS
+
+]
 
 const createDefaultAutomations = async (
     userId
 ) => {
 
     const automations =
-        DEFAULT_AUTOMATIONS.map(
+        ALL_DEFAULT_AUTOMATIONS.map(
             (automation) => ({
                 user: userId,
                 ...automation,
@@ -134,9 +363,29 @@ const createDefaultAutomations = async (
                     event: automation.event,
                     name: automation.name,
                 },
+
                 update: {
-                    $setOnInsert: automation,
+                    $set: {
+                        description:
+                            automation.description,
+
+                        conditions:
+                            automation.conditions,
+
+                        actions:
+                            automation.actions,
+
+                        enabled:
+                            automation.enabled,
+                    },
+
+                    $setOnInsert: {
+                        user: userId,
+                        event: automation.event,
+                        name: automation.name,
+                    },
                 },
+
                 upsert: true,
             },
         }))

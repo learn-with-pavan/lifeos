@@ -10,6 +10,7 @@ import {
     UserRound,
     Wrench,
     XCircle,
+    Star
 } from "lucide-react";
 
 import {
@@ -27,8 +28,12 @@ import {
     cancelServiceRequest,
     getServiceRequestById,
 } from "../services/serviceRequestService";
+import LoadingState from "../components/LoadingState";
 
 import "../styles/serviceRequestDetails.css";
+import { createReview, getReviewForServiceRequest } from "../services/reviewService";
+import { getPaymentForServiceRequest } from "../services/paymentService";
+import ServiceRequestPaymentCard from "../components/ServiceRequestPaymentCard";
 
 
 const STATUS_CONFIG = {
@@ -70,10 +75,7 @@ const STATUS_CONFIG = {
 
 };
 
-
-const formatDate = (
-    value
-) => {
+const formatDate = (value) => {
 
     if (!value) {
         return "Not scheduled";
@@ -103,10 +105,7 @@ const formatDate = (
     );
 };
 
-
-const getStatusConfig = (
-    status
-) => {
+const getStatusConfig = (status) => {
 
     return (
         STATUS_CONFIG[status] || {
@@ -121,9 +120,7 @@ const getStatusConfig = (
 };
 
 
-const getServiceTypeLabel = (
-    serviceType
-) => {
+const getServiceTypeLabel = (serviceType) => {
 
     const labels = {
         REPAIR: "Repair",
@@ -170,68 +167,98 @@ const ServiceRequestDetails = () => {
         setError,
     ] = useState("");
 
-
     const [
         cancelling,
         setCancelling,
     ] = useState(false);
 
-    const loadRequest =
-        useCallback(
-            async () => {
-                try {
-                    setLoading(true);
-                    setError("");
+    const [payment, setPayment] =
+        useState(null);
 
-                    const response =
-                        await getServiceRequestById(
-                            requestId
-                        );
+    const [paymentLoading, setPaymentLoading] =
+        useState(false);
+
+    const loadRequest = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError("");
+
+            const response =
+                await getServiceRequestById(
+                    requestId
+                );
 
 
-                    const data =
-                        response?.data;
+            const data =
+                response?.data;
 
 
-                    setRequest(
-                        data?.request ||
-                        data?.data ||
-                        data
-                    );
+            setRequest(
+                data?.request ||
+                data?.data ||
+                data
+            );
 
-                } catch (
+        } catch (
+        requestError
+        ) {
+
+            console.error(
+                "Failed to load service request:",
                 requestError
-                ) {
-
-                    console.error(
-                        "Failed to load service request:",
-                        requestError
-                    );
+            );
 
 
-                    setError(
-                        requestError
-                            ?.response
-                            ?.data
-                            ?.message ||
-                        "Unable to load this service request."
-                    );
+            setError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to load this service request."
+            );
 
-                } finally {
+        } finally {
 
-                    setLoading(false);
+            setLoading(false);
 
-                }
+        }
 
-            },
-            [requestId]
-        );
+    },
+        [requestId]
+    );
 
+    const loadPayment = async () => {
+
+        if (!requestId) {
+            return;
+        }
+
+        try {
+
+            setPaymentLoading(true);
+
+            const response =
+                await getPaymentForServiceRequest(
+                    requestId
+                );
+
+            setPayment(
+                response?.payment || null
+            );
+
+        } catch (error) {
+            setPayment(null);
+
+        } finally {
+
+            setPaymentLoading(false);
+
+        }
+    };
 
     useEffect(() => {
-
         loadRequest();
-
+        loadPayment();
     }, [loadRequest]);
 
 
@@ -266,30 +293,12 @@ const ServiceRequestDetails = () => {
     if (loading) {
 
         return (
-            <div className="service-request-details-page">
-
-                <div className="service-request-details-state">
-
-                    <RefreshCw
-                        size={28}
-                        className="request-loading-icon"
-                    />
-
-                    <h2>
-                        Loading request
-                    </h2>
-
-                    <p>
-                        We're retrieving your
-                        service request details.
-                    </p>
-
-                </div>
-
-            </div>
+            <LoadingState
+                title="Loading request"
+                message="We're retrieving your service request details."
+            />
         );
     }
-
 
     if (error || !request) {
 
@@ -346,26 +355,21 @@ const ServiceRequestDetails = () => {
         );
     }
 
-
     const asset =
         request.asset || {};
 
-
     const provider =
         request.serviceProvider || {};
-
 
     const status =
         getStatusConfig(
             request.status
         );
 
-
     const serviceType =
         getServiceTypeLabel(
             request.serviceType
         );
-
 
     return (
         <div className="service-request-details-page">
@@ -797,7 +801,6 @@ const ServiceRequestDetails = () => {
             )}
 
             {/* APPOINTMENT */}
-
             {request.status === "SCHEDULED" && request.scheduling && (
 
                 <section className="request-appointment-card">
@@ -952,7 +955,6 @@ const ServiceRequestDetails = () => {
             )}
 
             {/* PENDING CANCELLATION */}
-
             {request.status === "PENDING" && (
 
                 <section className="request-cancellation-card">
@@ -1005,9 +1007,7 @@ const ServiceRequestDetails = () => {
 
             )}
 
-
             {/* CANCELLED APPOINTMENT */}
-
             {request.status === "CANCELLED" && (
 
                 <section className="request-cancelled-appointment-card">
@@ -1042,188 +1042,195 @@ const ServiceRequestDetails = () => {
 
             )}
 
-
             {/* COMPLETION DETAILS */}
+            {request.status === "COMPLETED" && request.completion && (
 
-            {request.status === "COMPLETED" &&
-                request.completion && (
+                <section className="request-details-card">
 
-                    <section className="request-details-card">
+                    <div className="request-section-heading">
 
-                        <div className="request-section-heading">
+                        <div>
 
-                            <div>
+                            <h2>
+                                Service Completed
+                            </h2>
 
-                                <h2>
-                                    Service Completed
-                                </h2>
+                            <p>
+                                Final details provided by
+                                the service provider.
+                            </p>
 
-                                <p>
-                                    Final details provided by
-                                    the service provider.
-                                </p>
+                        </div>
 
-                            </div>
+                        <div className="request-completion-icon">
 
-                            <div className="request-completion-icon">
+                            <CheckCircle2
+                                size={22}
+                            />
 
-                                <CheckCircle2
-                                    size={22}
+                        </div>
+
+                    </div>
+
+
+                    <div className="request-completion-grid">
+
+                        {/* COMPLETED DATE */}
+
+                        <div className="request-completion-item">
+
+                            <div className="request-information-icon">
+
+                                <CalendarDays
+                                    size={17}
                                 />
 
                             </div>
 
-                        </div>
+                            <div>
 
+                                <span>
+                                    Completed on
+                                </span>
 
-                        <div className="request-completion-grid">
-
-                            {/* COMPLETED DATE */}
-
-                            <div className="request-completion-item">
-
-                                <div className="request-information-icon">
-
-                                    <CalendarDays
-                                        size={17}
-                                    />
-
-                                </div>
-
-                                <div>
-
-                                    <span>
-                                        Completed on
-                                    </span>
-
-                                    <strong>
-                                        {
-                                            formatDate(
-                                                request
-                                                    .completion
-                                                    .completedAt
-                                            )
-                                        }
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* SERVICE COST */}
-
-                            <div className="request-completion-item">
-
-                                <div className="request-information-icon">
-
-                                    <span className="request-currency-icon">
-                                        ₹
-                                    </span>
-
-                                </div>
-
-                                <div>
-
-                                    <span>
-                                        Service cost
-                                    </span>
-
-                                    <strong>
-                                        ₹
-                                        {Number(
+                                <strong>
+                                    {
+                                        formatDate(
                                             request
                                                 .completion
-                                                .serviceCost ||
-                                            0
-                                        ).toLocaleString(
-                                            "en-IN"
-                                        )}
-                                    </strong>
-
-                                </div>
+                                                .completedAt
+                                        )
+                                    }
+                                </strong>
 
                             </div>
-
-
-                            {/* PARTS USED */}
-
-                            {request
-                                .completion
-                                .partsUsed && (
-
-                                    <div className="request-completion-item">
-
-                                        <div className="request-information-icon">
-
-                                            <Wrench
-                                                size={17}
-                                            />
-
-                                        </div>
-
-                                        <div>
-
-                                            <span>
-                                                Parts used
-                                            </span>
-
-                                            <strong>
-                                                {
-                                                    request
-                                                        .completion
-                                                        .partsUsed
-                                                }
-                                            </strong>
-
-                                        </div>
-
-                                    </div>
-
-                                )}
 
                         </div>
 
 
-                        {/* PROVIDER NOTES */}
+                        {/* SERVICE COST */}
+
+                        <div className="request-completion-item">
+
+                            <div className="request-information-icon">
+
+                                <span className="request-currency-icon">
+                                    ₹
+                                </span>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Service cost
+                                </span>
+
+                                <strong>
+                                    ₹
+                                    {Number(
+                                        request
+                                            .completion
+                                            .serviceCost ||
+                                        0
+                                    ).toLocaleString(
+                                        "en-IN"
+                                    )}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* PARTS USED */}
 
                         {request
                             .completion
-                            .notes && (
+                            .partsUsed && (
 
-                                <div className="request-completion-notes">
+                                <div className="request-completion-item">
 
-                                    <div className="request-completion-notes-header">
+                                    <div className="request-information-icon">
 
-                                        <FileText
+                                        <Wrench
                                             size={17}
                                         />
 
-                                        <span>
-                                            Provider notes
-                                        </span>
-
                                     </div>
 
+                                    <div>
 
-                                    <p>
-                                        {
-                                            request
-                                                .completion
-                                                .notes
-                                        }
-                                    </p>
+                                        <span>
+                                            Parts used
+                                        </span>
+
+                                        <strong>
+                                            {
+                                                request
+                                                    .completion
+                                                    .partsUsed
+                                            }
+                                        </strong>
+
+                                    </div>
 
                                 </div>
 
                             )}
 
-                    </section>
+                    </div>
 
+
+                    {/* PROVIDER NOTES */}
+
+                    {request
+                        .completion
+                        .notes && (
+
+                            <div className="request-completion-notes">
+
+                                <div className="request-completion-notes-header">
+
+                                    <FileText
+                                        size={17}
+                                    />
+
+                                    <span>
+                                        Provider notes
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+                                    {
+                                        request
+                                            .completion
+                                            .notes
+                                    }
+                                </p>
+
+                            </div>
+
+                        )}
+
+                </section>
+
+            )}
+
+            {request.status === "COMPLETED" &&
+                payment && (
+                    <ServiceRequestPaymentCard
+                        payment={payment}
+                        onPay={() => {
+                            // Real payment gateway
+                            // will be connected here.
+                        }}
+                    />
                 )}
 
             {/* TIMELINE */}
-
             {request.status !== 'CANCELLED' && (
                 <section className="request-details-card">
 

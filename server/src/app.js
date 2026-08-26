@@ -13,6 +13,8 @@ const homeRoutes = require("./routes/homeRoutes");
 const insightsRoutes = require("./routes/insightsRoutes");
 const serviceProviderRoutes = require("./routes/serviceProviderRoutes");
 const serviceRequestRoutes = require("./routes/serviceRequestRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const errorMiddleware = require("./middleware/errorMiddleware");
 
@@ -46,6 +48,8 @@ app.use("/api/homes", homeRoutes);
 app.use("/api/insights", insightsRoutes);
 app.use("/api/service-providers", serviceProviderRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use(errorMiddleware);
 

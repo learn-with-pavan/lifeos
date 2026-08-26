@@ -19,6 +19,8 @@ import {
     useNavigate,
 } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
+
 import {
     getDashboard,
 } from "../services/dashboardService";
@@ -324,18 +326,10 @@ function Dashboard() {
 
                 {loading ? (
 
-                    <div className="empty-state">
-
-                        <h3>
-                            Loading homes...
-                        </h3>
-
-                        <p>
-                            We're getting your
-                            home information.
-                        </p>
-
-                    </div>
+                    <LoadingState
+                        title="Loading homes"
+                        message="We're getting your home information."
+                    />
 
                 ) : error ? (
 

@@ -128,3 +128,16 @@ export const scheduleServiceRequest = async (
 
     return response;
 };
+export const rescheduleServiceRequest = async (requestId, schedulingData) => {
+
+    const response = axios.patch(
+        `${API_URL}/service-requests/provider/${requestId}/reschedule`,
+        schedulingData,
+        {
+            headers:
+                getAuthHeaders(),
+        }
+    );
+
+    return response;
+};

@@ -16,19 +16,23 @@ import {
     History,
     HomeIcon,
     TrendingUp,
-    ClipboardList
+    ClipboardList,
+    Menu,
+    X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getNotifications, getUnreadNotificationCount, markNotificationAsRead } from "../services/notificationService";
 import { getNotificationIcon } from "../utils/notificationUtils";
 import { useNotifications } from "../context/NotificationContext";
 import { useToast } from "../context/ToastContext";
+import ReviewModal from "../components/ReviewModal";
 
 function AppLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const toast = useToast();
     const user = JSON.parse(localStorage.getItem("user"));
+    const [reviewRequestId, setReviewRequestId] = useState(null);
 
     const pageTitles = [
         {
@@ -110,19 +114,94 @@ function AppLayout() {
 
     const [showNotifications, setShowNotifications] =
         useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const notificationRef = useRef(null);
 
-    const handleNotificationClick =
-        async (notification) => {
+    useEffect(() => {
+        if (!showNotifications) {
+            return undefined;
+        }
+
+        const handlePointerDown = (event) => {
+            if (!notificationRef.current?.contains(event.target)) {
+                setShowNotifications(false);
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setShowNotifications(false);
+            }
+        };
+
+        document.addEventListener("pointerdown", handlePointerDown);
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("pointerdown", handlePointerDown);
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [showNotifications]);
+
+    const handleNotificationClick = async (notification) => {
+
+        try {
+
             if (!notification.isRead) {
                 await markAsRead(
                     notification._id
                 );
             }
-        };
+
+            /*
+             * Review notification
+             */
+            if (
+                notification.type ===
+                "SERVICE_COMPLETED"
+            ) {
+
+                const requestId =
+                    notification.serviceRequest?._id ||
+                    notification.serviceRequest;
+
+                if (requestId) {
+
+                    setReviewRequestId(
+                        requestId
+                    );
+
+                    setShowNotifications(false);
+                }
+
+                return;
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Failed to handle notification",
+                error
+            );
+
+        }
+    };
 
     return (
         <div className="app-layout">
-            <aside className="sidebar">
+            <header className="mobile-app-header">
+                <button
+                    type="button"
+                    className="mobile-menu-button"
+                    onClick={() => setMobileMenuOpen((current) => !current)}
+                    aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                >
+                    {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                </button>
+                <strong>LifeOS</strong>
+            </header>
+
+            <aside className={`sidebar ${mobileMenuOpen ? "sidebar-open" : ""}`}>
 
                 <div className="sidebar-brand">
                     <div className="brand-icon">
@@ -137,34 +216,35 @@ function AppLayout() {
 
                 <nav className="sidebar-nav">
 
-                    <NavLink to="/dashboard">
+                    <NavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                         <LayoutDashboard size={18} />
                         Dashboard
                     </NavLink>
 
-                    <NavLink to="/homes">
+                    <NavLink to="/homes" onClick={() => setMobileMenuOpen(false)}>
                         <HomeIcon size={18} />
                         Homes
                     </NavLink>
 
 
-                    <NavLink to="/assets">
+                    <NavLink to="/assets" onClick={() => setMobileMenuOpen(false)}>
                         <Package size={18} />
                         Assets
                     </NavLink>
 
-                    <NavLink to="/maintenance">
+                    <NavLink to="/maintenance" onClick={() => setMobileMenuOpen(false)}>
                         <Wrench size={18} />
                         Maintenance
                     </NavLink>
 
-                    <NavLink to="/documents">
+                    <NavLink to="/documents" onClick={() => setMobileMenuOpen(false)}>
                         <FileText size={18} />
                         Documents
                     </NavLink>
 
                     <NavLink
                         to="/service-history"
+                        onClick={() => setMobileMenuOpen(false)}
                         className="nav-link"
                     >
                         <History size={18} />
@@ -173,6 +253,7 @@ function AppLayout() {
 
                     <NavLink
                         to="/service-requests"
+                        onClick={() => setMobileMenuOpen(false)}
                         className="nav-link"
                     >
                         <ClipboardList size={18} />
@@ -181,13 +262,18 @@ function AppLayout() {
 
                     <NavLink
                         to="/notifications"
+                        onClick={() => setMobileMenuOpen(false)}
                         className="nav-link"
                     >
                         <Bell size={18} />
                         <span>Notifications</span>
                     </NavLink>
 
-                    <NavLink to="/insights" className="nav-link">
+                    <NavLink
+                        to="/insights"
+                        className="nav-link"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
                         <TrendingUp size={18} />
                         <span>Insights</span>
                     </NavLink>
@@ -239,7 +325,7 @@ function AppLayout() {
 
             </main>
 
-            <div className="notification-wrapper">
+            <div className="notification-wrapper" ref={notificationRef}>
 
                 <button
                     className="notification-button"
@@ -303,6 +389,10 @@ function AppLayout() {
                                             className={`notification-item ${!notification.isRead
                                                 ? "notification-unread"
                                                 : ""
+                                                } ${notification.type ===
+                                                    "SERVICE_COMPLETED"
+                                                    ? "notification-review-item"
+                                                    : ""
                                                 }`}
                                             onClick={() =>
                                                 handleNotificationClick(
@@ -337,6 +427,13 @@ function AppLayout() {
                                                         notification.createdAt
                                                     ).toLocaleDateString()}
                                                 </small>
+
+                                                {notification.type ===
+                                                    "SERVICE_COMPLETED" && (
+                                                        <span className="notification-review-action">
+                                                            Rate now →
+                                                        </span>
+                                                    )}
                                             </div>
                                         </div>
                                     ))}
@@ -357,6 +454,40 @@ function AppLayout() {
                     </div>
                 )}
             </div>
+
+            {reviewRequestId && (
+
+                <ReviewModal
+                    serviceRequestId={
+                        reviewRequestId
+                    }
+
+                    onClose={() =>
+                        setReviewRequestId(null)
+                    }
+
+                    onSubmitted={() => {
+
+                        setReviewRequestId(null);
+
+                        toast.success(
+                            "Thank you for your feedback!"
+                        );
+
+                        loadNotifications();
+                    }}
+                />
+
+            )}
+
+            {mobileMenuOpen && (
+                <button
+                    type="button"
+                    className="sidebar-overlay"
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                />
+            )}
         </div>
     );
 }

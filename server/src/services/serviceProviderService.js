@@ -1,5 +1,6 @@
 const ServiceProvider = require("../models/ServiceProvider");
 const ServiceRequest = require("../models/ServiceRequest");
+const { emitServiceRequestEvent } = require("./serviceRequestAutomationService");
 
 const createServiceProvider = async (
     userId,
@@ -233,23 +234,21 @@ const updateProviderAvailability = async (
     return provider;
 };
 
-const getProviderByUserId =
-    async (
-        userId
-    ) => {
+const getProviderByUserId = async (
+    userId
+) => {
 
-        const provider =
-            await ServiceProvider.findOne({
-                user: userId,
-            });
+    const provider =
+        await ServiceProvider.findOne({
+            user: userId,
+        });
 
-        return provider;
-    };
-
+    return provider;
+};
 
 const startProviderService = async (requestId, providerId) => {
 
-    return ServiceRequest.findOneAndUpdate(
+    const request = await ServiceRequest.findOneAndUpdate(
         {
             _id: requestId,
             serviceProvider: providerId,
@@ -264,8 +263,31 @@ const startProviderService = async (requestId, providerId) => {
             new: true,
         }
     );
-};
 
+    const populatedRequest =
+        await ServiceRequest
+            .findById(request._id)
+            .populate("asset")
+            .populate("user", "name email")
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
+
+
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_STARTED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service request was started by the provider.",
+    });
+
+    return request;
+};
 
 const completeProviderService = async (requestId, providerId, completionData) => {
 
@@ -281,26 +303,19 @@ const completeProviderService = async (requestId, providerId, completionData) =>
                     status: "COMPLETED",
 
                     completion: {
-                        completedAt:
-                            new Date(),
+                        completedAt: new Date(),
 
                         notes:
                             completionData
                                 ?.completionNotes
-                                ?.trim() ||
-                            "",
+                                ?.trim() || "",
 
-                        serviceCost:
-                            Number(
-                                completionData
-                                    ?.serviceCost
-                            ) || 0,
+                        serviceCost,
 
                         partsUsed:
                             completionData
                                 ?.partsUsed
-                                ?.trim() ||
-                            "",
+                                ?.trim() || "",
                     },
                 },
             },
@@ -321,6 +336,118 @@ const completeProviderService = async (requestId, providerId, completionData) =>
 
         throw error;
     }
+
+
+    if (serviceCost > 0) {
+
+        let payment =
+            await Payment.findOne({
+                serviceRequest:
+                    request._id,
+            });
+
+        if (!payment) {
+
+            payment =
+                await Payment.create({
+
+                    user:
+                        request.user,
+
+                    serviceRequest:
+                        request._id,
+
+                    serviceProvider:
+                        request.serviceProvider,
+
+                    amount:
+                        serviceCost,
+
+                    currency:
+                        "INR",
+
+                    status:
+                        "PENDING",
+                });
+        }
+
+
+        await processEvent(
+            "PAYMENT_CREATED",
+            {
+                userId:
+                    request.user,
+
+                assetId:
+                    request.asset,
+
+                entityId:
+                    payment._id,
+
+                paymentId:
+                    payment._id,
+
+                serviceRequestId:
+                    request._id,
+
+                recipientRole:
+                    "CUSTOMER",
+
+                message:
+                    `Payment of ₹${serviceCost} is due for your completed service.`,
+            }
+        );
+    }
+
+    /*
+     * Populate the request before
+     * sending the completion event.
+     *
+     * The notification system needs:
+     * - customer
+     * - asset
+     * - service provider
+     * - service request
+     */
+    const populatedRequest =
+        await ServiceRequest
+            .findById(request._id)
+            .populate(
+                "asset",
+                "name category brand model"
+            )
+            .populate(
+                "user",
+                "name email"
+            )
+            .populate(
+                "serviceProvider",
+                "user businessName"
+            );
+
+
+    /*
+     * Emit SERVICE_COMPLETED event.
+     *
+     * This goes through:
+     *
+     * Service Request
+     *       ↓
+     * Automation Engine
+     *       ↓
+     * Notification Engine
+     */
+    await emitServiceRequestEvent({
+        event:
+            "SERVICE_COMPLETED",
+
+        request:
+            populatedRequest,
+
+        customerMessage:
+            "Your service has been completed. How was your experience? Please rate your service.",
+    });
+
 
     return request;
 };

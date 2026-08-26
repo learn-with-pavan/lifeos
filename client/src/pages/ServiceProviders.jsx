@@ -25,6 +25,7 @@ import {
 } from "../services/serviceProviderService";
 
 import "../styles/serviceProvider.css";
+import LoadingState from "../components/LoadingState";
 
 
 const SERVICE_TYPES = [
@@ -268,27 +269,10 @@ const ServiceProviders = () => {
 
             {loading && (
 
-                <div className="service-state-card">
-
-                    <div className="service-state-icon loading-icon">
-
-                        <Search
-                            size={28}
-                        />
-
-                    </div>
-
-                    <h2>
-                        Finding technicians
-                    </h2>
-
-                    <p>
-                        We're looking for
-                        available technicians
-                        near your location.
-                    </p>
-
-                </div>
+                <LoadingState
+                    title="Finding technicians"
+                    message="We're looking for available technicians near your location."
+                />
 
             )}
 

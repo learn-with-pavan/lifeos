@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+import LoadingState from "../components/LoadingState";
+
 import {
     getMaintenances,
     createMaintenance,
@@ -514,11 +516,10 @@ function Maintenance() {
                 </div>
             )}
             {loading ? (
-                <div className="assets-empty-state">
-                    <p>
-                        Loading maintenance...
-                    </p>
-                </div>
+                <LoadingState
+                    title="Loading maintenance"
+                    message="We're checking your maintenance schedule."
+                />
             ) : maintenances.length === 0 ? (
                 <div className="assets-empty-state">
 

@@ -107,6 +107,14 @@ const getUserNotifications = async (
             user: userId,
         })
             .populate("asset", "name")
+            .populate(
+                "serviceRequest",
+                "status asset serviceProvider"
+            )
+            .populate(
+                "payment",
+                "amount currency status"
+            )
             .sort({
                 createdAt: -1,
             })
@@ -193,21 +201,38 @@ const markAllNotificationsAsRead = async (userId) => {
 const createAutomationNotification = async ({
     userId,
     assetId = null,
+    serviceRequestId = null,
+    paymentId = null,
     title,
     message,
     eventType,
+    notificationType = null,
     automationKey,
 }) => {
 
+    const resolvedNotificationType =
+        notificationType ||
+        (
+            eventType === "WARRANTY_EXPIRING"
+                ? "WARRANTY_EXPIRY"
+                : eventType
+        );
+
     try {
+
         return await Notification.create({
             user: userId,
 
             asset: assetId,
 
+            serviceRequest: serviceRequestId,
+
+            payment: paymentId,
+
             automationKey,
 
-            type: eventType,
+            type:
+                resolvedNotificationType,
 
             title,
 
@@ -217,8 +242,13 @@ const createAutomationNotification = async ({
 
             readAt: null,
         });
+
     } catch (error) {
-        if (error.code !== 11000 || !automationKey) {
+
+        if (
+            error.code !== 11000 ||
+            !automationKey
+        ) {
             throw error;
         }
 

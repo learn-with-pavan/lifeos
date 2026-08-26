@@ -10,6 +10,7 @@ const {
     acceptProviderRequest,
     rejectProviderRequest,
     scheduleServiceRequestController,
+    rescheduleServiceRequestController,
 } = require("../controllers/serviceRequestController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -76,4 +77,9 @@ router.patch(
     scheduleServiceRequestController
 );
 
+router.patch(
+    "/provider/:requestId/reschedule",
+    authorizeRoles("PROVIDER"),
+    rescheduleServiceRequestController
+);
 module.exports = router;

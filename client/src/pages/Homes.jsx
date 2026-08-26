@@ -17,6 +17,7 @@ import {
     deleteHome,
 } from "../services/homeService";
 import { useToast } from "../context/ToastContext";
+import LoadingState from "../components/LoadingState";
 
 import "../styles/homes.css";
 
@@ -377,11 +378,10 @@ function Home() {
 
             {loading ? (
 
-                <div className="home-empty-state">
-                    <div className="home-loading">
-                        Loading homes...
-                    </div>
-                </div>
+                <LoadingState
+                    title="Loading homes"
+                    message="We're retrieving your homes and assets."
+                />
 
             ) : homes.length === 0 ? (
 

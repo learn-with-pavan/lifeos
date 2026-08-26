@@ -8,14 +8,11 @@ const {
     acceptProviderRequest: acceptProviderRequestService,
     rejectProviderRequest: rejectProviderRequestService,
     scheduleServiceRequest,
+    rescheduleServiceRequest,
 } = require("../services/serviceRequestService");
 
 
-const create = async (
-    req,
-    res
-) => {
-
+const create = async (req, res) => {
     try {
 
         const serviceRequest =
@@ -171,6 +168,28 @@ const cancelServiceRequest = async (req, res) => {
 
         await request.save();
 
+        const populatedRequest =
+            await ServiceRequest
+                .findById(request._id)
+                .populate("asset")
+                .populate("user", "name email")
+                .populate(
+                    "serviceProvider",
+                    "user businessName"
+                );
+
+
+        await emitServiceRequestEvent({
+            event:
+                "SERVICE_REQUEST_CANCELLED",
+
+            request:
+                populatedRequest,
+
+            providerMessage:
+                "The customer cancelled this service request.",
+        });
+
 
         return res.status(200).json({
 
@@ -311,43 +330,86 @@ const rejectProviderRequest = async (req, res) => {
 };
 
 // Schedling service
-const scheduleServiceRequestController =
-    async (req, res) => {
+const scheduleServiceRequestController = async (req, res) => {
 
-        try {
+    try {
 
-            const request =
-                await scheduleServiceRequest(
-                    req.params.requestId,
-                    req.userId,
-                    req.body
-                );
+        const request =
+            await scheduleServiceRequest(
+                req.params.requestId,
+                req.userId,
+                req.body
+            );
 
 
-            return res.status(200).json({
+        return res.status(200).json({
 
-                message:
-                    "Service request scheduled successfully.",
+            message:
+                "Service request scheduled successfully.",
 
-                request,
+            request,
 
-            });
+        });
 
-        } catch (error) {
+    } catch (error) {
 
-            return res.status(
-                error.statusCode || 500
-            ).json({
+        return res.status(
+            error.statusCode || 500
+        ).json({
 
-                message:
-                    error.statusCode
-                        ? error.message
-                        : "Unable to schedule service request.",
+            message:
+                error.statusCode
+                    ? error.message
+                    : "Unable to schedule service request.",
 
-            });
+        });
 
-        }
-    };
+    }
+};
+
+// Reschedule service
+const rescheduleServiceRequestController = async (req, res) => {
+
+    try {
+
+        const request =
+            await rescheduleServiceRequest(
+                req.params.requestId,
+                req.userId,
+                req.body
+            );
+
+
+        return res.status(200).json({
+
+            message:
+                "Service appointment rescheduled successfully.",
+
+            request,
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Reschedule service request error:",
+            error
+        );
+
+
+        return res.status(
+            error.statusCode || 500
+        ).json({
+
+            message:
+                error.statusCode
+                    ? error.message
+                    : "Unable to reschedule service appointment.",
+
+        });
+
+    }
+};
 module.exports = {
     create,
     getAll,
@@ -357,5 +419,6 @@ module.exports = {
     getProviderRequest,
     acceptProviderRequest,
     rejectProviderRequest,
-    scheduleServiceRequestController
+    scheduleServiceRequestController,
+    rescheduleServiceRequestController
 };

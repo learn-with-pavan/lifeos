@@ -1025,3 +1025,312 @@
 
     line-height: 1.5;
 }
+
+/* =========================================================
+   REVIEW CARD
+   ========================================================= */
+
+.request-review-card {
+    margin-top: 24px;
+}
+
+
+/* Header icon */
+
+.request-review-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #fff7ed;
+    color: #f59e0b;
+
+    flex-shrink: 0;
+}
+
+
+/* Loading */
+
+.request-review-loading {
+    padding: 24px 0;
+
+    text-align: center;
+
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RATING SELECTOR
+   ========================================================= */
+
+.request-review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+    margin-top: 20px;
+}
+
+
+.request-review-rating-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.request-review-rating-selector > span {
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #475569;
+}
+
+
+.request-review-stars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+.request-review-stars button {
+    border: none;
+    background: transparent;
+
+    padding: 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #cbd5e1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.request-review-stars button:hover {
+    color: #f59e0b;
+
+    transform: scale(1.08);
+}
+
+
+.request-review-stars button.active {
+    color: #f59e0b;
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+   ========================================================= */
+
+.request-review-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 4px;
+}
+
+
+.request-review-submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+
+    padding: 0 18px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #0f172a;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        opacity 0.2s ease;
+}
+
+
+.request-review-submit-button:hover:not(:disabled) {
+    background: #1e293b;
+
+    transform: translateY(-1px);
+}
+
+
+.request-review-submit-button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.request-review-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    background: #fef2f2;
+    color: #b91c1c;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SUBMITTED REVIEW
+   ========================================================= */
+
+.request-review-submitted {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    margin-top: 20px;
+}
+
+
+.request-review-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    color: #f59e0b;
+}
+
+
+.request-review-rating strong {
+    margin-left: 8px;
+
+    color: #334155;
+
+    font-size: 15px;
+}
+
+
+/* Comment */
+
+.request-review-comment {
+    padding: 16px;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+}
+
+
+.request-review-comment span {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #64748b;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.request-review-comment p {
+    margin: 0;
+
+    color: #334155;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* Success */
+
+.request-review-success {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+
+    color: #15803d;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+    .request-review-card {
+        margin-top: 18px;
+    }
+
+
+    .request-review-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+
+    .request-review-stars {
+        gap: 4px;
+    }
+
+
+    .request-review-stars button {
+        padding: 3px;
+    }
+
+
+    .request-review-actions {
+        justify-content: stretch;
+    }
+
+
+    .request-review-submit-button {
+        width: 100%;
+    }
+
+}

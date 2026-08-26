@@ -72,7 +72,7 @@
         0 4px 16px rgba(15, 23, 42, 0.04);
 }
 
-.provider-details-status-card > div:first-child > span {
+.provider-details-status-card>div:first-child>span {
     display: block;
     margin-bottom: 7px;
     color: #94a3b8;
@@ -138,10 +138,8 @@
 
 .provider-details-grid {
     display: grid;
-    grid-template-columns: repeat(
-        2,
-        minmax(0, 1fr)
-    );
+    grid-template-columns: repeat(2,
+            minmax(0, 1fr));
     gap: 18px;
     margin-bottom: 18px;
 }
@@ -247,10 +245,8 @@
 
 .provider-information-grid {
     display: grid;
-    grid-template-columns: repeat(
-        3,
-        minmax(0, 1fr)
-    );
+    grid-template-columns: repeat(3,
+            minmax(0, 1fr));
     gap: 12px;
 }
 
@@ -452,9 +448,7 @@
 .provider-schedule-grid {
     display: grid;
     grid-template-columns:
-        1fr
-        1fr
-        0.8fr;
+        1fr 1fr 0.8fr;
     gap: 14px;
     margin-bottom: 15px;
 }
@@ -499,12 +493,10 @@
 .provider-form-group textarea:focus {
     border-color: #818cf8;
     box-shadow:
-        0 0 0 3px rgba(
-            99,
+        0 0 0 3px rgba(99,
             102,
             241,
-            0.08
-        );
+            0.08);
 }
 
 .provider-input-with-suffix {
@@ -528,6 +520,13 @@
     display: flex;
     justify-content: flex-end;
     margin-top: 17px;
+}
+
+.provider-schedule-actions-resschedule {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 17px;
+    gap: 10px;
 }
 
 .provider-details-schedule-button {
@@ -573,10 +572,8 @@
 
 .provider-appointment-grid {
     display: grid;
-    grid-template-columns: repeat(
-        3,
-        minmax(0, 1fr)
-    );
+    grid-template-columns: repeat(3,
+            minmax(0, 1fr));
     gap: 12px;
 }
 
@@ -590,7 +587,7 @@
     color: #64748b;
 }
 
-.provider-appointment-item > svg {
+.provider-appointment-item>svg {
     margin-top: 2px;
     flex-shrink: 0;
 }
@@ -643,7 +640,7 @@
     color: #64748b;
 }
 
-.provider-details-terminal-card > svg {
+.provider-details-terminal-card>svg {
     margin-top: 2px;
     flex-shrink: 0;
 }
@@ -677,7 +674,7 @@
     background: #ffffff;
 }
 
-.provider-details-state > svg {
+.provider-details-state>svg {
     margin-bottom: 15px;
     color: #64748b;
 }
@@ -715,8 +712,7 @@
 
 .provider-details-spin {
     animation:
-        provider-details-spin-animation
-        1s linear infinite;
+        provider-details-spin-animation 1s linear infinite;
 }
 
 @keyframes provider-details-spin-animation {
@@ -743,26 +739,20 @@
 
     .provider-information-grid {
         grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
+            repeat(2,
+                minmax(0, 1fr));
     }
 
     .provider-schedule-grid {
         grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
+            repeat(2,
+                minmax(0, 1fr));
     }
 
     .provider-appointment-grid {
         grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
+            repeat(2,
+                minmax(0, 1fr));
     }
 
     .provider-details-action-card {
@@ -932,8 +922,7 @@
 }
 
 
-.request-appointment-item
-.request-information-icon {
+.request-appointment-item .request-information-icon {
     flex-shrink: 0;
 }
 
@@ -1096,14 +1085,12 @@
 }
 
 
-.provider-completion-form
-.provider-form-group {
+.provider-completion-form .provider-form-group {
     margin-bottom: 18px;
 }
 
 
-.provider-completion-form
-textarea {
+.provider-completion-form textarea {
     width: 100%;
 
     box-sizing: border-box;
@@ -1126,14 +1113,12 @@ textarea {
 }
 
 
-.provider-completion-form
-textarea:focus,
+.provider-completion-form textarea:focus,
 .provider-input-with-prefix:focus-within {
     border-color: #2563eb;
 
     box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.1);
+        0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 
@@ -1149,4 +1134,290 @@ textarea:focus,
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+/* =========================================================
+   CANCELLED APPOINTMENT
+   ========================================================= */
+
+.request-appointment-cancelled {
+    border-color: #fecaca;
+    background: #fffafa;
+}
+
+
+.request-appointment-icon-cancelled {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+
+.request-appointment-cancelled-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    margin-top: 18px;
+    padding: 15px 16px;
+
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+
+.request-appointment-cancelled-message svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+
+.request-appointment-cancelled-message>div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.request-appointment-cancelled-message strong {
+    font-size: 13px;
+    font-weight: 700;
+    color: #991b1b;
+}
+
+
+.request-appointment-cancelled-message span {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #b91c1c;
+}
+
+/* =========================================================
+   PROVIDER REQUEST TIMELINE
+   ========================================================= */
+
+.provider-request-timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.provider-timeline-item {
+    position: relative;
+
+    display: flex;
+    gap: 15px;
+
+    min-height: 78px;
+
+    opacity: 0.45;
+}
+
+
+.provider-timeline-item.active {
+    opacity: 1;
+}
+
+
+.provider-timeline-item:not(:last-child)::before {
+    content: "";
+
+    position: absolute;
+
+    left: 16px;
+    top: 34px;
+
+    width: 2px;
+    height: calc(100% - 12px);
+
+    background: #e2e8f0;
+}
+
+
+.provider-timeline-item.active:not(:last-child)::before {
+    background: #c7d2fe;
+}
+
+
+.provider-timeline-marker {
+    position: relative;
+    z-index: 1;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+    color: #94a3b8;
+
+    flex-shrink: 0;
+}
+
+
+.provider-timeline-item.active .provider-timeline-marker {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+
+.provider-timeline-item>div:last-child {
+    display: flex;
+    flex-direction: column;
+
+    padding-top: 2px;
+}
+
+
+.provider-timeline-item strong {
+    color: #334155;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+
+.provider-timeline-item span {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.provider-timeline-terminal {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px;
+
+    border-radius: 12px;
+}
+
+
+.provider-timeline-terminal>div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.provider-timeline-terminal strong {
+    font-size: 13px;
+}
+
+
+.provider-timeline-terminal span {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+.provider-timeline-terminal.cancelled {
+    background: #fef2f2;
+    color: #b91c1c;
+
+    border: 1px solid #fecaca;
+}
+
+
+.provider-timeline-terminal.cancelled strong {
+    color: #991b1b;
+}
+
+
+.provider-timeline-terminal.cancelled span {
+    color: #b91c1c;
+}
+
+
+.provider-timeline-terminal.rejected {
+    background: #fff7ed;
+    color: #c2410c;
+
+    border: 1px solid #fed7aa;
+}
+
+
+.provider-timeline-terminal.rejected strong {
+    color: #9a3412;
+}
+
+
+.provider-timeline-terminal.rejected span {
+    color: #c2410c;
+}
+
+.request-appointment-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.provider-details-reschedule-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 40px;
+    padding: 0 16px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.provider-details-reschedule-button:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.provider-details-reschedule-button:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.provider-details-cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+    padding: 0 16px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.provider-details-cancel-button:hover {
+    background: #f9fafb;
 }

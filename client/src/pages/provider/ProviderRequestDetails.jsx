@@ -24,7 +24,7 @@ import {
 
 
 import "../../styles/provider/providerRequestDetails.css";
-import { acceptProviderRequest, getProviderRequestById, rejectProviderRequest, scheduleServiceRequest } from "../../services/serviceRequestService";
+import { acceptProviderRequest, getProviderRequestById, rejectProviderRequest, rescheduleServiceRequest, scheduleServiceRequest } from "../../services/serviceRequestService";
 import { completeProviderService, startProviderService } from "../../services/serviceProviderService";
 
 const STATUS_CONFIG = {
@@ -138,37 +138,6 @@ const formatDate = (
     );
 };
 
-
-const formatShortDate = (
-    value
-) => {
-
-    if (!value) {
-        return "";
-    }
-
-    const date =
-        new Date(value);
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return "";
-    }
-
-    return date.toLocaleDateString(
-        undefined,
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-        }
-    );
-};
-
-
 const ProviderRequestDetails = () => {
 
     const {
@@ -239,101 +208,109 @@ const ProviderRequestDetails = () => {
         setCompleting,
     ] = useState(false);
 
-    const loadRequest =
-        useCallback(
-            async () => {
+    const [rescheduling, setRescheduling] = useState(false);
+    const [showRescheduleForm, setShowRescheduleForm] = useState(false);
+    const [rescheduleForm, setRescheduleForm] = useState({
+        scheduledDate: "",
+        scheduledTime: "",
+        durationMinutes: "",
+        notes: "",
+    });
 
-                try {
+    const loadRequest = useCallback(
+        async () => {
 
-                    setLoading(true);
-                    setError("");
+            try {
 
-                    const response =
-                        await getProviderRequestById(
-                            requestId
-                        );
+                setLoading(true);
+                setError("");
 
-                    const data =
-                        response?.data;
-
-                    const requestData =
-                        data?.request ||
-                        data;
-
-                    setRequest(
-                        requestData
+                const response =
+                    await getProviderRequestById(
+                        requestId
                     );
 
+                const data =
+                    response?.data;
 
-                    /*
-                     * Populate scheduling form
-                     * if scheduling data already exists.
-                     */
-                    if (
-                        requestData?.scheduling
-                    ) {
+                const requestData =
+                    data?.request ||
+                    data;
 
-                        setForm({
-                            scheduledDate:
-                                requestData
-                                    .scheduling
-                                    .scheduledDate
-                                    ? new Date(
-                                        requestData
-                                            .scheduling
-                                            .scheduledDate
-                                    )
-                                        .toISOString()
-                                        .split("T")[0]
-                                    : "",
+                setRequest(
+                    requestData
+                );
 
-                            scheduledTime:
-                                requestData
-                                    .scheduling
-                                    .scheduledTime ||
-                                "",
 
-                            durationMinutes:
-                                requestData
-                                    .scheduling
-                                    .durationMinutes ||
-                                60,
-
-                            notes:
-                                requestData
-                                    .scheduling
-                                    .notes ||
-                                "",
-                        });
-
-                    }
-
-                } catch (
-                requestError
+                /*
+                 * Populate scheduling form
+                 * if scheduling data already exists.
+                 */
+                if (
+                    requestData?.scheduling
                 ) {
 
-                    console.error(
-                        "Failed to load provider request:",
-                        requestError
-                    );
+                    setForm({
+                        scheduledDate:
+                            requestData
+                                .scheduling
+                                .scheduledDate
+                                ? new Date(
+                                    requestData
+                                        .scheduling
+                                        .scheduledDate
+                                )
+                                    .toISOString()
+                                    .split("T")[0]
+                                : "",
 
-                    setError(
-                        requestError
-                            ?.response
-                            ?.data
-                            ?.message ||
-                        "Unable to load this service request."
-                    );
+                        scheduledTime:
+                            requestData
+                                .scheduling
+                                .scheduledTime ||
+                            "",
 
-                } finally {
+                        durationMinutes:
+                            requestData
+                                .scheduling
+                                .durationMinutes ||
+                            60,
 
-                    setLoading(false);
+                        notes:
+                            requestData
+                                .scheduling
+                                .notes ||
+                            "",
+                    });
 
                 }
 
-            },
-            [requestId]
-        );
+            } catch (
+            requestError
+            ) {
+
+                console.error(
+                    "Failed to load provider request:",
+                    requestError
+                );
+
+                setError(
+                    requestError
+                        ?.response
+                        ?.data
+                        ?.message ||
+                    "Unable to load this service request."
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        },
+        [requestId]
+    );
 
 
     useEffect(() => {
@@ -343,90 +320,84 @@ const ProviderRequestDetails = () => {
     }, [loadRequest]);
 
 
-    const handleAccept =
-        async () => {
+    const handleAccept = async () => {
 
-            try {
+        try {
 
-                setProcessing(true);
-                setActionError("");
+            setProcessing(true);
+            setActionError("");
 
-                await acceptProviderRequest(
-                    requestId
-                );
-
-                await loadRequest();
-
-            } catch (
-            requestError
-            ) {
-
-                setActionError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to accept this request."
-                );
-
-            } finally {
-
-                setProcessing(false);
-
-            }
-        };
-
-
-    const handleReject =
-        async () => {
-
-            try {
-
-                setProcessing(true);
-                setActionError("");
-
-                await rejectProviderRequest(
-                    requestId
-                );
-
-                await loadRequest();
-
-            } catch (
-            requestError
-            ) {
-
-                setActionError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to reject this request."
-                );
-
-            } finally {
-
-                setProcessing(false);
-
-            }
-        };
-
-
-    const handleFormChange =
-        (event) => {
-
-            const {
-                name,
-                value,
-            } = event.target;
-
-            setForm(
-                (current) => ({
-                    ...current,
-                    [name]: value,
-                })
+            await acceptProviderRequest(
+                requestId
             );
-        };
 
+            await loadRequest();
+
+        } catch (
+        requestError
+        ) {
+
+            setActionError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to accept this request."
+            );
+
+        } finally {
+
+            setProcessing(false);
+
+        }
+    };
+
+    const handleReject = async () => {
+
+        try {
+
+            setProcessing(true);
+            setActionError("");
+
+            await rejectProviderRequest(
+                requestId
+            );
+
+            await loadRequest();
+
+        } catch (
+        requestError
+        ) {
+
+            setActionError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to reject this request."
+            );
+
+        } finally {
+
+            setProcessing(false);
+
+        }
+    };
+
+    const handleFormChange = (event) => {
+
+        const {
+            name,
+            value,
+        } = event.target;
+
+        setForm(
+            (current) => ({
+                ...current,
+                [name]: value,
+            })
+        );
+    };
 
     const handleSchedule = async (event) => {
 
@@ -477,109 +448,223 @@ const ProviderRequestDetails = () => {
         }
     };
 
+    const handleStartService = async () => {
 
-    const handleStartService =
-        async () => {
+        try {
 
-            try {
+            setProcessing(true);
+            setActionError("");
 
-                setProcessing(true);
-                setActionError("");
-
-                await startProviderService(
-                    requestId
-                );
-
-                await loadRequest();
-
-            } catch (requestError) {
-                setActionError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to start this service."
-                );
-
-            } finally {
-
-                setProcessing(false);
-
-            }
-        };
-
-    const handleCompletionFormChange =
-        (event) => {
-
-            const {
-                name,
-                value,
-            } = event.target;
-
-            setCompletionForm(
-                (current) => ({
-                    ...current,
-                    [name]: value,
-                })
+            await startProviderService(
+                requestId
             );
-        };
 
-    const handleCompleteService =
-        async (
-            event
-        ) => {
+            await loadRequest();
 
-            event.preventDefault();
+        } catch (requestError) {
+            setActionError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to start this service."
+            );
 
-            try {
+        } finally {
 
-                setCompleting(true);
-                setActionError("");
+            setProcessing(false);
 
-                await completeProviderService(
-                    requestId,
-                    {
-                        completionNotes:
-                            completionForm
-                                .completionNotes
-                                .trim(),
+        }
+    };
 
-                        serviceCost:
-                            completionForm
-                                .serviceCost === ""
-                                ? 0
-                                : Number(
-                                    completionForm
-                                        .serviceCost
-                                ),
+    const handleCompletionFormChange = (event) => {
 
-                        partsUsed:
-                            completionForm
-                                .partsUsed
-                                .trim(),
-                    }
-                );
+        const {
+            name,
+            value,
+        } = event.target;
 
-                await loadRequest();
+        setCompletionForm(
+            (current) => ({
+                ...current,
+                [name]: value,
+            })
+        );
+    };
 
-            } catch (
-            requestError
-            ) {
+    const handleCompleteService = async (event) => {
 
-                setActionError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to complete this service."
-                );
+        event.preventDefault();
 
-            } finally {
+        try {
 
-                setCompleting(false);
+            setCompleting(true);
+            setActionError("");
 
-            }
-        };
+            await completeProviderService(
+                requestId,
+                {
+                    completionNotes:
+                        completionForm
+                            .completionNotes
+                            .trim(),
+
+                    serviceCost:
+                        completionForm
+                            .serviceCost === ""
+                            ? 0
+                            : Number(
+                                completionForm
+                                    .serviceCost
+                            ),
+
+                    partsUsed:
+                        completionForm
+                            .partsUsed
+                            .trim(),
+                }
+            );
+
+            await loadRequest();
+
+        } catch (
+        requestError
+        ) {
+
+            setActionError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to complete this service."
+            );
+
+        } finally {
+
+            setCompleting(false);
+
+        }
+    };
+
+    const handleOpenReschedule = () => {
+
+        const scheduling =
+            request.scheduling || {};
+
+        setRescheduleForm({
+            scheduledDate:
+                scheduling.scheduledDate
+                    ? new Date(
+                        scheduling.scheduledDate
+                    )
+                        .toISOString()
+                        .split("T")[0]
+                    : "",
+
+            scheduledTime:
+                scheduling.scheduledTime || "",
+
+            durationMinutes:
+                scheduling.durationMinutes
+                    ? String(
+                        scheduling.durationMinutes
+                    )
+                    : "",
+
+            notes:
+                scheduling.notes || "",
+        });
+
+        setShowRescheduleForm(true);
+
+        setActionError("");
+    };
+
+    const handleCancelReschedule = () => {
+
+        setShowRescheduleForm(false);
+
+        setRescheduleForm({
+            scheduledDate: "",
+            scheduledTime: "",
+            durationMinutes: "",
+            notes: "",
+        });
+
+        setActionError("");
+    };
+
+    const handleRescheduleFormChange = (event) => {
+
+        const {
+            name,
+            value,
+        } = event.target;
+
+
+        setRescheduleForm(
+            (previous) => ({
+                ...previous,
+                [name]: value,
+            })
+        );
+    };
+
+    const handleReschedule = async (event) => {
+
+        event.preventDefault();
+
+        try {
+
+            setRescheduling(true);
+            setActionError("");
+
+            await rescheduleServiceRequest(
+                requestId,
+                {
+                    scheduledDate:
+                        rescheduleForm.scheduledDate,
+
+                    scheduledTime:
+                        rescheduleForm.scheduledTime,
+
+                    durationMinutes:
+                        Number(
+                            rescheduleForm.durationMinutes
+                        ),
+
+                    notes:
+                        rescheduleForm.notes,
+                }
+            );
+
+            await loadRequest();
+
+            setShowRescheduleForm(false);
+
+            setRescheduleForm({
+                scheduledDate: "",
+                scheduledTime: "",
+                durationMinutes: "",
+                notes: "",
+            });
+
+        } catch (error) {
+
+            setActionError(
+                error
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to reschedule service request."
+            );
+
+        } finally {
+
+            setRescheduling(false);
+
+        }
+    };
 
     if (loading) {
 
@@ -1076,7 +1161,7 @@ const ProviderRequestDetails = () => {
                             <strong>
                                 {
                                     request.preferredTime
-                                    
+
                                 }
                             </strong>
 
@@ -1495,9 +1580,14 @@ const ProviderRequestDetails = () => {
 
             {/* APPOINTMENT */}
 
-            {isScheduled && (
+            {(isScheduled || request.status === "CANCELLED") && (
 
-                <section className="request-details-card request-appointment-card">
+                <section
+                    className={`request-details-card request-appointment-card ${request.status === "CANCELLED"
+                        ? "request-appointment-cancelled"
+                        : ""
+                        }`}
+                >
 
                     <div className="request-section-heading">
 
@@ -1508,115 +1598,140 @@ const ProviderRequestDetails = () => {
                             </h2>
 
                             <p>
-                                Your service appointment
-                                details.
+                                {request.status === "CANCELLED"
+                                    ? "This appointment was cancelled."
+                                    : "Your scheduled service appointment details."
+                                }
                             </p>
 
                         </div>
 
 
-                        <div className="request-appointment-icon">
+                        <div
+                            className={`request-appointment-icon ${request.status === "CANCELLED"
+                                ? "request-appointment-icon-cancelled"
+                                : ""
+                                }`}
+                        >
 
-                            <CheckCircle2
-                                size={22}
-                            />
+                            {request.status === "CANCELLED" ? (
+
+                                <XCircle
+                                    size={22}
+                                />
+
+                            ) : (
+
+                                <CheckCircle2
+                                    size={22}
+                                />
+
+                            )}
 
                         </div>
 
                     </div>
 
 
-                    <div className="request-appointment-grid">
+                    {/* APPOINTMENT DETAILS */}
 
-                        <div className="request-appointment-item">
+                    {request.scheduling && (
 
-                            <div className="request-information-icon">
+                        <div className="request-appointment-grid">
 
-                                <CalendarDays
-                                    size={17}
-                                />
+                            <div className="request-appointment-item">
+
+                                <div className="request-information-icon">
+
+                                    <CalendarDays
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        Service date
+                                    </span>
+
+                                    <strong>
+                                        {
+                                            formatDate(
+                                                request.scheduling.scheduledDate
+                                            )
+                                        }
+                                    </strong>
+
+                                </div>
 
                             </div>
 
-                            <div>
 
-                                <span>
-                                    Service date
-                                </span>
+                            <div className="request-appointment-item">
 
-                                <strong>
-                                    {
-                                        formatDate(
-                                            request.scheduling.scheduledDate
-                                        )
-                                    }
-                                </strong>
+                                <div className="request-information-icon">
+
+                                    <Clock
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        Service time
+                                    </span>
+
+                                    <strong>
+                                        {
+                                            request.scheduling.scheduledTime ||
+                                            "Not specified"
+                                        }
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="request-appointment-item">
+
+                                <div className="request-information-icon">
+
+                                    <Clock
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        Duration
+                                    </span>
+
+                                    <strong>
+                                        {
+                                            request.scheduling.durationMinutes ||
+                                            0
+                                        }{" "}
+                                        minutes
+                                    </strong>
+
+                                </div>
 
                             </div>
 
                         </div>
 
-
-                        <div className="request-appointment-item">
-
-                            <div className="request-information-icon">
-
-                                <Clock
-                                    size={17}
-                                />
-
-                            </div>
-
-                            <div>
-
-                                <span>
-                                    Service time
-                                </span>
-
-                                <strong>
-                                    {
-                                        request.scheduling.scheduledTime ||
-                                        "Not specified"
-                                    }
-                                </strong>
-
-                            </div>
-
-                        </div>
+                    )}
 
 
-                        <div className="request-appointment-item">
+                    {/* APPOINTMENT NOTES */}
 
-                            <div className="request-information-icon">
-
-                                <Clock
-                                    size={17}
-                                />
-
-                            </div>
-
-                            <div>
-
-                                <span>
-                                    Duration
-                                </span>
-
-                                <strong>
-                                    {
-                                        request.scheduling.durationMinutes ||
-                                        0
-                                    }{" "}
-                                    minutes
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {request.scheduling.notes && (
+                    {request.scheduling?.notes && (
 
                         <div className="request-appointment-notes">
 
@@ -1633,6 +1748,252 @@ const ProviderRequestDetails = () => {
                         </div>
 
                     )}
+
+                    {isScheduled && (
+
+                        <div className="request-appointment-actions">
+
+                            <button
+                                type="button"
+                                className="provider-details-reschedule-button"
+                                onClick={handleOpenReschedule}
+                            >
+
+                                <CalendarDays
+                                    size={16}
+                                />
+
+                                Reschedule Service
+
+                            </button>
+
+                        </div>
+
+                    )}
+
+                    {/* CANCELLED MESSAGE */}
+
+                    {request.status === "CANCELLED" && (
+
+                        <div className="request-appointment-cancelled-message">
+
+                            <XCircle
+                                size={18}
+                            />
+
+                            <div>
+
+                                <strong>
+                                    Appointment cancelled
+                                </strong>
+
+                                <span>
+                                    The customer cancelled this
+                                    service request. No service visit
+                                    should take place.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+                </section>
+
+            )}
+
+
+            {isScheduled && showRescheduleForm && (
+
+                <section className="provider-details-card provider-reschedule-card">
+
+                    <div className="provider-section-heading">
+
+                        <div>
+
+                            <h2>
+                                Reschedule Service
+                            </h2>
+
+                            <p>
+                                Update the date, time, or duration
+                                of the existing appointment.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        className="provider-schedule-form"
+                        onSubmit={handleReschedule}
+                    >
+
+                        <div className="provider-schedule-grid">
+
+                            {/* DATE */}
+
+                            <div className="provider-form-group">
+
+                                <label htmlFor="rescheduledDate">
+                                    Service date
+                                </label>
+
+                                <input
+                                    id="rescheduledDate"
+                                    name="scheduledDate"
+                                    type="date"
+                                    value={
+                                        rescheduleForm.scheduledDate
+                                    }
+                                    onChange={
+                                        handleRescheduleFormChange
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+                            {/* TIME */}
+
+                            <div className="provider-form-group">
+
+                                <label htmlFor="rescheduledTime">
+                                    Service time
+                                </label>
+
+                                <input
+                                    id="rescheduledTime"
+                                    name="scheduledTime"
+                                    type="time"
+                                    value={
+                                        rescheduleForm.scheduledTime
+                                    }
+                                    onChange={
+                                        handleRescheduleFormChange
+                                    }
+                                    required
+                                />
+
+                            </div>
+
+
+                            {/* DURATION */}
+
+                            <div className="provider-form-group">
+
+                                <label htmlFor="rescheduledDuration">
+                                    Duration
+                                </label>
+
+                                <div className="provider-input-with-suffix">
+
+                                    <input
+                                        id="rescheduledDuration"
+                                        name="durationMinutes"
+                                        type="number"
+                                        min="1"
+                                        value={
+                                            rescheduleForm.durationMinutes
+                                        }
+                                        onChange={
+                                            handleRescheduleFormChange
+                                        }
+                                        required
+                                    />
+
+                                    <span>
+                                        minutes
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* NOTES */}
+
+                        <div className="provider-form-group">
+
+                            <label htmlFor="rescheduleNotes">
+                                Appointment notes
+                            </label>
+
+                            <textarea
+                                id="rescheduleNotes"
+                                name="notes"
+                                rows="4"
+                                value={
+                                    rescheduleForm.notes
+                                }
+                                onChange={
+                                    handleRescheduleFormChange
+                                }
+                                placeholder="Add any instructions or notes for the customer..."
+                            />
+
+                        </div>
+
+
+                        {/* ACTIONS */}
+
+                        <div className="provider-schedule-actions-resschedule">
+
+                            <button
+                                type="button"
+                                className="provider-details-cancel-button"
+                                onClick={
+                                    handleCancelReschedule
+                                }
+                                disabled={rescheduling}
+                            >
+                                Cancel
+                            </button>
+
+
+                            <button
+                                type="submit"
+                                className="provider-details-schedule-button"
+                                disabled={rescheduling}
+                            >
+
+                                {rescheduling ? (
+
+                                    <>
+
+                                        <RefreshCw
+                                            size={16}
+                                            className="provider-details-spin"
+                                        />
+
+                                        Updating...
+
+                                    </>
+
+                                ) : (
+
+                                    <>
+
+                                        <CalendarDays
+                                            size={16}
+                                        />
+
+                                        Update Appointment
+
+                                    </>
+
+                                )}
+
+                            </button>
+
+                        </div>
+
+                    </form>
 
                 </section>
 
@@ -1866,6 +2227,287 @@ const ProviderRequestDetails = () => {
                 </section>
 
             )}
+
+            {/* REQUEST TIMELINE */}
+
+            <section className="provider-details-card">
+
+                <div className="provider-section-heading">
+
+                    <div>
+
+                        <h2>
+                            Request Timeline
+                        </h2>
+
+                        <p>
+                            Track the progress of this service request.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {/* CANCELLED */}
+
+                {request.status === "CANCELLED" && (
+
+                    <div className="provider-timeline-terminal cancelled">
+
+                        <XCircle
+                            size={20}
+                        />
+
+                        <div>
+
+                            <strong>
+                                Request cancelled
+                            </strong>
+
+                            <span>
+                                The customer cancelled this service request.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                )}
+
+
+                {/* REJECTED */}
+
+                {request.status === "REJECTED" && (
+
+                    <div className="provider-timeline-terminal rejected">
+
+                        <XCircle
+                            size={20}
+                        />
+
+                        <div>
+
+                            <strong>
+                                Request rejected
+                            </strong>
+
+                            <span>
+                                This request was declined and no service
+                                appointment will take place.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                )}
+
+
+                {/* NORMAL TIMELINE */}
+
+                {![
+                    "CANCELLED",
+                    "REJECTED",
+                ].includes(request.status) && (
+
+                        <div className="provider-request-timeline">
+
+                            {/* SUBMITTED */}
+
+                            <div className="provider-timeline-item active">
+
+                                <div className="provider-timeline-marker">
+
+                                    <CheckCircle2
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Request submitted
+                                    </strong>
+
+                                    <span>
+                                        Customer submitted this service request.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* ACCEPTED */}
+
+                            <div
+                                className={`provider-timeline-item ${[
+                                    "ACCEPTED",
+                                    "SCHEDULED",
+                                    "IN_PROGRESS",
+                                    "COMPLETED",
+                                ].includes(request.status)
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+
+                                <div className="provider-timeline-marker">
+
+                                    <CheckCircle2
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Request accepted
+                                    </strong>
+
+                                    <span>
+                                        {request.status === "PENDING"
+                                            ? "Waiting for your response."
+                                            : "You accepted this service request."
+                                        }
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* SCHEDULED */}
+
+                            <div
+                                className={`provider-timeline-item ${[
+                                    "SCHEDULED",
+                                    "IN_PROGRESS",
+                                    "COMPLETED",
+                                ].includes(request.status)
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+
+                                <div className="provider-timeline-marker">
+
+                                    <CalendarDays
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Service scheduled
+                                    </strong>
+
+                                    <span>
+                                        {[
+                                            "SCHEDULED",
+                                            "IN_PROGRESS",
+                                            "COMPLETED",
+                                        ].includes(request.status)
+                                            ? "The service appointment has been scheduled."
+                                            : "Schedule an appointment after accepting the request."
+                                        }
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* IN PROGRESS */}
+
+                            <div
+                                className={`provider-timeline-item ${[
+                                    "IN_PROGRESS",
+                                    "COMPLETED",
+                                ].includes(request.status)
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+
+                                <div className="provider-timeline-marker">
+
+                                    <Wrench
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Service in progress
+                                    </strong>
+
+                                    <span>
+                                        {[
+                                            "IN_PROGRESS",
+                                            "COMPLETED",
+                                        ].includes(request.status)
+                                            ? "Service work has started."
+                                            : "Start the service when work begins."
+                                        }
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* COMPLETED */}
+
+                            <div
+                                className={`provider-timeline-item ${request.status === "COMPLETED"
+                                    ? "active"
+                                    : ""
+                                    }`}
+                            >
+
+                                <div className="provider-timeline-marker">
+
+                                    <CheckCircle2
+                                        size={17}
+                                    />
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Service completed
+                                    </strong>
+
+                                    <span>
+                                        {request.status === "COMPLETED"
+                                            ? request.completion?.completedAt
+                                                ? `Service completed on ${formatDate(
+                                                    request.completion.completedAt
+                                                )}.`
+                                                : "The service has been completed."
+                                            : "Complete the request after service work is finished."
+                                        }
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+            </section>
+
             {/* TERMINAL MESSAGE */}
 
             {isTerminal && (
