@@ -1,6 +1,6 @@
 /* =========================================================
    HOME PAGE
-   ========================================================= */
+========================================================= */
 
 .home-page {
     width: 100%;
@@ -10,10 +10,10 @@
 
 
 /* =========================================================
-   HEADER
-   ========================================================= */
+   PAGE HEADER
+========================================================= */
 
-.home-header {
+.page-title-row {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -21,814 +21,1031 @@
     margin-bottom: 28px;
 }
 
-.home-header-content h1 {
-    margin: 0 0 7px;
-    color: #111827;
+.page-title-row h1 {
+    margin: 0;
+    color: #0f172a;
     font-size: 30px;
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: -0.5px;
 }
 
-.home-header-content p {
-    margin: 0;
-    color: #6b7280;
+.page-title-row p {
+    margin: 7px 0 0;
+    color: #64748b;
     font-size: 14px;
     line-height: 1.6;
 }
 
 
 /* =========================================================
-   OVERVIEW
-   ========================================================= */
+   BUTTONS
+========================================================= */
 
-.home-overview-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-bottom: 26px;
-}
+.primary-button,
+.secondary-button,
+.danger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
-.home-overview-card {
-    min-width: 0;
-    padding: 20px;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    background: #ffffff;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    min-height: 40px;
+    padding: 0 15px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease,
+        opacity 0.15s ease;
 }
 
-.home-overview-card:hover {
-    border-color: #d1d5db;
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+.primary-button {
+    border: 1px solid #0f172a;
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.primary-button:hover:not(:disabled) {
+    background: #1e293b;
     transform: translateY(-1px);
 }
 
-.home-overview-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.home-overview-label {
-    color: #6b7280;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.home-overview-icon {
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: #f5f6f8;
-}
-
-.home-overview-value {
-    margin: 0 0 5px;
-    color: #111827;
-    font-size: 28px;
-    line-height: 1;
-    font-weight: 700;
-}
-
-.home-overview-description {
-    margin: 0;
-    color: #9ca3af;
-    font-size: 12px;
-}
-
-
-/* =========================================================
-   MAIN GRID
-   ========================================================= */
-
-.home-main-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
-    gap: 22px;
-    align-items: start;
-}
-
-
-/* =========================================================
-   SECTION CARD
-   ========================================================= */
-
-.home-section {
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
+.secondary-button {
+    border: 1px solid #e2e8f0;
     background: #ffffff;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    color: #334155;
 }
 
-.home-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 20px 22px;
-    border-bottom: 1px solid #f0f1f3;
+.secondary-button:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
 }
 
-.home-section-heading h2 {
-    margin: 0 0 5px;
-    color: #111827;
-    font-size: 17px;
-    font-weight: 650;
+.danger-button {
+    border: 1px solid #dc2626;
+    background: #dc2626;
+    color: #ffffff;
 }
 
-.home-section-heading p {
-    margin: 0;
-    color: #8a9099;
-    font-size: 12px;
-    line-height: 1.5;
+.danger-button:hover:not(:disabled) {
+    background: #b91c1c;
 }
 
-.home-section-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-    padding: 7px 9px;
-    border: none;
-    border-radius: 7px;
-    background: transparent;
-    color: #4b5563;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.home-section-action:hover {
-    background: #f5f6f8;
-}
-
-
-/* =========================================================
-   SECTION BODY
-   ========================================================= */
-
-.home-section-body {
-    padding: 16px 18px;
-}
-
-
-/* =========================================================
-   ASSET LIST
-   ========================================================= */
-
-.home-asset-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.home-asset-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 4px;
-}
-
-.home-asset-item + .home-asset-item {
-    border-top: 1px solid #f0f1f3;
-}
-
-.home-asset-main {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.home-asset-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: 10px;
-    background: #f5f6f8;
-}
-
-.home-asset-info {
-    min-width: 0;
-}
-
-.home-asset-info h3 {
-    margin: 0 0 4px;
-    overflow: hidden;
-    color: #1f2937;
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.home-asset-info p {
-    margin: 0;
-    color: #9ca3af;
-    font-size: 12px;
-}
-
-.home-asset-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    flex-shrink: 0;
-    padding: 7px 10px;
-    border: 1px solid #e5e7eb;
-    border-radius: 7px;
-    background: #ffffff;
-    color: #4b5563;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.home-asset-button:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
-}
-
-
-/* =========================================================
-   UPCOMING
-   ========================================================= */
-
-.home-upcoming-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.home-upcoming-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 4px;
-}
-
-.home-upcoming-item + .home-upcoming-item {
-    border-top: 1px solid #f0f1f3;
-}
-
-.home-upcoming-icon {
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: 10px;
-    background: #f5f6f8;
-}
-
-.home-upcoming-content {
-    min-width: 0;
-    flex: 1;
-}
-
-.home-upcoming-content strong {
-    display: block;
-    margin-bottom: 4px;
-    overflow: hidden;
-    color: #1f2937;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.home-upcoming-content span {
-    display: block;
-    overflow: hidden;
-    color: #9ca3af;
-    font-size: 11px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.home-upcoming-date {
-    flex-shrink: 0;
-    color: #6b7280;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-   ========================================================= */
-
-.home-quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.home-quick-action {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #ffffff;
-    text-align: left;
-    cursor: pointer;
-    transition:
-        border-color 0.2s ease,
-        background 0.2s ease;
-}
-
-.home-quick-action:hover {
-    border-color: #d1d5db;
-    background: #f9fafb;
-}
-
-.home-quick-action-icon {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: 9px;
-    background: #f5f6f8;
-}
-
-.home-quick-action-text {
-    min-width: 0;
-}
-
-.home-quick-action-text strong {
-    display: block;
-    margin-bottom: 3px;
-    color: #1f2937;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.home-quick-action-text span {
-    display: block;
-    color: #9ca3af;
-    font-size: 10px;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
-.home-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 210px;
-    padding: 28px 24px;
-    text-align: center;
-}
-
-.home-empty-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 14px;
-    border-radius: 13px;
-    background: #f5f6f8;
-}
-
-.home-empty-state h3 {
-    margin: 0 0 6px;
-    color: #1f2937;
-    font-size: 15px;
-    font-weight: 650;
-}
-
-.home-empty-state p {
-    max-width: 420px;
-    margin: 0;
-    color: #8a9099;
-    font-size: 12px;
-    line-height: 1.6;
-    margin: 8px auto 22px
-}
-
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-.home-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 210px;
-    color: #6b7280;
-    font-size: 13px;
+.primary-button:disabled,
+.secondary-button:disabled,
+.danger-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
 }
 
 
 /* =========================================================
    ERROR
-   ========================================================= */
+========================================================= */
 
 .home-error {
     margin-bottom: 20px;
     padding: 13px 15px;
+
     border: 1px solid #fecaca;
     border-radius: 9px;
+
     background: #fef2f2;
     color: #b91c1c;
+
     font-size: 13px;
 }
 
 
 /* =========================================================
-   HOME MASTER PAGE
-   ========================================================= */
+   SEARCH
+========================================================= */
 
 .home-page .home-toolbar {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+
+    margin-bottom: 20px;
 }
 
 .home-page .home-search {
-    flex: 0 1 520px;
     width: 100%;
     max-width: 520px;
-    min-width: 240px;
-    height: 44px;
+    height: 42px;
+
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 0 14px;
+
+    padding: 0 13px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    color: #9ca3af;
+    color: #94a3b8;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .home-page .home-search:focus-within {
-    border-color: #cbd5e1;
+    border-color: #94a3b8;
     box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
 }
 
 .home-page .home-search input {
     width: 100%;
+
     border: none;
     outline: none;
+
     background: transparent;
-    font-size: 14px;
-    color: #111827;
+
+    color: #0f172a;
+
+    font-size: 13px;
 }
+
+.home-page .home-search input::placeholder {
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   HOME LIST
+========================================================= */
 
 .home-page .home-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
 }
+
+
+/* =========================================================
+   HOME CARD
+========================================================= */
 
 .home-page .home-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 24px;
-    padding: 20px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+
+    padding: 18px 20px;
+
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
 }
+
+.home-page .home-card:hover {
+    border-color: #cbd5e1;
+
+    box-shadow:
+        0 6px 20px rgba(15, 23, 42, 0.06);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   HOME CARD LEFT
+========================================================= */
 
 .home-page .home-card-main {
     display: flex;
     align-items: flex-start;
+
     gap: 14px;
+
     min-width: 0;
+    flex: 1;
 }
+
+
+/* Home icon */
 
 .home-page .home-card-icon {
     width: 42px;
     height: 42px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     flex-shrink: 0;
-    border-radius: 10px;
+
+    border-radius: 11px;
+
     background: #f1f5f9;
+    color: #334155;
 }
+
+
+/* =========================================================
+   HOME INFORMATION
+
+   IMPORTANT:
+   Name / Type / Address now all start from
+   exactly the same left position.
+========================================================= */
 
 .home-page .home-card-info {
     min-width: 0;
+    flex: 1;
 }
+
+
+/* Name + type */
 
 .home-page .home-title-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+
+    gap: 10px;
+
+    min-width: 0;
+
+    margin: 0;
 }
 
 .home-page .home-title-row h3 {
+    min-width: 0;
+
     margin: 0;
+
+    overflow: hidden;
+
     color: #0f172a;
+
     font-size: 15px;
-    font-weight: 600;
+    line-height: 1.4;
+    font-weight: 650;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.home-page .home-card-info > p {
-    margin: 7px 0 0;
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.5;
-}
 
-.home-page .home-card-right {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-shrink: 0;
-}
-
-.home-page .home-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+/* Home type badge */
 
 .home-page .home-status {
     display: inline-flex;
     align-items: center;
-    padding: 4px 9px;
+
+    flex-shrink: 0;
+
+    padding: 4px 8px;
+
     border-radius: 999px;
-    background: #f1f5f9;
-    color: #475569;
+
     font-size: 11px;
+    line-height: 1.2;
     font-weight: 600;
+
     white-space: nowrap;
 }
 
-.home-page .home-status-type,
-.home-page .home-status-date {
+.home-page .home-status-type {
     background: #f1f5f9;
     color: #475569;
 }
 
-.home-page .home-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
+
+/* Address */
+
+.home-page .home-card-info > p {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    margin: 7px 0 0;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.home-page .home-card-info > p svg {
+    flex-shrink: 0;
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   HOME CARD RIGHT
+========================================================= */
+
+.home-page .home-card-right {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    flex-shrink: 0;
+}
+
+
+/* Purchase date */
+
+.home-page .home-status-date {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+
+/* Actions */
+
+.home-page .home-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+
+/* =========================================================
+   ICON BUTTONS
+========================================================= */
+
+.home-page .icon-button {
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.home-page .secondary-icon-button {
+    border: 1px solid #e2e8f0;
+
+    background: #ffffff;
+    color: #475569;
+}
+
+.home-page .secondary-icon-button:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.home-page .danger-icon-button {
+    border: 1px solid #fee2e2;
+
+    background: #ffffff;
+    color: #dc2626;
+}
+
+.home-page .danger-icon-button:hover {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.home-empty-state {
+    min-height: 300px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px 24px;
+
+    border: 1px dashed #dbe2ea;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+.home-empty-icon {
+    width: 52px;
+    height: 52px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
-    background: rgba(17, 24, 39, 0.45);
+
+    margin-bottom: 15px;
+
+    border-radius: 13px;
+
+    background: #f1f5f9;
+    color: #475569;
 }
+
+.home-empty-state h2 {
+    margin: 0;
+
+    color: #1e293b;
+
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.home-empty-state p {
+    max-width: 430px;
+
+    margin: 8px 0 20px;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   ADD / EDIT MODAL OVERLAY
+========================================================= */
+
+.home-page .home-modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: rgba(15, 23, 42, 0.48);
+
+    backdrop-filter: blur(2px);
+}
+
+
+/* =========================================================
+   ADD / EDIT MODAL
+========================================================= */
 
 .home-page .home-modal {
     width: 100%;
-    max-width: 560px;
-    height: min(90vh, 680px);
-    max-height: calc(100vh - 40px);
+    max-width: 540px;
+
+    max-height: min(720px, calc(100vh - 40px));
+
     display: flex;
     flex-direction: column;
+
     overflow: hidden;
-    padding: 24px;
+
     box-sizing: border-box;
-    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+
+    background: #ffffff;
+
+    box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.18);
+
+    animation: homeModalIn 0.18s ease-out;
 }
 
+@keyframes homeModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
 .home-page .home-modal-header {
-    flex-shrink: 0;
     display: flex;
+
     align-items: flex-start;
     justify-content: space-between;
+
     gap: 20px;
-    margin-bottom: 24px;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    flex-shrink: 0;
 }
 
 .home-page .home-modal-header h2 {
     margin: 0;
+
     color: #0f172a;
-    font-size: 20px;
+
+    font-size: 19px;
+    line-height: 1.3;
+    font-weight: 650;
 }
 
 .home-page .home-modal-header p {
     margin: 5px 0 0;
+
     color: #64748b;
-    font-size: 13px;
+
+    font-size: 12px;
+    line-height: 1.5;
 }
 
-.home-page .home-form {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
 
-.home-page .home-form-body {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 0 4px 4px 0;
-}
+/* Close */
 
 .home-page .home-modal-close {
     width: 34px;
     height: 34px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     flex-shrink: 0;
-    border: none;
+
+    padding: 0;
+
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
-    background: #f1f5f9;
-    color: #475569;
+
+    background: #ffffff;
+    color: #64748b;
+
     cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .home-page .home-modal-close:hover {
-    background: #e2e8f0;
+    border-color: #cbd5e1;
+    background: #f8fafc;
     color: #0f172a;
 }
 
-.home-page .home-modal-actions {
-    flex-shrink: 0;
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.home-page .home-form {
+    min-height: 0;
+
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
-    background: #ffffff;
+    flex-direction: column;
+
+    flex: 1;
+
+    overflow: hidden;
 }
+
+.home-page .home-form-body {
+    min-height: 0;
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 22px 24px 6px;
+}
+
+
+/* Scrollbar */
+
+.home-page .home-form-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.home-page .home-form-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.home-page .home-form-body::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #cbd5e1;
+}
+
+
+/* =========================================================
+   FORM GROUP
+========================================================= */
 
 .home-page .home-form-group {
     display: flex;
     flex-direction: column;
+
     gap: 7px;
+
     margin-bottom: 18px;
+}
+
+.home-page .home-form-group:last-child {
+    margin-bottom: 8px;
 }
 
 .home-page .home-form-group label {
     color: #334155;
-    font-size: 13px;
+
+    font-size: 12px;
+    line-height: 1.3;
     font-weight: 600;
 }
+
+
+/* =========================================================
+   FORM INPUTS
+========================================================= */
 
 .home-page .home-form-group input,
 .home-page .home-form-group select,
 .home-page .home-form-group textarea {
     width: 100%;
-    padding: 11px 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    outline: none;
+
     box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+
+    outline: none;
+
     background: #ffffff;
+
     color: #0f172a;
+
+    font-family: inherit;
+
     font-size: 13px;
+    line-height: 1.5;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.home-page .home-form-group input,
+.home-page .home-form-group select {
+    height: 42px;
+}
+
+.home-page .home-form-group textarea {
+    min-height: 88px;
+
+    resize: vertical;
+}
+
+.home-page .home-form-group input::placeholder,
+.home-page .home-form-group textarea::placeholder {
+    color: #94a3b8;
+}
+
+.home-page .home-form-group input:hover,
+.home-page .home-form-group select:hover,
+.home-page .home-form-group textarea:hover {
+    border-color: #94a3b8;
 }
 
 .home-page .home-form-group input:focus,
 .home-page .home-form-group select:focus,
 .home-page .home-form-group textarea:focus {
     border-color: #64748b;
+
+    box-shadow:
+        0 0 0 3px rgba(15, 23, 42, 0.05);
 }
 
 
 /* =========================================================
-   RESPONSIVE
-   ========================================================= */
+   MODAL ACTIONS
+========================================================= */
 
-@media (max-width: 1100px) {
-    .home-overview-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.home-page .home-modal-actions {
+    display: flex;
 
-    .home-main-grid {
-        grid-template-columns: 1fr;
-    }
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    flex-shrink: 0;
+
+    padding: 16px 24px;
+
+    border-top: 1px solid #f1f5f9;
+
+    background: #ffffff;
 }
 
 
-@media (max-width: 768px) {
-    .home-page {
-        padding: 24px 20px 32px;
+/* =========================================================
+   DELETE MODAL
+========================================================= */
+
+.home-page .delete-modal {
+    width: 100%;
+    max-width: 390px;
+
+    padding: 26px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    text-align: center;
+
+    box-shadow:
+        0 24px 70px rgba(15, 23, 42, 0.18);
+
+    animation: homeModalIn 0.18s ease-out;
+}
+
+.home-page .delete-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 15px;
+
+    border-radius: 12px;
+
+    background: #fef2f2;
+    color: #dc2626;
+
+    font-size: 21px;
+}
+
+.home-page .delete-modal h2 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 18px;
+    font-weight: 650;
+}
+
+.home-page .delete-modal > p {
+    margin: 8px auto 22px;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.home-page .delete-modal > p strong {
+    color: #334155;
+}
+
+.home-page .modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .home-page .home-card {
+        align-items: flex-start;
     }
 
-    .home-header {
+    .home-page .home-card-right {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .page-title-row {
         flex-direction: column;
         align-items: stretch;
+
+        gap: 16px;
+
+        margin-bottom: 22px;
     }
 
-    .home-header-content h1 {
+    .page-title-row h1 {
         font-size: 26px;
     }
 
-    .home-overview-grid {
-        gap: 12px;
+    .page-title-row .primary-button {
+        width: 100%;
     }
 
-    .home-section-header {
-        padding: 18px;
-    }
-
-    .home-section-body {
-        padding: 14px 16px;
-    }
 
     .home-page .home-card {
         flex-direction: column;
-        align-items: flex-start;
+
+        align-items: stretch;
+
+        gap: 16px;
+
+        padding: 16px;
     }
 
     .home-page .home-card-right {
         width: 100%;
+
+        flex-direction: row;
+
+        align-items: center;
         justify-content: space-between;
+
+        gap: 12px;
     }
 
-    .home-page .home-search {
-        flex: 1 1 100%;
-        max-width: none;
+    .home-page .home-actions {
+        flex-shrink: 0;
     }
+
+
+    .home-page .home-modal-overlay {
+        padding: 12px;
+    }
+
+    .home-page .home-modal {
+        max-height: calc(100vh - 24px);
+
+        border-radius: 14px;
+    }
+
+    .home-page .home-modal-header {
+        padding: 18px;
+    }
+
+    .home-page .home-form-body {
+        padding: 18px 18px 4px;
+    }
+
+    .home-page .home-modal-actions {
+        padding: 14px 18px;
+    }
+
 }
 
 
-@media (max-width: 520px) {
-    .home-page {
-        padding: 20px 14px 28px;
+/* =========================================================
+   RESPONSIVE — SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .page-title-row h1 {
+        font-size: 24px;
     }
 
-    .home-overview-grid {
-        grid-template-columns: 1fr;
+    .page-title-row p {
+        font-size: 13px;
     }
 
-    .home-overview-card {
-        padding: 17px;
+
+    .home-page .home-card-main {
+        gap: 11px;
     }
 
-    .home-section-header {
+    .home-page .home-card-icon {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 10px;
+    }
+
+    .home-page .home-title-row {
         align-items: flex-start;
-    }
 
-    .home-asset-item {
-        align-items: flex-start;
-    }
-
-    .home-asset-item {
         flex-direction: column;
+
+        gap: 5px;
     }
 
-    .home-asset-button {
-        margin-left: 52px;
+    .home-page .home-title-row h3 {
+        font-size: 14px;
     }
 
-    .home-upcoming-item {
-        align-items: flex-start;
+    .home-page .home-card-info > p {
+        max-width: 100%;
     }
 
-    .home-upcoming-date {
-        margin-left: auto;
-    }
-
-    .home-quick-actions {
-        grid-template-columns: 1fr;
-    }
 
     .home-page .home-card-right {
-        flex-direction: column;
         align-items: flex-start;
-        gap: 14px;
+
+        flex-direction: column;
+
+        gap: 12px;
     }
 
     .home-page .home-actions {
         width: 100%;
     }
 
-    .home-page .home-modal-overlay {
-        padding: 12px;
+    .home-page .home-actions .icon-button {
+        flex: 1;
     }
+
+
+    .home-page .home-modal-header h2 {
+        font-size: 18px;
+    }
+
+    .home-page .home-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .home-page .home-modal-actions button {
+        width: 100%;
+    }
+
+
+    .home-page .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .home-page .modal-actions button {
+        width: 100%;
+    }
+
 }

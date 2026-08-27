@@ -107,8 +107,8 @@ const executeAction = async (
                     automation.name,
 
                 message:
-                    action.config?.message ||
                     eventData.message ||
+                    action.config?.message ||
                     "You have something that requires your attention.",
 
                 eventType:

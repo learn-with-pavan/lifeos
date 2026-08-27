@@ -26,13 +26,19 @@ import { getNotificationIcon } from "../utils/notificationUtils";
 import { useNotifications } from "../context/NotificationContext";
 import { useToast } from "../context/ToastContext";
 import ReviewModal from "../components/ReviewModal";
+import { getPaymentForServiceRequest } from "../services/paymentService";
+import PaymentModal from "../components/PaymentModal";
+import logo from "../assets/logo.svg";
 
 function AppLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const toast = useToast();
     const user = JSON.parse(localStorage.getItem("user"));
+
     const [reviewRequestId, setReviewRequestId] = useState(null);
+    const [paymentId, setPaymentId] = useState(null);
+    const [selectedPayment, setSelectedPayment] = useState(null);
 
     const pageTitles = [
         {
@@ -148,13 +154,13 @@ function AppLayout() {
         try {
 
             if (!notification.isRead) {
-                await markAsRead(
-                    notification._id
-                );
+                await markAsRead(notification._id);
             }
 
             /*
-             * Review notification
+             * SERVICE COMPLETED
+             *
+             * Opens review modal.
              */
             if (
                 notification.type ===
@@ -177,13 +183,108 @@ function AppLayout() {
                 return;
             }
 
+
+            /*
+             * PAYMENT CREATED
+             *
+             * Opens payment modal.
+             */
+            if (
+                notification.type ===
+                "PAYMENT_CREATED"
+            ) {
+
+                const requestId =
+                    notification.serviceRequest?._id ||
+                    notification.serviceRequest;
+
+                const notificationPaymentId =
+                    notification.paymentId ||
+                    notification.entityId;
+
+                setShowNotifications(false);
+
+
+                /*
+                 * If notification contains
+                 * paymentId, use it.
+                 */
+                if (notificationPaymentId) {
+
+                    setPaymentId(
+                        notificationPaymentId
+                    );
+
+                    /*
+                     * We still need the complete
+                     * payment object for the modal.
+                     */
+                    try {
+
+                        const response =
+                            await getPaymentForServiceRequest(
+                                requestId
+                            );
+
+                        setSelectedPayment(
+                            response?.payment || null
+                        );
+
+                    } catch (paymentError) {
+                        toast.error(
+                            paymentError?.response?.data?.message ||
+                            "Unable to load payment."
+                        );
+
+                        return;
+                    }
+
+                    return;
+                }
+
+
+                /*
+                 * Fallback:
+                 * notification has serviceRequestId
+                 * but no paymentId.
+                 */
+                if (requestId) {
+
+                    try {
+
+                        const response =
+                            await getPaymentForServiceRequest(
+                                requestId
+                            );
+
+                        if (response?.payment) {
+
+                            setPaymentId(
+                                response.payment._id
+                            );
+
+                            setSelectedPayment(
+                                response.payment
+                            );
+
+                        }
+
+                    } catch (paymentError) {
+                        toast.error(
+                            paymentError?.response?.data?.message ||
+                            "Unable to load payment."
+                        );
+                    }
+                }
+
+                return;
+            }
+
         } catch (error) {
-
-            console.error(
-                "Failed to handle notification",
-                error
+            toast.error(
+                error?.response?.data?.message ||
+                "Unable to open notification."
             );
-
         }
     };
 
@@ -205,7 +306,7 @@ function AppLayout() {
 
                 <div className="sidebar-brand">
                     <div className="brand-icon">
-                        <LayoutDashboard size={20} />
+                        <img src={logo} alt="brand-icon" />
                     </div>
 
                     <div>
@@ -393,6 +494,10 @@ function AppLayout() {
                                                     "SERVICE_COMPLETED"
                                                     ? "notification-review-item"
                                                     : ""
+                                                } ${notification.type ===
+                                                    "PAYMENT_CREATED"
+                                                    ? "notification-payment-item"
+                                                    : ""
                                                 }`}
                                             onClick={() =>
                                                 handleNotificationClick(
@@ -432,6 +537,13 @@ function AppLayout() {
                                                     "SERVICE_COMPLETED" && (
                                                         <span className="notification-review-action">
                                                             Rate now →
+                                                        </span>
+                                                    )}
+
+                                                {notification.type ===
+                                                    "PAYMENT_CREATED" && (
+                                                        <span className="notification-payment-action">
+                                                            Pay now →
                                                         </span>
                                                     )}
                                             </div>
@@ -475,6 +587,34 @@ function AppLayout() {
                         );
 
                         loadNotifications();
+                    }}
+                />
+
+            )}
+
+            {selectedPayment && (
+
+                <PaymentModal
+                    payment={selectedPayment}
+
+                    onClose={() => {
+
+                        setSelectedPayment(null);
+                        setPaymentId(null);
+
+                    }}
+
+                    onSuccess={(updatedPayment) => {
+
+                        setSelectedPayment(null);
+                        setPaymentId(null);
+
+                        toast.success(
+                            "Payment completed successfully!"
+                        );
+
+                        loadNotifications();
+
                     }}
                 />
 

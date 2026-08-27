@@ -313,7 +313,7 @@ const SERVICE_REQUEST_AUTOMATIONS = [
         name: "Payment Required",
 
         description:
-            "Notify the customer when payment is required after service completion.",
+            "Notify the customer when payment is created for a completed service.",
 
         event: "PAYMENT_CREATED",
 
@@ -329,11 +329,18 @@ const SERVICE_REQUEST_AUTOMATIONS = [
                     title: "Payment required",
 
                     message:
-                        "Your service has been completed and payment is now due.",
+                        "A payment is required for your completed service.",
                 },
             },
         ],
     },
+    {
+        type: "PAYMENT_COMPLETED",
+        title: "Payment successful",
+        message:
+            "Your payment has been completed successfully.",
+        recipientRole: "CUSTOMER",
+    }
 ];
 
 const ALL_DEFAULT_AUTOMATIONS = [

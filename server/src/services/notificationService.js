@@ -208,6 +208,7 @@ const createAutomationNotification = async ({
     eventType,
     notificationType = null,
     automationKey,
+    
 }) => {
 
     const resolvedNotificationType =

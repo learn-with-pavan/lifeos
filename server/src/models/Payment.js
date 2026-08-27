@@ -109,7 +109,9 @@ paymentSchema.index({
     status: 1,
 });
 
-module.exports = mongoose.model(
+const Payment = mongoose.model(
     "Payment",
     paymentSchema
 );
+
+module.exports = Payment;

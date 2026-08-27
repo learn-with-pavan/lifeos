@@ -26,6 +26,12 @@ export const getNotificationIcon = (
     case "SYSTEM":
       return Info;
 
+    case "PAYMENT_CREATED":
+      return CreditCard;
+
+    case "PAYMENT_COMPLETED":
+      return CreditCard;
+
     default:
       return Bell;
   }

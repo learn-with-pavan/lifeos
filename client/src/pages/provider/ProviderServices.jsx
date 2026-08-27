@@ -1,5 +1,6 @@
 import {
     Check,
+    ClipboardCheck,
     RefreshCw,
     Save,
     Wrench,
@@ -24,91 +25,74 @@ const SERVICE_OPTIONS = [
         label: "Repair",
         description:
             "Diagnose and repair damaged or malfunctioning assets.",
+        icon: Wrench,
     },
     {
         value: "SERVICE",
         label: "Service",
         description:
             "Routine servicing, maintenance and preventive care.",
+        icon: RefreshCw,
     },
     {
         value: "INSPECTION",
         label: "Inspection",
         description:
             "Inspect assets and identify potential problems.",
+        icon: ClipboardCheck,
     },
 ];
 
 
 const ProviderServices = () => {
 
-    const [
-        services,
-        setServices,
-    ] = useState([]);
-
-    const [
-        loading,
-        setLoading,
-    ] = useState(true);
-
-    const [
-        saving,
-        setSaving,
-    ] = useState(false);
-
-    const [
-        error,
-        setError,
-    ] = useState("");
-
-    const [
-        success,
-        setSuccess,
-    ] = useState("");
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
 
-    const loadProvider =
-        async () => {
+    const loadProvider = async () => {
 
-            try {
+        try {
 
-                setLoading(true);
-                setError("");
+            setLoading(true);
+            setError("");
 
-                const response =
-                    await getMyProvider();
+            const response =
+                await getMyProvider();
 
-                const provider =
-                    response?.data?.data ||
-                    response?.data?.provider ||
-                    response?.data;
+            const provider =
+                response?.data?.data ||
+                response?.data?.provider ||
+                response?.data;
 
-                setServices(
-                    provider?.services || []
-                );
+            setServices(
+                provider?.services || []
+            );
 
-            } catch (requestError) {
+        } catch (requestError) {
 
-                console.error(
-                    "Failed to load provider services:",
-                    requestError
-                );
+            console.error(
+                "Failed to load provider services:",
+                requestError
+            );
 
-                setError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to load your services."
-                );
+            setError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to load your services."
+            );
 
-            } finally {
+        } finally {
 
-                setLoading(false);
+            setLoading(false);
 
-            }
-        };
+        }
+    };
 
 
     useEffect(() => {
@@ -118,87 +102,68 @@ const ProviderServices = () => {
     }, []);
 
 
-    const toggleService =
-        (serviceValue) => {
+    const toggleService = (serviceValue) => {
 
-            setSuccess("");
-            setError("");
+        setSuccess("");
+        setError("");
 
-            setServices(
-                (current) => {
+        setServices((current) =>
+            current.includes(serviceValue)
+                ? current.filter(
+                    (service) =>
+                        service !== serviceValue
+                )
+                : [...current, serviceValue]
+        );
+    };
 
-                    if (
-                        current.includes(
-                            serviceValue
-                        )
-                    ) {
 
-                        return current.filter(
-                            (service) =>
-                                service !==
-                                serviceValue
-                        );
+    const handleSave = async () => {
 
-                    }
+        if (services.length === 0) {
 
-                    return [
-                        ...current,
-                        serviceValue,
-                    ];
-                }
+            setError(
+                "Please select at least one service."
             );
-        };
 
+            return;
+        }
 
-    const handleSave =
-        async () => {
+        try {
 
-            if (
-                services.length === 0
-            ) {
+            setSaving(true);
+            setError("");
+            setSuccess("");
 
-                setError(
-                    "Please select at least one service."
-                );
+            await updateProviderProfile({
+                services,
+            });
 
-                return;
-            }
+            setSuccess(
+                "Your services have been updated successfully."
+            );
 
-            try {
+        } catch (requestError) {
 
-                setSaving(true);
-                setError("");
-                setSuccess("");
+            console.error(
+                "Failed to update services:",
+                requestError
+            );
 
-                await updateProviderProfile({
-                    services,
-                });
+            setError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to update your services."
+            );
 
-                setSuccess(
-                    "Services updated successfully."
-                );
+        } finally {
 
-            } catch (requestError) {
+            setSaving(false);
 
-                console.error(
-                    "Failed to update services:",
-                    requestError
-                );
-
-                setError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to update your services."
-                );
-
-            } finally {
-
-                setSaving(false);
-
-            }
-        };
+        }
+    };
 
 
     if (loading) {
@@ -209,18 +174,19 @@ const ProviderServices = () => {
 
                 <div className="provider-services-state">
 
-                    <RefreshCw
-                        size={26}
-                        className="provider-services-spin"
-                    />
+                    <div className="provider-services-loading-icon">
+                        <RefreshCw
+                            size={24}
+                        />
+                    </div>
 
                     <h2>
                         Loading services
                     </h2>
 
                     <p>
-                        We're retrieving your
-                        service offerings.
+                        We're retrieving your service
+                        offerings.
                     </p>
 
                 </div>
@@ -234,50 +200,66 @@ const ProviderServices = () => {
 
         <div className="provider-services-page">
 
-            <div className="provider-services-header">
+            {/* HEADER */}
 
-                <div className="provider-services-title">
+            <header className="provider-services-header">
 
-                    <div className="provider-services-title-icon">
+                <div>
 
-                        <Wrench
-                            size={23}
-                        />
+                    <span className="provider-services-eyebrow">
+                        Provider Workspace
+                    </span>
 
-                    </div>
+                    <h1>
+                        Services
+                    </h1>
 
-                    <div>
-
-                        <h1>
-                            Services
-                        </h1>
-
-                        <p>
-                            Manage the services you
-                            provide to customers.
-                        </p>
-
-                    </div>
+                    <p>
+                        Choose the services customers
+                        can request from your business.
+                    </p>
 
                 </div>
 
-            </div>
+                <div className="provider-services-summary">
 
+                    <span className="provider-services-summary-number">
+                        {services.length}
+                    </span>
+
+                    <span>
+                        {services.length === 1
+                            ? "service active"
+                            : "services active"}
+                    </span>
+
+                </div>
+
+            </header>
+
+
+            {/* ERROR */}
 
             {error && (
 
-                <div className="provider-services-message provider-services-error">
-
+                <div
+                    className="provider-services-message provider-services-error"
+                    role="alert"
+                >
                     {error}
-
                 </div>
 
             )}
 
 
+            {/* SUCCESS */}
+
             {success && (
 
-                <div className="provider-services-message provider-services-success">
+                <div
+                    className="provider-services-message provider-services-success"
+                    role="status"
+                >
 
                     <Check size={17} />
 
@@ -288,26 +270,36 @@ const ProviderServices = () => {
             )}
 
 
+            {/* MAIN CARD */}
+
             <section className="provider-services-card">
 
-                <div className="provider-services-card-heading">
+                <div className="provider-services-card-header">
 
                     <div>
 
                         <h2>
-                            Services you offer
+                            Service offerings
                         </h2>
 
                         <p>
-                            Select the services that
-                            customers can request from
-                            your business.
+                            Select all services your business
+                            is currently equipped to provide.
                         </p>
 
                     </div>
 
+                    <span className="provider-services-selection-count">
+
+                        {services.length} /{" "}
+                        {SERVICE_OPTIONS.length}
+
+                    </span>
+
                 </div>
 
+
+                {/* SERVICES */}
 
                 <div className="provider-services-list">
 
@@ -319,6 +311,9 @@ const ProviderServices = () => {
                                     service.value
                                 );
 
+                            const Icon =
+                                service.icon;
+
                             return (
 
                                 <button
@@ -326,10 +321,14 @@ const ProviderServices = () => {
                                         service.value
                                     }
                                     type="button"
-                                    className={`provider-service-option ${selected
+                                    aria-pressed={
+                                        selected
+                                    }
+                                    className={`provider-service-option ${
+                                        selected
                                             ? "provider-service-option-selected"
                                             : ""
-                                        }`}
+                                    }`}
                                     onClick={() =>
                                         toggleService(
                                             service.value
@@ -338,10 +337,61 @@ const ProviderServices = () => {
                                 >
 
                                     <div
-                                        className={`provider-service-checkbox ${selected
+                                        className={`provider-service-icon ${
+                                            selected
+                                                ? "provider-service-icon-selected"
+                                                : ""
+                                        }`}
+                                    >
+
+                                        <Icon
+                                            size={20}
+                                        />
+
+                                    </div>
+
+
+                                    <div className="provider-service-option-content">
+
+                                        <div className="provider-service-option-title">
+
+                                            <strong>
+                                                {
+                                                    service.label
+                                                }
+                                            </strong>
+
+                                            {selected && (
+
+                                                <span className="provider-service-active">
+
+                                                    <Check
+                                                        size={12}
+                                                    />
+
+                                                    Active
+
+                                                </span>
+
+                                            )}
+
+                                        </div>
+
+                                        <span>
+                                            {
+                                                service.description
+                                            }
+                                        </span>
+
+                                    </div>
+
+
+                                    <div
+                                        className={`provider-service-checkbox ${
+                                            selected
                                                 ? "provider-service-checkbox-selected"
                                                 : ""
-                                            }`}
+                                        }`}
                                     >
 
                                         {selected && (
@@ -349,23 +399,6 @@ const ProviderServices = () => {
                                                 size={15}
                                             />
                                         )}
-
-                                    </div>
-
-
-                                    <div className="provider-service-option-content">
-
-                                        <strong>
-                                            {
-                                                service.label
-                                            }
-                                        </strong>
-
-                                        <span>
-                                            {
-                                                service.description
-                                            }
-                                        </span>
 
                                     </div>
 
@@ -377,27 +410,32 @@ const ProviderServices = () => {
                 </div>
 
 
+                {/* FOOTER */}
+
                 <div className="provider-services-footer">
 
-                    <span>
+                    <div className="provider-services-footer-info">
 
-                        {services.length}{" "}
+                        <span className="provider-services-footer-title">
+                            Service availability
+                        </span>
 
-                        {services.length === 1
-                            ? "service"
-                            : "services"}{" "}
-                        selected
+                        <span className="provider-services-footer-description">
+                            Customers can only request
+                            services you have enabled.
+                        </span>
 
-                    </span>
+                    </div>
 
 
                     <button
                         type="button"
                         className="provider-services-save-button"
-                        disabled={saving}
-                        onClick={
-                            handleSave
+                        disabled={
+                            saving ||
+                            services.length === 0
                         }
+                        onClick={handleSave}
                     >
 
                         {saving ? (
@@ -419,7 +457,7 @@ const ProviderServices = () => {
                                     size={16}
                                 />
 
-                                Save Services
+                                Save changes
                             </>
 
                         )}

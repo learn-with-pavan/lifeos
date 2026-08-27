@@ -504,7 +504,7 @@ const ProviderRequests = () => {
                                                     <strong>
                                                         {
                                                             formatDate(
-                                                                request.createdAt
+                                                                request.preferredDate
                                                             )
                                                         }
                                                     </strong>

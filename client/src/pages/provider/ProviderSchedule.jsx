@@ -1,4 +1,5 @@
 import {
+    ArrowRight,
     CalendarDays,
     Clock,
     RefreshCw,
@@ -12,9 +13,7 @@ import {
     useState,
 } from "react";
 
-import {
-    useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
     getProviderSchedule,
@@ -23,20 +22,18 @@ import {
 import "../../styles/provider/providerSchedule.css";
 
 
-const getStatusLabel = (status) => {
-
-    const labels = {
-        SCHEDULED: "Scheduled",
-        IN_PROGRESS: "In Progress",
-        COMPLETED: "Completed",
-    };
-
-    return labels[status] || status;
+const STATUS_LABELS = {
+    SCHEDULED: "Scheduled",
+    IN_PROGRESS: "In Progress",
+    COMPLETED: "Completed",
 };
 
 
-const formatDate = (value) => {
+const getStatusLabel = (status) =>
+    STATUS_LABELS[status] || status;
 
+
+const formatDate = (value) => {
     if (!value) {
         return "Date not specified";
     }
@@ -59,98 +56,63 @@ const formatDate = (value) => {
 };
 
 
-const formatTime = (value) => {
-
-    if (!value) {
-        return "Time not specified";
-    }
-
-    return value;
-};
+const formatTime = (value) =>
+    value || "Time not specified";
 
 
 const ProviderSchedule = () => {
-
     const navigate = useNavigate();
 
-
-    const [
-        schedule,
-        setSchedule,
-    ] = useState([]);
-
-
-    const [
-        loading,
-        setLoading,
-    ] = useState(true);
+    const [schedule, setSchedule] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [refreshing, setRefreshing] = useState(false);
 
 
-    const [
-        error,
-        setError,
-    ] = useState("");
+    const loadSchedule = useCallback(
+        async (isRefresh = false) => {
+            try {
+                isRefresh
+                    ? setRefreshing(true)
+                    : setLoading(true);
 
+                setError("");
 
-    const loadSchedule =
-        useCallback(
-            async () => {
+                const response =
+                    await getProviderSchedule();
 
-                try {
+                setSchedule(
+                    response?.data?.schedule || []
+                );
+            } catch (requestError) {
+                console.error(
+                    "Failed to load provider schedule:",
+                    requestError
+                );
 
-                    setLoading(true);
-                    setError("");
-
-
-                    const response =
-                        await getProviderSchedule();
-
-
-                    setSchedule(
-                        response?.data?.schedule || []
-                    );
-
-                } catch (requestError) {
-
-                    console.error(
-                        "Failed to load provider schedule:",
-                        requestError
-                    );
-
-
-                    setError(
-                        requestError
-                            ?.response
-                            ?.data
-                            ?.message ||
-                        "Unable to load your schedule."
-                    );
-
-                } finally {
-
-                    setLoading(false);
-
-                }
-
-            },
-            []
-        );
+                setError(
+                    requestError?.response?.data?.message ||
+                    "Unable to load your schedule."
+                );
+            } finally {
+                setLoading(false);
+                setRefreshing(false);
+            }
+        },
+        []
+    );
 
 
     useEffect(() => {
-
         loadSchedule();
-
     }, [loadSchedule]);
 
 
     if (loading) {
-
         return (
             <div className="provider-schedule-page">
 
                 <div className="provider-schedule-state">
-
                     <RefreshCw
                         size={28}
                         className="provider-schedule-spin"
@@ -163,7 +125,6 @@ const ProviderSchedule = () => {
                     <p>
                         We're retrieving your appointments.
                     </p>
-
                 </div>
 
             </div>
@@ -172,11 +133,14 @@ const ProviderSchedule = () => {
 
 
     if (error) {
-
         return (
             <div className="provider-schedule-page">
 
                 <div className="provider-schedule-state">
+
+                    <div className="provider-schedule-state-icon">
+                        <CalendarDays size={26} />
+                    </div>
 
                     <h2>
                         Unable to load schedule
@@ -188,9 +152,10 @@ const ProviderSchedule = () => {
 
                     <button
                         type="button"
-                        onClick={loadSchedule}
+                        className="provider-schedule-retry"
+                        onClick={() => loadSchedule()}
                     >
-                        Try Again
+                        Try again
                     </button>
 
                 </div>
@@ -205,10 +170,9 @@ const ProviderSchedule = () => {
 
             {/* HEADER */}
 
-            <div className="provider-schedule-header">
+            <header className="provider-schedule-header">
 
                 <div>
-
                     <span className="provider-schedule-eyebrow">
                         Provider Workspace
                     </span>
@@ -221,21 +185,30 @@ const ProviderSchedule = () => {
                         Manage your upcoming service
                         appointments.
                     </p>
-
                 </div>
 
 
                 <button
                     type="button"
                     className="provider-schedule-refresh"
-                    onClick={loadSchedule}
+                    onClick={() => loadSchedule(true)}
+                    disabled={refreshing}
                 >
-                    <RefreshCw size={16} />
+                    <RefreshCw
+                        size={16}
+                        className={
+                            refreshing
+                                ? "provider-schedule-refresh-spin"
+                                : ""
+                        }
+                    />
 
-                    Refresh
+                    {refreshing
+                        ? "Refreshing..."
+                        : "Refresh"}
                 </button>
 
-            </div>
+            </header>
 
 
             {/* EMPTY */}
@@ -244,7 +217,9 @@ const ProviderSchedule = () => {
 
                 <section className="provider-schedule-empty">
 
-                    <CalendarDays size={42} />
+                    <div className="provider-schedule-empty-icon">
+                        <CalendarDays size={30} />
+                    </div>
 
                     <h2>
                         No scheduled services
@@ -252,7 +227,8 @@ const ProviderSchedule = () => {
 
                     <p>
                         Your upcoming appointments
-                        will appear here.
+                        will appear here once a service
+                        is scheduled.
                     </p>
 
                 </section>
@@ -261,138 +237,159 @@ const ProviderSchedule = () => {
 
                 <section className="provider-schedule-list">
 
-                    {schedule.map((request) => (
+                    {schedule.map((request) => {
 
-                        <button
-                            type="button"
-                            key={request._id}
-                            className="provider-schedule-item"
-                            onClick={() =>
-                                navigate(
-                                    `/provider/requests/${request._id}`
-                                )
-                            }
-                        >
+                        const status =
+                            request.status?.toLowerCase() ||
+                            "scheduled";
 
-                            {/* DATE */}
+                        const duration =
+                            request.scheduling
+                                ?.durationMinutes;
 
-                            <div className="provider-schedule-date">
+                        return (
+                            <button
+                                type="button"
+                                key={request._id}
+                                className="provider-schedule-item"
+                                onClick={() =>
+                                    navigate(
+                                        `/provider/requests/${request._id}`
+                                    )
+                                }
+                            >
 
-                                <CalendarDays size={19} />
+                                {/* DATE */}
 
-                                <strong>
-                                    {formatDate(
-                                        request
-                                            .scheduling
-                                            ?.scheduledDate
-                                    )}
-                                </strong>
+                                <div className="provider-schedule-date">
 
-                            </div>
+                                    <div className="provider-schedule-date-icon">
+                                        <CalendarDays size={18} />
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Appointment
+                                        </span>
+
+                                        <strong>
+                                            {formatDate(
+                                                request
+                                                    .scheduling
+                                                    ?.scheduledDate
+                                            )}
+                                        </strong>
+                                    </div>
+
+                                </div>
 
 
-                            {/* SERVICE */}
+                                {/* SERVICE */}
 
-                            <div className="provider-schedule-service">
+                                <div className="provider-schedule-service">
 
-                                <div className="provider-schedule-service-icon">
+                                    <div className="provider-schedule-service-icon">
+                                        <Wrench size={19} />
+                                    </div>
 
-                                    <Wrench size={19} />
+                                    <div className="provider-schedule-service-info">
+
+                                        <strong>
+                                            {
+                                                request.asset?.name ||
+                                                "Service"
+                                            }
+                                        </strong>
+
+                                        <span>
+                                            {
+                                                request.serviceType ||
+                                                "Service request"
+                                            }
+
+                                            {request.asset?.category && (
+                                                <>
+                                                    {" · "}
+                                                    {
+                                                        request.asset.category
+                                                    }
+                                                </>
+                                            )}
+                                        </span>
+
+                                    </div>
 
                                 </div>
 
 
-                                <div>
+                                {/* CUSTOMER */}
 
-                                    <strong>
-                                        {
-                                            request.asset?.name ||
-                                            "Service"
-                                        }
-                                    </strong>
+                                <div className="provider-schedule-customer">
 
-                                    <span>
-                                        {
-                                            request.serviceType
-                                        }
+                                    <UserRound size={16} />
 
-                                        {" · "}
+                                    <div>
+                                        <span>
+                                            Customer
+                                        </span>
 
-                                        {
-                                            request.asset?.category ||
-                                            "Asset"
-                                        }
-                                    </span>
+                                        <strong>
+                                            {
+                                                request.user?.name ||
+                                                "Customer"
+                                            }
+                                        </strong>
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                {/* TIME */}
 
-                            {/* CUSTOMER */}
+                                <div className="provider-schedule-time">
 
-                            <div className="provider-schedule-customer">
+                                    <Clock size={17} />
 
-                                <UserRound size={17} />
-
-                                <span>
-                                    {
-                                        request.user?.name ||
-                                        "Customer"
-                                    }
-                                </span>
-
-                            </div>
-
-
-                            {/* TIME */}
-
-                            <div className="provider-schedule-time">
-
-                                <Clock size={17} />
-
-                                <div>
-
-                                    <strong>
-                                        {
-                                            formatTime(
+                                    <div>
+                                        <strong>
+                                            {formatTime(
                                                 request
                                                     .scheduling
                                                     ?.scheduledTime
-                                            )
-                                        }
-                                    </strong>
+                                            )}
+                                        </strong>
 
-                                    <span>
-                                        {
-                                            request
-                                                .scheduling
-                                                ?.durationMinutes ||
-                                            0
-                                        }{" "}
-                                        minutes
-                                    </span>
+                                        <span>
+                                            {duration || 0}
+                                            {" "}
+                                            min
+                                        </span>
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                                {/* STATUS */}
 
-                            {/* STATUS */}
-
-                            <span
-                                className={`provider-schedule-status provider-schedule-status-${request.status.toLowerCase()}`}
-                            >
-                                {
-                                    getStatusLabel(
+                                <span
+                                    className={`provider-schedule-status provider-schedule-status-${status}`}
+                                >
+                                    {getStatusLabel(
                                         request.status
-                                    )
-                                }
-                            </span>
+                                    )}
+                                </span>
 
-                        </button>
 
-                    ))}
+                                {/* ARROW */}
+
+                                <ArrowRight
+                                    size={18}
+                                    className="provider-schedule-arrow"
+                                />
+
+                            </button>
+                        );
+                    })}
 
                 </section>
 

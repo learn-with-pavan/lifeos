@@ -9,8 +9,8 @@ import {
     FileText,
     Bell,
     History,
-    MapPin,
     X,
+    MapPin,
 } from "lucide-react";
 
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,10 +20,27 @@ import {
     updateHome,
     deleteHome,
 } from "../services/homeService";
+
 import { useToast } from "../context/ToastContext";
 import LoadingState from "../components/LoadingState";
 
 import "../styles/homeDetails.css";
+
+const EMPTY_ADDRESS = {
+    line1: "",
+    line2: "",
+    city: "",
+    state: "",
+    pincode: "",
+};
+
+const EMPTY_FORM = {
+    name: "",
+    type: "HOUSE",
+    address: EMPTY_ADDRESS,
+    description: "",
+    purchaseDate: "",
+};
 
 const HomeDetails = () => {
     const navigate = useNavigate();
@@ -48,33 +65,13 @@ const HomeDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    /* ---------------------------------
-       EDIT HOME STATE
-    --------------------------------- */
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-    const [showEditForm, setShowEditForm] =
-        useState(false);
+    const [formData, setFormData] = useState(EMPTY_FORM);
 
-    const [saving, setSaving] =
-        useState(false);
-
-    const [formData, setFormData] = useState({
-        name: "",
-        type: "HOUSE",
-        address: "",
-        description: "",
-        purchaseDate: "",
-    });
-
-    /* ---------------------------------
-       DELETE HOME STATE
-    --------------------------------- */
-
-    const [showDeleteConfirm, setShowDeleteConfirm] =
-        useState(false);
-
-    const [deleting, setDeleting] =
-        useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     /* ---------------------------------
        FETCH HOME DETAILS
@@ -108,10 +105,7 @@ const HomeDetails = () => {
                 }
             );
         } catch (err) {
-            console.error(
-                "Failed to load home details:",
-                err
-            );
+            console.error("Failed to load home details:", err);
 
             setError(
                 err.response?.data?.message ||
@@ -120,6 +114,59 @@ const HomeDetails = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    /* ---------------------------------
+       HELPERS
+    --------------------------------- */
+
+    const formatType = (type) => {
+        const types = {
+            HOUSE: "House",
+            APARTMENT: "Apartment",
+            VILLA: "Villa",
+            OTHER: "Other",
+        };
+
+        return types[type] || type || "Not provided";
+    };
+
+    const formatDate = (date) => {
+        if (!date) return "Not provided";
+
+        return new Date(date).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    };
+
+    const formatAddress = (address) => {
+        if (!address) return "Not provided";
+
+        if (typeof address === "string") {
+            return address;
+        }
+
+        return [
+            address.line1,
+            address.line2,
+            address.city,
+            address.state,
+            address.pincode,
+        ]
+            .filter(Boolean)
+            .join(", ") || "Not provided";
+    };
+
+    const updateAddress = (field, value) => {
+        setFormData((prev) => ({
+            ...prev,
+            address: {
+                ...prev.address,
+                [field]: value,
+            },
+        }));
     };
 
     /* ---------------------------------
@@ -132,7 +179,21 @@ const HomeDetails = () => {
         setFormData({
             name: home.name || "",
             type: home.type || "HOUSE",
-            address: home.address || "",
+
+            address:
+                typeof home.address === "object" && home.address
+                    ? {
+                        line1: home.address.line1 || "",
+                        line2: home.address.line2 || "",
+                        city: home.address.city || "",
+                        state: home.address.state || "",
+                        pincode: home.address.pincode || "",
+                    }
+                    : {
+                        ...EMPTY_ADDRESS,
+                        line1: home.address || "",
+                    },
+
             description: home.description || "",
             purchaseDate: home.purchaseDate
                 ? home.purchaseDate.split("T")[0]
@@ -144,14 +205,7 @@ const HomeDetails = () => {
 
     const closeEditForm = () => {
         setShowEditForm(false);
-
-        setFormData({
-            name: "",
-            type: "HOUSE",
-            address: "",
-            description: "",
-            purchaseDate: "",
-        });
+        setFormData(EMPTY_FORM);
     };
 
     const handleUpdate = async (event) => {
@@ -161,34 +215,24 @@ const HomeDetails = () => {
             setSaving(true);
             setError("");
 
-            const response = await updateHome(
-                home._id,
-                {
-                    ...formData,
-                    purchaseDate:
-                        formData.purchaseDate || null,
-                }
-            );
+            const response = await updateHome(home._id, {
+                ...formData,
+                purchaseDate: formData.purchaseDate || null,
+            });
 
-            /*
-             * Update the home displayed on this page
-             * without navigating anywhere.
-             */
             setHome(response.home);
 
             toast.success("Home updated successfully");
             closeEditForm();
         } catch (err) {
-            console.error(
-                "Failed to update home:",
-                err
-            );
+            console.error("Failed to update home:", err);
 
-            setError(
+            const message =
                 err.response?.data?.message ||
-                "Unable to update home."
-            );
-            toast.error(err.response?.data?.message || "Unable to update home.");
+                "Unable to update home.";
+
+            setError(message);
+            toast.error(message);
         } finally {
             setSaving(false);
         }
@@ -206,59 +250,24 @@ const HomeDetails = () => {
             setError("");
 
             await deleteHome(home._id);
+
             toast.success("Home deleted successfully");
 
-            /*
-             * After deleting the home,
-             * return to Home Management.
-             */
             navigate("/homes");
         } catch (err) {
-            console.error(
-                "Failed to delete home:",
-                err
-            );
+            console.error("Failed to delete home:", err);
 
-            setError(
+            const message =
                 err.response?.data?.message ||
-                "Unable to delete home."
-            );
-            toast.error(err.response?.data?.message || "Unable to delete home.");
+                "Unable to delete home.";
+
+            setError(message);
+            toast.error(message);
 
             setShowDeleteConfirm(false);
         } finally {
             setDeleting(false);
         }
-    };
-
-    /* ---------------------------------
-       FORMATTERS
-    --------------------------------- */
-
-    const formatType = (type) => {
-        const types = {
-            HOUSE: "House",
-            APARTMENT: "Apartment",
-            VILLA: "Villa",
-            OTHER: "Other",
-        };
-
-        return types[type] || type || "Not provided";
-    };
-
-    const formatDate = (date) => {
-        if (!date) {
-            return "Not provided";
-        }
-
-        return new Date(date).toLocaleDateString(
-            "en-IN",
-            {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-            }
-        );
     };
 
     /* ---------------------------------
@@ -272,7 +281,6 @@ const HomeDetails = () => {
                     title="Loading home"
                     message="Getting your home information and related assets."
                 />
-
             </div>
         );
     }
@@ -284,55 +292,38 @@ const HomeDetails = () => {
     if (error || !home) {
         return (
             <div className="home-details-page">
-
                 <button
                     className="back-button"
-                    onClick={() =>
-                        navigate("/homes")
-                    }
+                    onClick={() => navigate("/homes")}
                 >
                     <ArrowLeft size={18} />
                     Back to homes
                 </button>
 
                 <div className="home-details-error">
-
                     <div className="home-error-icon">
                         <HomeIcon size={26} />
                     </div>
 
-                    <h2>
-                        Home not found
-                    </h2>
+                    <h2>Home not found</h2>
 
                     <p>
-                        {error ||
-                            "We couldn't find this home."}
+                        {error || "We couldn't find this home."}
                     </p>
 
                     <button
                         className="primary-button"
-                        onClick={() =>
-                            navigate("/homes")
-                        }
+                        onClick={() => navigate("/homes")}
                     >
                         Back to homes
                     </button>
-
                 </div>
-
             </div>
         );
     }
 
-    /* ---------------------------------
-       PAGE
-    --------------------------------- */
-
     return (
         <div className="home-details-page">
-
-            {/* ERROR MESSAGE */}
 
             {error && (
                 <div className="home-details-error-message">
@@ -344,9 +335,7 @@ const HomeDetails = () => {
 
             <button
                 className="back-button"
-                onClick={() =>
-                    navigate("/homes")
-                }
+                onClick={() => navigate("/homes")}
             >
                 <ArrowLeft size={18} />
                 Back to homes
@@ -355,35 +344,25 @@ const HomeDetails = () => {
             {/* HEADER */}
 
             <div className="home-details-header">
-
                 <div className="home-details-title">
-
                     <div className="home-details-icon">
                         <HomeIcon size={28} />
                     </div>
 
                     <div>
-
                         <span className="home-details-label">
                             HOME
                         </span>
 
-                        <h1>
-                            {home.name}
-                        </h1>
+                        <h1>{home.name}</h1>
 
                         {home.description && (
-                            <p>
-                                {home.description}
-                            </p>
+                            <p>{home.description}</p>
                         )}
-
                     </div>
-
                 </div>
 
                 <div className="home-header-actions">
-
                     <button
                         className="icon-button secondary-icon-button"
                         onClick={handleEdit}
@@ -395,112 +374,48 @@ const HomeDetails = () => {
 
                     <button
                         className="icon-button danger-icon-button"
-                        onClick={() =>
-                            setShowDeleteConfirm(true)
-                        }
+                        onClick={() => setShowDeleteConfirm(true)}
                         title="Delete home"
                         aria-label="Delete home"
                     >
                         <Trash2 size={18} />
                     </button>
-
                 </div>
-
             </div>
 
             {/* SUMMARY */}
 
             <div className="home-summary-grid">
 
-                <div className="home-summary-card">
+                <SummaryCard
+                    icon={<Package size={20} />}
+                    value={summary.assets}
+                    label="Assets"
+                />
 
-                    <div className="home-summary-icon">
-                        <Package size={20} />
-                    </div>
+                <SummaryCard
+                    icon={<Wrench size={20} />}
+                    value={summary.maintenance}
+                    label="Maintenance"
+                />
 
-                    <div>
-                        <strong>
-                            {summary.assets}
-                        </strong>
+                <SummaryCard
+                    icon={<FileText size={20} />}
+                    value={summary.documents}
+                    label="Documents"
+                />
 
-                        <span>
-                            Assets
-                        </span>
-                    </div>
+                <SummaryCard
+                    icon={<History size={20} />}
+                    value={summary.serviceHistory}
+                    label="Service history"
+                />
 
-                </div>
-
-                <div className="home-summary-card">
-
-                    <div className="home-summary-icon">
-                        <Wrench size={20} />
-                    </div>
-
-                    <div>
-                        <strong>
-                            {summary.maintenance}
-                        </strong>
-
-                        <span>
-                            Maintenance
-                        </span>
-                    </div>
-
-                </div>
-
-                <div className="home-summary-card">
-
-                    <div className="home-summary-icon">
-                        <FileText size={20} />
-                    </div>
-
-                    <div>
-                        <strong>
-                            {summary.documents}
-                        </strong>
-
-                        <span>
-                            Documents
-                        </span>
-                    </div>
-
-                </div>
-
-                <div className="home-summary-card">
-
-                    <div className="home-summary-icon">
-                        <History size={20} />
-                    </div>
-
-                    <div>
-                        <strong>
-                            {summary.serviceHistory}
-                        </strong>
-
-                        <span>
-                            Service history
-                        </span>
-                    </div>
-
-                </div>
-
-                <div className="home-summary-card">
-
-                    <div className="home-summary-icon">
-                        <Bell size={20} />
-                    </div>
-
-                    <div>
-                        <strong>
-                            {summary.reminders}
-                        </strong>
-
-                        <span>
-                            Reminders
-                        </span>
-                    </div>
-
-                </div>
+                <SummaryCard
+                    icon={<Bell size={20} />}
+                    value={summary.reminders}
+                    label="Reminders"
+                />
 
             </div>
 
@@ -509,78 +424,51 @@ const HomeDetails = () => {
             <div className="home-info-card">
 
                 <div className="home-section-header">
-
                     <div>
-                        <h2>
-                            Home information
-                        </h2>
-
-                        <p>
-                            Details about this home.
-                        </p>
+                        <h2>Home information</h2>
+                        <p>Details about this home.</p>
                     </div>
 
+                    <button
+                        className="section-edit-button"
+                        onClick={handleEdit}
+                        type="button"
+                    >
+                        <Pencil size={15} />
+                        Edit
+                    </button>
                 </div>
 
                 <div className="home-info-grid">
 
-                    <div>
-                        <span>
-                            Home name
-                        </span>
+                    <InfoItem
+                        label="Home name"
+                        value={home.name}
+                    />
 
-                        <strong>
-                            {home.name ||
-                                "Not provided"}
-                        </strong>
-                    </div>
+                    <InfoItem
+                        label="Type"
+                        value={formatType(home.type)}
+                    />
 
-                    <div>
-                        <span>
-                            Type
-                        </span>
+                    <InfoItem
+                        label="Address"
+                        value={formatAddress(home.address)}
+                        icon={<MapPin size={15} />}
+                        className="home-info-address"
+                    />
 
-                        <strong>
-                            {formatType(home.type)}
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>
-                            Address
-                        </span>
-
-                        <strong>
-                            {home.address ||
-                                "Not provided"}
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>
-                            Purchase date
-                        </span>
-
-                        <strong>
-                            {formatDate(
-                                home.purchaseDate
-                            )}
-                        </strong>
-                    </div>
+                    <InfoItem
+                        label="Purchase date"
+                        value={formatDate(home.purchaseDate)}
+                    />
 
                 </div>
 
                 {home.notes && (
                     <div className="home-notes">
-
-                        <span>
-                            Notes
-                        </span>
-
-                        <p>
-                            {home.notes}
-                        </p>
-
+                        <span>Notes</span>
+                        <p>{home.notes}</p>
                     </div>
                 )}
 
@@ -591,61 +479,37 @@ const HomeDetails = () => {
             <div className="home-section-card">
 
                 <div className="home-section-header">
-
                     <div>
-                        <h2>
-                            Assets
-                        </h2>
-
-                        <p>
-                            Assets assigned to this home.
-                        </p>
+                        <h2>Assets</h2>
+                        <p>Assets assigned to this home.</p>
                     </div>
 
                     <span className="section-count">
                         {assets.length}
                     </span>
-
                 </div>
 
                 {assets.length === 0 ? (
-
-                    <div className="section-empty">
-
-                        <Package size={24} />
-
-                        <p>
-                            No assets are assigned
-                            to this home yet.
-                        </p>
-
-                    </div>
-
+                    <EmptySection
+                        icon={<Package size={24} />}
+                        text="No assets are assigned to this home yet."
+                    />
                 ) : (
-
                     <div className="home-assets-list">
-
                         {assets.map((asset) => (
-
                             <div
                                 className="home-asset-row"
                                 key={asset._id}
                                 onClick={() =>
-                                    navigate(
-                                        `/assets/${asset._id}`
-                                    )
+                                    navigate(`/assets/${asset._id}`)
                                 }
                             >
-
                                 <div className="home-asset-icon">
                                     <Package size={19} />
                                 </div>
 
                                 <div className="home-asset-info">
-
-                                    <strong>
-                                        {asset.name}
-                                    </strong>
+                                    <strong>{asset.name}</strong>
 
                                     <span>
                                         {asset.category}
@@ -658,513 +522,327 @@ const HomeDetails = () => {
                                             ? ` · ${asset.model}`
                                             : ""}
                                     </span>
-
                                 </div>
 
                                 <span className="home-asset-price">
-
                                     {asset.purchasePrice
                                         ? `₹${Number(
                                             asset.purchasePrice
-                                        ).toLocaleString()}`
+                                        ).toLocaleString("en-IN")}`
                                         : "—"}
-
                                 </span>
-
                             </div>
-
                         ))}
-
                     </div>
-
                 )}
 
             </div>
 
-            {/* ACTIVITY GRID */}
+            {/* ACTIVITY */}
 
             <div className="home-activity-grid">
 
-                {/* MAINTENANCE */}
+                <ActivitySection
+                    title="Maintenance"
+                    description="Upcoming maintenance."
+                    icon={<Wrench size={19} />}
+                    items={maintenance}
+                    emptyText="No maintenance records."
+                    renderTitle={(item) =>
+                        item.asset?.name || "Asset"
+                    }
+                    renderDescription={(item) =>
+                        item.title ||
+                        item.description ||
+                        "Maintenance"
+                    }
+                    renderDate={(item) => item.dueDate}
+                />
 
-                <div className="home-section-card">
-
-                    <div className="home-section-header">
-
-                        <div>
-                            <h2>
-                                Maintenance
-                            </h2>
-
-                            <p>
-                                Upcoming maintenance.
-                            </p>
-                        </div>
-
-                        <Wrench size={19} />
-
-                    </div>
-
-                    {maintenance.length === 0 ? (
-
-                        <div className="section-empty">
-
-                            <p>
-                                No maintenance records.
-                            </p>
-
-                        </div>
-
-                    ) : (
-
-                        <div className="activity-list">
-
-                            {maintenance.map((item) => (
-
-                                <div
-                                    className="activity-row"
-                                    key={item._id}
-                                >
-
-                                    <div>
-
-                                        <strong>
-                                            {item.asset?.name ||
-                                                "Asset"}
-                                        </strong>
-
-                                        <span>
-                                            {item.title ||
-                                                item.description ||
-                                                "Maintenance"}
-                                        </span>
-
-                                    </div>
-
-                                    {item.dueDate && (
-                                        <time>
-                                            {formatDate(
-                                                item.dueDate
-                                            )}
-                                        </time>
-                                    )}
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    )}
-
-                </div>
-
-                {/* REMINDERS */}
-
-                <div className="home-section-card">
-
-                    <div className="home-section-header">
-
-                        <div>
-                            <h2>
-                                Reminders
-                            </h2>
-
-                            <p>
-                                Pending reminders.
-                            </p>
-                        </div>
-
-                        <Bell size={19} />
-
-                    </div>
-
-                    {reminders.length === 0 ? (
-
-                        <div className="section-empty">
-
-                            <p>
-                                No pending reminders.
-                            </p>
-
-                        </div>
-
-                    ) : (
-
-                        <div className="activity-list">
-
-                            {reminders.map((item) => (
-
-                                <div
-                                    className="activity-row"
-                                    key={item._id}
-                                >
-
-                                    <div>
-
-                                        <strong>
-                                            {item.asset?.name ||
-                                                "Asset"}
-                                        </strong>
-
-                                        <span>
-                                            {item.title ||
-                                                "Reminder"}
-                                        </span>
-
-                                    </div>
-
-                                    {item.reminderDate && (
-                                        <time>
-                                            {formatDate(
-                                                item.reminderDate
-                                            )}
-                                        </time>
-                                    )}
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    )}
-
-                </div>
+                <ActivitySection
+                    title="Reminders"
+                    description="Pending reminders."
+                    icon={<Bell size={19} />}
+                    items={reminders}
+                    emptyText="No pending reminders."
+                    renderTitle={(item) =>
+                        item.asset?.name || "Asset"
+                    }
+                    renderDescription={(item) =>
+                        item.title || "Reminder"
+                    }
+                    renderDate={(item) => item.reminderDate}
+                />
 
             </div>
 
             {/* DOCUMENTS */}
 
-            <div className="home-section-card">
-
-                <div className="home-section-header">
-
-                    <div>
-                        <h2>
-                            Documents
-                        </h2>
-
-                        <p>
-                            Recent documents related
-                            to assets in this home.
-                        </p>
-                    </div>
-
-                    <FileText size={19} />
-
-                </div>
-
-                {documents.length === 0 ? (
-
-                    <div className="section-empty">
-
-                        <p>
-                            No documents available.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    <div className="activity-list">
-
-                        {documents.map((document) => (
-
-                            <div
-                                className="activity-row"
-                                key={document._id}
-                            >
-
-                                <div>
-
-                                    <strong>
-                                        {document.name ||
-                                            document.fileName ||
-                                            "Document"}
-                                    </strong>
-
-                                    <span>
-                                        {document.asset?.name ||
-                                            "Asset"}
-                                    </span>
-
-                                </div>
-
-                                {document.createdAt && (
-                                    <time>
-                                        {formatDate(
-                                            document.createdAt
-                                        )}
-                                    </time>
-                                )}
-
-                            </div>
-
-                        ))}
-
-                    </div>
-
-                )}
-
-            </div>
+            <ActivitySection
+                title="Documents"
+                description="Recent documents related to assets in this home."
+                icon={<FileText size={19} />}
+                items={documents}
+                emptyText="No documents available."
+                renderTitle={(item) =>
+                    item.name ||
+                    item.fileName ||
+                    "Document"
+                }
+                renderDescription={(item) =>
+                    item.asset?.name || "Asset"
+                }
+                renderDate={(item) => item.createdAt}
+            />
 
             {/* SERVICE HISTORY */}
 
-            <div className="home-section-card">
+            <ActivitySection
+                title="Service history"
+                description="Recent service activity."
+                icon={<History size={19} />}
+                items={serviceHistory}
+                emptyText="No service history available."
+                renderTitle={(item) =>
+                    item.asset?.name || "Asset"
+                }
+                renderDescription={(item) =>
+                    item.description ||
+                    item.serviceType ||
+                    "Service"
+                }
+                renderDate={(item) => item.serviceDate}
+            />
 
-                <div className="home-section-header">
-
-                    <div>
-                        <h2>
-                            Service history
-                        </h2>
-
-                        <p>
-                            Recent service activity.
-                        </p>
-                    </div>
-
-                    <History size={19} />
-
-                </div>
-
-                {serviceHistory.length === 0 ? (
-
-                    <div className="section-empty">
-
-                        <p>
-                            No service history available.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    <div className="activity-list">
-
-                        {serviceHistory.map((service) => (
-
-                            <div
-                                className="activity-row"
-                                key={service._id}
-                            >
-
-                                <div>
-
-                                    <strong>
-                                        {service.asset?.name ||
-                                            "Asset"}
-                                    </strong>
-
-                                    <span>
-                                        {service.description ||
-                                            service.serviceType ||
-                                            "Service"}
-                                    </span>
-
-                                </div>
-
-                                {service.serviceDate && (
-                                    <time>
-                                        {formatDate(
-                                            service.serviceDate
-                                        )}
-                                    </time>
-                                )}
-
-                            </div>
-
-                        ))}
-
-                    </div>
-
-                )}
-
-            </div>
-
-            {/* ==========================================
-                EDIT HOME MODAL
-            ========================================== */}
+            {/* EDIT MODAL */}
 
             {showEditForm && (
-
-                <div className="home-modal-overlay">
-
-                    <div className="home-modal">
-
+                <div
+                    className="home-modal-overlay"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) {
+                            closeEditForm();
+                        }
+                    }}
+                >
+                    <div
+                        className="home-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="edit-home-title"
+                    >
                         <div className="home-modal-header">
-
                             <div>
+                                <span className="modal-eyebrow">
+                                    HOME SETTINGS
+                                </span>
 
-                                <h2>
+                                <h2 id="edit-home-title">
                                     Edit home
                                 </h2>
 
                                 <p>
                                     Update your home information.
                                 </p>
-
                             </div>
 
                             <button
                                 className="home-modal-close"
                                 onClick={closeEditForm}
                                 type="button"
+                                aria-label="Close"
                             >
-                                <X size={20} />
+                                <X size={19} />
                             </button>
-
                         </div>
 
                         <form
                             className="home-form"
                             onSubmit={handleUpdate}
                         >
-
                             <div className="home-form-body">
 
-                                {/* HOME NAME */}
+                                <div className="home-form-section">
+                                    <div className="home-form-section-title">
+                                        Basic information
+                                    </div>
 
-                                <div className="home-form-group">
+                                    <div className="home-form-row">
+                                        <FormField
+                                            label="Home name"
+                                            required
+                                        >
+                                            <input
+                                                type="text"
+                                                required
+                                                maxLength={100}
+                                                placeholder="e.g. My Home"
+                                                value={formData.name}
+                                                onChange={(event) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        name: event.target.value,
+                                                    }))
+                                                }
+                                            />
+                                        </FormField>
 
-                                    <label>
-                                        Home name
-                                    </label>
+                                        <FormField label="Home type">
+                                            <select
+                                                value={formData.type}
+                                                onChange={(event) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        type: event.target.value,
+                                                    }))
+                                                }
+                                            >
+                                                <option value="HOUSE">
+                                                    House
+                                                </option>
 
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="e.g. My Home"
-                                        value={formData.name}
-                                        onChange={(event) =>
-                                            setFormData({
-                                                ...formData,
-                                                name: event.target.value,
-                                            })
-                                        }
-                                    />
+                                                <option value="APARTMENT">
+                                                    Apartment
+                                                </option>
 
+                                                <option value="VILLA">
+                                                    Villa
+                                                </option>
+
+                                                <option value="OTHER">
+                                                    Other
+                                                </option>
+                                            </select>
+                                        </FormField>
+                                    </div>
+
+                                    <FormField label="Purchase date">
+                                        <input
+                                            type="date"
+                                            value={formData.purchaseDate}
+                                            onChange={(event) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    purchaseDate:
+                                                        event.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </FormField>
                                 </div>
 
-                                {/* HOME TYPE */}
-
-                                <div className="home-form-group">
-
-                                    <label>
-                                        Home type
-                                    </label>
-
-                                    <select
-                                        value={formData.type}
-                                        onChange={(event) =>
-                                            setFormData({
-                                                ...formData,
-                                                type: event.target.value,
-                                            })
-                                        }
-                                    >
-
-                                        <option value="HOUSE">
-                                            House
-                                        </option>
-
-                                        <option value="APARTMENT">
-                                            Apartment
-                                        </option>
-
-                                        <option value="VILLA">
-                                            Villa
-                                        </option>
-
-                                        <option value="OTHER">
-                                            Other
-                                        </option>
-
-                                    </select>
-
-                                </div>
-
-                                {/* ADDRESS */}
-
-                                <div className="home-form-group">
-
-                                    <label>
+                                <div className="home-form-section">
+                                    <div className="home-form-section-title">
                                         Address
-                                    </label>
+                                    </div>
 
-                                    <textarea
-                                        placeholder="Enter home address"
-                                        value={formData.address}
-                                        onChange={(event) =>
-                                            setFormData({
-                                                ...formData,
-                                                address:
-                                                    event.target.value,
-                                            })
-                                        }
-                                    />
+                                    <FormField label="Address line 1">
+                                        <input
+                                            type="text"
+                                            placeholder="House / flat / street"
+                                            value={formData.address.line1}
+                                            onChange={(event) =>
+                                                updateAddress(
+                                                    "line1",
+                                                    event.target.value
+                                                )
+                                            }
+                                        />
+                                    </FormField>
 
+                                    <FormField label="Address line 2">
+                                        <input
+                                            type="text"
+                                            placeholder="Area / landmark (optional)"
+                                            value={formData.address.line2}
+                                            onChange={(event) =>
+                                                updateAddress(
+                                                    "line2",
+                                                    event.target.value
+                                                )
+                                            }
+                                        />
+                                    </FormField>
+
+                                    <div className="home-form-row">
+                                        <FormField label="City">
+                                            <input
+                                                type="text"
+                                                placeholder="City"
+                                                value={formData.address.city}
+                                                onChange={(event) =>
+                                                    updateAddress(
+                                                        "city",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </FormField>
+
+                                        <FormField label="State">
+                                            <input
+                                                type="text"
+                                                placeholder="State"
+                                                value={formData.address.state}
+                                                onChange={(event) =>
+                                                    updateAddress(
+                                                        "state",
+                                                        event.target.value
+                                                    )
+                                                }
+                                            />
+                                        </FormField>
+                                    </div>
+
+                                    <FormField label="PIN code">
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            maxLength={6}
+                                            placeholder="e.g. 522001"
+                                            value={formData.address.pincode}
+                                            onChange={(event) =>
+                                                updateAddress(
+                                                    "pincode",
+                                                    event.target.value.replace(
+                                                        /\D/g,
+                                                        ""
+                                                    )
+                                                )
+                                            }
+                                        />
+                                    </FormField>
                                 </div>
 
-                                {/* PURCHASE DATE */}
+                                <div className="home-form-section">
+                                    <div className="home-form-section-title">
+                                        Additional information
+                                    </div>
 
-                                <div className="home-form-group">
-
-                                    <label>
-                                        Purchase date
-                                    </label>
-
-                                    <input
-                                        type="date"
-                                        value={
-                                            formData.purchaseDate
-                                        }
-                                        onChange={(event) =>
-                                            setFormData({
-                                                ...formData,
-                                                purchaseDate:
-                                                    event.target.value,
-                                            })
-                                        }
-                                    />
-
-                                </div>
-
-                                {/* DESCRIPTION */}
-
-                                <div className="home-form-group">
-
-                                    <label>
-                                        Description
-                                    </label>
-
-                                    <textarea
-                                        placeholder="Additional details about this home"
-                                        value={
-                                            formData.description
-                                        }
-                                        onChange={(event) =>
-                                            setFormData({
-                                                ...formData,
-                                                description:
-                                                    event.target.value,
-                                            })
-                                        }
-                                    />
-
+                                    <FormField label="Description">
+                                        <textarea
+                                            maxLength={500}
+                                            placeholder="Add a short description about this home"
+                                            value={formData.description}
+                                            onChange={(event) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    description:
+                                                        event.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </FormField>
                                 </div>
 
                             </div>
 
-                            {/* ACTIONS */}
-
                             <div className="home-modal-actions">
-
                                 <button
                                     type="button"
                                     className="secondary-button"
                                     onClick={closeEditForm}
+                                    disabled={saving}
                                 >
                                     Cancel
                                 </button>
@@ -1178,50 +856,49 @@ const HomeDetails = () => {
                                         ? "Saving..."
                                         : "Save changes"}
                                 </button>
-
                             </div>
-
                         </form>
-
                     </div>
-
                 </div>
-
             )}
 
-            {/* ==========================================
-                DELETE HOME MODAL
-            ========================================== */}
+            {/* DELETE MODAL */}
 
             {showDeleteConfirm && (
-
-                <div className="home-modal-overlay">
-
-                    <div className="delete-modal">
-
+                <div
+                    className="home-modal-overlay"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) {
+                            if (!deleting) {
+                                setShowDeleteConfirm(false);
+                            }
+                        }
+                    }}
+                >
+                    <div
+                        className="delete-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="delete-home-title"
+                    >
                         <div className="delete-icon">
-                            ⚠
+                            <Trash2 size={21} />
                         </div>
 
-                        <h2>
+                        <h2 id="delete-home-title">
                             Delete home?
                         </h2>
 
                         <p>
                             You're about to delete{" "}
-                            <strong>
-                                {home.name}
-                            </strong>
-                            .
+                            <strong>{home.name}</strong>.
                         </p>
 
                         <p className="delete-warning">
-                            This will remove the home from
-                            your home management.
+                            This action cannot be undone.
                         </p>
 
                         <div className="modal-actions">
-
                             <button
                                 type="button"
                                 className="secondary-button"
@@ -1243,17 +920,128 @@ const HomeDetails = () => {
                                     ? "Deleting..."
                                     : "Delete home"}
                             </button>
-
                         </div>
-
                     </div>
-
                 </div>
-
             )}
 
         </div>
     );
 };
+
+/* =========================================================
+   REUSABLE COMPONENTS
+========================================================= */
+
+const SummaryCard = ({ icon, value, label }) => (
+    <div className="home-summary-card">
+        <div className="home-summary-icon">
+            {icon}
+        </div>
+
+        <div>
+            <strong>{value}</strong>
+            <span>{label}</span>
+        </div>
+    </div>
+);
+
+const InfoItem = ({
+    label,
+    value,
+    icon,
+    className = "",
+}) => (
+    <div className={className}>
+        <span>{label}</span>
+
+        <strong className={icon ? "info-value-with-icon" : ""}>
+            {icon}
+            {value || "Not provided"}
+        </strong>
+    </div>
+);
+
+const FormField = ({
+    label,
+    required = false,
+    children,
+}) => (
+    <div className="home-form-group">
+        <label>
+            {label}
+
+            {required && (
+                <span className="required-mark">*</span>
+            )}
+        </label>
+
+        {children}
+    </div>
+);
+
+const EmptySection = ({ icon, text }) => (
+    <div className="section-empty">
+        {icon}
+        <p>{text}</p>
+    </div>
+);
+
+const ActivitySection = ({
+    title,
+    description,
+    icon,
+    items,
+    emptyText,
+    renderTitle,
+    renderDescription,
+    renderDate,
+}) => (
+    <div className="home-section-card">
+        <div className="home-section-header">
+            <div>
+                <h2>{title}</h2>
+                <p>{description}</p>
+            </div>
+
+            {icon}
+        </div>
+
+        {items.length === 0 ? (
+            <EmptySection text={emptyText} />
+        ) : (
+            <div className="activity-list">
+                {items.map((item) => (
+                    <div
+                        className="activity-row"
+                        key={item._id}
+                    >
+                        <div>
+                            <strong>
+                                {renderTitle(item)}
+                            </strong>
+
+                            <span>
+                                {renderDescription(item)}
+                            </span>
+                        </div>
+
+                        {renderDate(item) && (
+                            <time>
+                                {new Date(
+                                    renderDate(item)
+                                ).toLocaleDateString("en-IN", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                })}
+                            </time>
+                        )}
+                    </div>
+                ))}
+            </div>
+        )}
+    </div>
+);
 
 export default HomeDetails;

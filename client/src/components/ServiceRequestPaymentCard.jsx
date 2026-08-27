@@ -22,6 +22,9 @@ const ServiceRequestPaymentCard = ({
     const isFailed =
         payment.status === "FAILED";
 
+    const isProcessing =
+        payment.status === "PROCESSING";
+
     return (
         <section className="request-details-card request-payment-card">
 
@@ -98,6 +101,26 @@ const ServiceRequestPaymentCard = ({
                             <span>
                                 Please try again.
                             </span>
+                        </div>
+
+                    </div>
+
+                ) : isProcessing ? (
+
+                    <div className="request-payment-status request-payment-processing">
+
+                        <Clock size={18} />
+
+                        <div>
+
+                            <strong>
+                                Payment processing
+                            </strong>
+
+                            <span>
+                                Your payment is being processed.
+                            </span>
+
                         </div>
 
                     </div>

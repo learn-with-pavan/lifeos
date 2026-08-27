@@ -25,13 +25,27 @@ export const getPayments = async () => {
 
 export const getPaymentForServiceRequest = async (serviceRequestId) => {
 
-    const response =
-        await axios.get(
-            `${API_URL}/payments/service-request/${serviceRequestId}`,
-            {
-                headers: getAuthHeaders()
-            }
-        );
+    const response = await axios.get(
+        `${API_URL}/payments/service-request/${serviceRequestId}`,
+        {
+            headers: getAuthHeaders()
+        }
+    );
+
+    return response.data;
+};
+
+export const processPayment = async (
+    paymentId,
+    paymentData
+) => {
+    const response = await axios.post(
+        `${API_URL}/payments/${paymentId}/process`,
+        paymentData,
+        {
+            headers: getAuthHeaders()
+        }
+    );
 
     return response.data;
 };

@@ -63,6 +63,7 @@ const notificationSchema = new mongoose.Schema(
 
                 // Service Request
                 "SERVICE_REQUEST_CREATED",
+                "SERVICE_STARTED",
                 "SERVICE_REQUEST_ACCEPTED",
                 "SERVICE_REQUEST_REJECTED",
                 "SERVICE_REQUEST_SCHEDULED",
@@ -74,6 +75,7 @@ const notificationSchema = new mongoose.Schema(
                 // Payment
                 "PAYMENT_CREATED",
                 "PAYMENT_SUCCESS",
+                "PAYMENT_COMPLETED",
                 "PAYMENT_FAILED",
                 "PAYMENT_REFUNDED",
             ],

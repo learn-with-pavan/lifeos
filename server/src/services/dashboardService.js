@@ -3,6 +3,7 @@ const Asset = require("../models/Asset");
 const Document = require("../models/Document");
 const Maintenance = require("../models/Maintenance");
 const Reminder = require("../models/Reminder");
+const ServiceRequest = require("../models/ServiceRequest");
 
 const getDashboardData = async (userId) => {
   const now = new Date();
@@ -23,6 +24,7 @@ const getDashboardData = async (userId) => {
     upcomingMaintenance,
     upcomingReminders,
     homes,
+    serviceRequests
   ] = await Promise.all([
 
     // Homes
@@ -107,6 +109,15 @@ const getDashboardData = async (userId) => {
       .sort({
         createdAt: -1,
       }),
+    // Recent service requests
+    ServiceRequest.find({
+      user: userId,
+    })
+      .populate("asset", "name")
+      .sort({
+        createdAt: -1,
+      })
+      .limit(5),
   ]);
 
   /*
@@ -245,6 +256,28 @@ const getDashboardData = async (userId) => {
     )
     .slice(0, 5);
 
+  const serviceRequestItems =
+    serviceRequests.map((request) => ({
+      _id: request._id,
+
+      title:
+        request.title ||
+        request.serviceType ||
+        "Service request",
+
+      asset:
+        request.asset?.name ||
+        "Asset",
+
+      status:
+        request.status ||
+        "PENDING",
+
+      scheduledDate:
+        request.scheduledDate ||
+        request.serviceDate ||
+        null,
+    }));
   /*
    * Final dashboard response
    */
@@ -269,9 +302,8 @@ const getDashboardData = async (userId) => {
         attentionReminders,
     },
 
-    homes:
-      homeDashboard,
-
+    homes: homeDashboard,
+    serviceRequests: serviceRequestItems,
     upcoming,
   };
 };

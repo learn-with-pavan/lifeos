@@ -2,6 +2,7 @@ const express = require("express");
 const {
     getPayment,
     getPayments,
+    processPayment,
 } = require("../controllers/paymentController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -19,6 +20,11 @@ router.get(
 router.get(
     "/service-request/:serviceRequestId",
     getPayment
+);
+
+router.post(
+    "/:paymentId/process",
+    processPayment
 );
 
 module.exports = router;

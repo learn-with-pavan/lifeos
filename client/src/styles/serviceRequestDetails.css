@@ -464,6 +464,7 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+    gap: 10px !important;
 }
 
 .request-details-primary-button:hover {

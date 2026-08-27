@@ -26,10 +26,42 @@ const homeSchema = new mongoose.Schema(
             default: "HOUSE",
         },
 
-        address: {
+        ownership: {
             type: String,
-            trim: true,
-            default: "",
+            enum: [
+                "OWNED",
+                "RENTED",
+                "LEASED",
+                "OTHER",
+            ],
+            default: "OWNED",
+        },
+
+        address: {
+            line1: {
+                type: String,
+                trim: true,
+            },
+
+            line2: {
+                type: String,
+                trim: true,
+            },
+
+            city: {
+                type: String,
+                trim: true,
+            },
+
+            state: {
+                type: String,
+                trim: true,
+            },
+
+            pincode: {
+                type: String,
+                trim: true,
+            },
         },
 
         description: {

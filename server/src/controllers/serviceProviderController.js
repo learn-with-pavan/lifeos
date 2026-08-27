@@ -224,21 +224,13 @@ const startProviderServices = async (req, res) => {
 const completeProviderServices = async (req, res) => {
 
     try {
-
-        const provider =
-            await getProviderByUserId(
-                req.userId
-            );
-
-
+        const provider = await getProviderByUserId(req.userId);
         if (!provider) {
-
             return res.status(404).json({
                 message:
                     "Service provider profile not found.",
             });
         }
-
 
         const completionData = {
             completionNotes:
@@ -262,15 +254,11 @@ const completeProviderServices = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-
-            message:
-                "Service completed successfully.",
-
+            message: "Service completed successfully.",
             request,
         });
 
     } catch (error) {
-
         return res.status(
             error.statusCode || 500
         ).json({

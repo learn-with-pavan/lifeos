@@ -34,6 +34,7 @@ import "../styles/serviceRequestDetails.css";
 import { createReview, getReviewForServiceRequest } from "../services/reviewService";
 import { getPaymentForServiceRequest } from "../services/paymentService";
 import ServiceRequestPaymentCard from "../components/ServiceRequestPaymentCard";
+import PaymentModal from "../components/PaymentModal";
 
 
 const STATUS_CONFIG = {
@@ -141,118 +142,50 @@ const getServiceTypeLabel = (serviceType) => {
 
 const ServiceRequestDetails = () => {
 
-    const {
-        requestId,
-    } = useParams();
+    const { requestId } = useParams();
+    const navigate = useNavigate();
 
-
-    const navigate =
-        useNavigate();
-
-
-    const [
-        request,
-        setRequest,
-    ] = useState(null);
-
-
-    const [
-        loading,
-        setLoading,
-    ] = useState(true);
-
-
-    const [
-        error,
-        setError,
-    ] = useState("");
-
-    const [
-        cancelling,
-        setCancelling,
-    ] = useState(false);
-
-    const [payment, setPayment] =
-        useState(null);
-
-    const [paymentLoading, setPaymentLoading] =
-        useState(false);
+    const [request, setRequest] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [cancelling, setCancelling,] = useState(false);
+    const [payment, setPayment] = useState(null);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     const loadRequest = useCallback(async () => {
         try {
             setLoading(true);
             setError("");
 
-            const response =
-                await getServiceRequestById(
-                    requestId
-                );
+            const response = await getServiceRequestById(requestId);
+            const data = response?.data;
+            setRequest(data?.request || data?.data || data);
 
-
-            const data =
-                response?.data;
-
-
-            setRequest(
-                data?.request ||
-                data?.data ||
-                data
-            );
-
-        } catch (
-        requestError
-        ) {
-
-            console.error(
-                "Failed to load service request:",
-                requestError
-            );
-
-
-            setError(
-                requestError
-                    ?.response
-                    ?.data
-                    ?.message ||
-                "Unable to load this service request."
-            );
+        } catch (requestError) {
+            setError(requestError?.response?.data?.message || "Unable to load this service request.");
 
         } finally {
-
             setLoading(false);
-
         }
-
     },
         [requestId]
     );
 
     const loadPayment = async () => {
-
         if (!requestId) {
             return;
         }
 
         try {
-
             setPaymentLoading(true);
-
-            const response =
-                await getPaymentForServiceRequest(
-                    requestId
-                );
-
-            setPayment(
-                response?.payment || null
-            );
+            const response = await getPaymentForServiceRequest(requestId);
+            setPayment(response?.payment || null);
 
         } catch (error) {
             setPayment(null);
-
         } finally {
-
             setPaymentLoading(false);
-
         }
     };
 
@@ -261,32 +194,19 @@ const ServiceRequestDetails = () => {
         loadPayment();
     }, [loadRequest]);
 
-
     const handleCancelRequest = async () => {
-
         try {
-
             setCancelling(true);
-
-
-            await cancelServiceRequest(
-                requestId
-            );
-
-
+            await cancelServiceRequest(requestId);
             await loadRequest();
 
         } catch (error) {
-
-            console.error(
+            console.log(
                 "Failed to cancel service request:",
                 error
             );
-
         } finally {
-
             setCancelling(false);
-
         }
     };
 
@@ -355,21 +275,10 @@ const ServiceRequestDetails = () => {
         );
     }
 
-    const asset =
-        request.asset || {};
-
-    const provider =
-        request.serviceProvider || {};
-
-    const status =
-        getStatusConfig(
-            request.status
-        );
-
-    const serviceType =
-        getServiceTypeLabel(
-            request.serviceType
-        );
+    const asset = request.asset || {};
+    const provider = request.serviceProvider || {};
+    const status = getStatusConfig(request.status);
+    const serviceType = getServiceTypeLabel(request.serviceType);
 
     return (
         <div className="service-request-details-page">
@@ -396,55 +305,41 @@ const ServiceRequestDetails = () => {
 
 
                 <div className="request-details-title-row">
-
                     <div className="request-details-title-icon">
-
                         <Wrench
                             size={24}
                         />
-
                     </div>
 
-
                     <div>
-
                         <h1>
                             Service Request
                         </h1>
-
                         <p>
                             Track the progress of
                             your service request.
                         </p>
-
                     </div>
-
                 </div>
-
             </div>
-
 
             {/* STATUS */}
 
             <div className="request-details-status-card">
 
                 <div>
-
                     <span className="request-status-label">
                         Current status
                     </span>
-
                     <div
                         className={`request-details-status ${status.className}`}
                     >
                         {status.label}
                     </div>
-
                 </div>
 
 
                 <div className="request-status-icon">
-
                     {request.status ===
                         "COMPLETED" ? (
 
@@ -1219,16 +1114,14 @@ const ServiceRequestDetails = () => {
 
             )}
 
-            {request.status === "COMPLETED" &&
-                payment && (
-                    <ServiceRequestPaymentCard
-                        payment={payment}
-                        onPay={() => {
-                            // Real payment gateway
-                            // will be connected here.
-                        }}
-                    />
-                )}
+            {request.status === "COMPLETED" && payment && (
+                <ServiceRequestPaymentCard
+                    payment={payment}
+                    onPay={() => {
+                        setShowPaymentModal(true);
+                    }}
+                />
+            )}
 
             {/* TIMELINE */}
             {request.status !== 'CANCELLED' && (
@@ -1552,6 +1445,21 @@ const ServiceRequestDetails = () => {
                 </section>
             )}
 
+            {showPaymentModal && payment && (
+                <PaymentModal
+                    payment={payment}
+
+                    onClose={() =>
+                        setShowPaymentModal(false)
+                    }
+
+                    onSuccess={async () => {
+                        setShowPaymentModal(false);
+                        await loadPayment();
+
+                    }}
+                />
+            )}
         </div>
     );
 };

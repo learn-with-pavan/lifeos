@@ -79,62 +79,19 @@ const CATEGORY_OPTIONS = [
 
 const ProviderProfile = () => {
 
-    const [
-        locationSaving,
-        setLocationSaving,
-    ] = useState(false);
+    const [provider, setProvider] = useState(null);
+    const [supportedCategories, setSupportedCategories] = useState([]);
 
-    const [
-        locationMessage,
-        setLocationMessage,
-    ] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [availabilitySaving, setAvailabilitySaving] = useState(false);
+    const [locationSaving, setLocationSaving] = useState(false);
 
-    const [
-        provider,
-        setProvider,
-    ] = useState(null);
+    const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [locationMessage, setLocationMessage] = useState("");
 
-
-    const [
-        supportedCategories,
-        setSupportedCategories,
-    ] = useState([]);
-
-
-    const [
-        loading,
-        setLoading,
-    ] = useState(true);
-
-
-    const [
-        saving,
-        setSaving,
-    ] = useState(false);
-
-
-    const [
-        availabilitySaving,
-        setAvailabilitySaving,
-    ] = useState(false);
-
-
-    const [
-        error,
-        setError,
-    ] = useState("");
-
-
-    const [
-        successMessage,
-        setSuccessMessage,
-    ] = useState("");
-
-
-    const [
-        form,
-        setForm,
-    ] = useState({
+    const [form, setForm] = useState({
         businessName: "",
         description: "",
         phone: "",
@@ -156,56 +113,30 @@ const ProviderProfile = () => {
             setLoading(true);
             setError("");
 
-            const response =
-                await getMyProvider();
+            const response = await getMyProvider();
 
             const data =
                 response?.data?.provider ||
                 response?.data?.data ||
                 response?.data;
 
-
             setProvider(data);
-
-
             setSupportedCategories(
                 data?.supportedCategories || []
             );
 
-
             setForm({
-                businessName:
-                    data?.businessName || "",
-
-                description:
-                    data?.description || "",
-
-                phone:
-                    data?.phone || "",
-
-                email:
-                    data?.email || "",
-
-                serviceRadiusKm:
-                    data?.serviceRadiusKm ?? "",
-
-                experienceYears:
-                    data?.experienceYears ?? "",
-
-                address:
-                    data?.location?.address || "",
-
-                city:
-                    data?.location?.city || "",
-
-                state:
-                    data?.location?.state || "",
-
-                country:
-                    data?.location?.country || "",
-
-                pincode:
-                    data?.location?.pincode || "",
+                businessName: data?.businessName || "",
+                description: data?.description || "",
+                phone: data?.phone || "",
+                email: data?.email || "",
+                serviceRadiusKm: data?.serviceRadiusKm ?? "",
+                experienceYears: data?.experienceYears ?? "",
+                address: data?.location?.address || "",
+                city: data?.location?.city || "",
+                state: data?.location?.state || "",
+                country: data?.location?.country || "",
+                pincode: data?.location?.pincode || "",
             });
 
         } catch (requestError) {
@@ -216,10 +147,7 @@ const ProviderProfile = () => {
             );
 
             setError(
-                requestError
-                    ?.response
-                    ?.data
-                    ?.message ||
+                requestError?.response?.data?.message ||
                 "Unable to load provider profile."
             );
 
@@ -232,9 +160,7 @@ const ProviderProfile = () => {
 
 
     useEffect(() => {
-
         loadProvider();
-
     }, []);
 
 
@@ -245,14 +171,10 @@ const ProviderProfile = () => {
             value,
         } = event.target;
 
-
-        setForm(
-            (current) => ({
-                ...current,
-                [name]: value,
-            })
-        );
-
+        setForm((current) => ({
+            ...current,
+            [name]: value,
+        }));
     };
 
 
@@ -261,30 +183,12 @@ const ProviderProfile = () => {
         setError("");
         setSuccessMessage("");
 
-
-        setSupportedCategories(
-            (current) => {
-
-                if (
-                    current.includes(
-                        categoryValue
-                    )
-                ) {
-
-                    return current.filter(
-                        (category) =>
-                            category !==
-                            categoryValue
-                    );
-
-                }
-
-
-                return [
-                    ...current,
-                    categoryValue,
-                ];
-            }
+        setSupportedCategories((current) =>
+            current.includes(categoryValue)
+                ? current.filter(
+                    (category) => category !== categoryValue
+                )
+                : [...current, categoryValue]
         );
     };
 
@@ -293,18 +197,12 @@ const ProviderProfile = () => {
 
         event.preventDefault();
 
-
-        if (
-            supportedCategories.length === 0
-        ) {
-
+        if (!supportedCategories.length) {
             setError(
                 "Please select at least one supported asset category."
             );
-
             return;
         }
-
 
         try {
 
@@ -312,76 +210,38 @@ const ProviderProfile = () => {
             setError("");
             setSuccessMessage("");
 
-
             const payload = {
-
-                businessName:
-                    form.businessName.trim(),
-
-                description:
-                    form.description.trim(),
-
-                phone:
-                    form.phone.trim(),
-
-                email:
-                    form.email.trim(),
-
+                businessName: form.businessName.trim(),
+                description: form.description.trim(),
+                phone: form.phone.trim(),
+                email: form.email.trim(),
                 serviceRadiusKm:
-                    Number(
-                        form.serviceRadiusKm
-                    ) || 0,
-
+                    Number(form.serviceRadiusKm) || 0,
                 experienceYears:
-                    Number(
-                        form.experienceYears
-                    ) || 0,
-
-                supportedCategories:
-                    supportedCategories,
-
+                    Number(form.experienceYears) || 0,
+                supportedCategories,
                 location: {
-
-                    address:
-                        form.address.trim(),
-
-                    city:
-                        form.city.trim(),
-
-                    state:
-                        form.state.trim(),
-
-                    country:
-                        form.country.trim(),
-
-                    pincode:
-                        form.pincode.trim(),
+                    address: form.address.trim(),
+                    city: form.city.trim(),
+                    state: form.state.trim(),
+                    country: form.country.trim(),
+                    pincode: form.pincode.trim(),
                 },
             };
 
-
-            const response =
-                await updateProvider(
-                    payload
-                );
-
+            const response = await updateProvider(payload);
 
             const updatedProvider =
                 response?.data?.provider ||
                 response?.data?.data ||
                 response?.data;
 
-
-            setProvider(
-                updatedProvider
-            );
-
+            setProvider(updatedProvider);
 
             setSupportedCategories(
                 updatedProvider?.supportedCategories ||
                 supportedCategories
             );
-
 
             setSuccessMessage(
                 "Provider profile updated successfully."
@@ -395,10 +255,7 @@ const ProviderProfile = () => {
             );
 
             setError(
-                requestError
-                    ?.response
-                    ?.data
-                    ?.message ||
+                requestError?.response?.data?.message ||
                 "Unable to update provider profile."
             );
 
@@ -410,91 +267,50 @@ const ProviderProfile = () => {
     };
 
 
-    const handleAvailabilityChange =
-        async (event) => {
+    const handleAvailabilityChange = async (event) => {
 
-            const availability =
-                event.target.value;
+        const availability = event.target.value;
 
+        try {
 
-            try {
+            setAvailabilitySaving(true);
+            setError("");
+            setSuccessMessage("");
 
-                setAvailabilitySaving(
-                    true
+            const response =
+                await updateProviderAvailability(
+                    availability
                 );
 
-                setError("");
-                setSuccessMessage("");
+            const updatedProvider =
+                response?.data?.provider ||
+                response?.data?.data ||
+                response?.data;
 
+            setProvider(updatedProvider);
 
-                const response =
-                    await updateProviderAvailability(
-                        availability
-                    );
+            setSuccessMessage(
+                "Availability updated successfully."
+            );
 
+        } catch (requestError) {
 
-                const updatedProvider =
-                    response?.data?.provider ||
-                    response?.data?.data ||
-                    response?.data;
+            console.error(
+                "Failed to update availability:",
+                requestError
+            );
 
+            setError(
+                requestError?.response?.data?.message ||
+                "Unable to update availability."
+            );
 
-                setProvider(
-                    updatedProvider
-                );
+        } finally {
 
+            setAvailabilitySaving(false);
 
-                setSuccessMessage(
-                    "Availability updated successfully."
-                );
-
-            } catch (requestError) {
-
-                console.error(
-                    "Failed to update availability:",
-                    requestError
-                );
-
-                setError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to update availability."
-                );
-
-            } finally {
-
-                setAvailabilitySaving(
-                    false
-                );
-
-            }
-        };
-
-
-    if (loading) {
-
-        return (
-            <div className="provider-profile-page">
-
-                <div className="provider-profile-state">
-
-                    <Clock size={28} />
-
-                    <h2>
-                        Loading profile
-                    </h2>
-
-                    <p>
-                        Retrieving your provider profile.
-                    </p>
-
-                </div>
-
-            </div>
-        );
-    }
+        }
+    };
 
 
     const handleUseCurrentLocation = () => {
@@ -542,10 +358,7 @@ const ProviderProfile = () => {
                     );
 
                     setError(
-                        requestError
-                            ?.response
-                            ?.data
-                            ?.message ||
+                        requestError?.response?.data?.message ||
                         "Unable to save your location."
                     );
 
@@ -562,35 +375,19 @@ const ProviderProfile = () => {
                     locationError
                 );
 
-                let message =
-                    "Unable to get your current location.";
+                const messages = {
+                    [locationError.PERMISSION_DENIED]:
+                        "Location permission was denied. Please allow location access in your browser.",
+                    [locationError.POSITION_UNAVAILABLE]:
+                        "Your current location could not be determined.",
+                    [locationError.TIMEOUT]:
+                        "Location request timed out. Please try again.",
+                };
 
-                if (
-                    locationError.code ===
-                    locationError.PERMISSION_DENIED
-                ) {
-
-                    message =
-                        "Location permission was denied. Please allow location access in your browser.";
-
-                } else if (
-                    locationError.code ===
-                    locationError.POSITION_UNAVAILABLE
-                ) {
-
-                    message =
-                        "Your current location could not be determined.";
-
-                } else if (
-                    locationError.code ===
-                    locationError.TIMEOUT
-                ) {
-
-                    message =
-                        "Location request timed out. Please try again.";
-                }
-
-                setError(message);
+                setError(
+                    messages[locationError.code] ||
+                    "Unable to get your current location."
+                );
 
                 setLocationSaving(false);
             },
@@ -603,6 +400,31 @@ const ProviderProfile = () => {
         );
     };
 
+
+    if (loading) {
+
+        return (
+            <div className="provider-profile-page">
+
+                <div className="provider-profile-state">
+
+                    <div className="provider-profile-loading-icon">
+                        <Clock size={26} />
+                    </div>
+
+                    <h2>Loading profile</h2>
+
+                    <p>
+                        Retrieving your provider profile.
+                    </p>
+
+                </div>
+
+            </div>
+        );
+    }
+
+
     if (error && !provider) {
 
         return (
@@ -610,15 +432,13 @@ const ProviderProfile = () => {
 
                 <div className="provider-profile-state provider-profile-state-error">
 
-                    <ShieldCheck size={30} />
+                    <div className="provider-profile-error-icon">
+                        <ShieldCheck size={28} />
+                    </div>
 
-                    <h2>
-                        Unable to load profile
-                    </h2>
+                    <h2>Unable to load profile</h2>
 
-                    <p>
-                        {error}
-                    </p>
+                    <p>{error}</p>
 
                     <button
                         type="button"
@@ -634,44 +454,52 @@ const ProviderProfile = () => {
     }
 
 
+    const hasSavedLocation =
+        provider?.location?.coordinates?.length === 2 &&
+        provider.location.coordinates.some(
+            (coordinate) => Number(coordinate) !== 0
+        );
+
+
     return (
 
         <div className="provider-profile-page">
 
-            <div className="provider-profile-header">
+            {/* PAGE HEADER */}
+
+            <header className="provider-profile-header">
 
                 <div className="provider-profile-header-icon">
-
                     <UserRound size={24} />
-
                 </div>
 
-                <div>
+                <div className="provider-profile-header-content">
 
-                    <h1>
-                        Provider Profile
-                    </h1>
+                    <span className="provider-profile-eyebrow">
+                        Provider Workspace
+                    </span>
+
+                    <h1>Provider Profile</h1>
 
                     <p>
                         Manage your business information,
-                        contact details and service coverage.
+                        services and coverage.
                     </p>
 
                 </div>
 
-            </div>
+            </header>
 
+
+            {/* MESSAGES */}
 
             {error && (
 
                 <div className="provider-profile-message provider-profile-message-error">
 
-                    <span>
-                        {error}
-                    </span>
+                    <span>{error}</span>
 
                 </div>
-
             )}
 
 
@@ -679,14 +507,11 @@ const ProviderProfile = () => {
 
                 <div className="provider-profile-message provider-profile-message-success">
 
-                    <CheckCircle2 size={18} />
+                    <CheckCircle2 size={17} />
 
-                    <span>
-                        {successMessage}
-                    </span>
+                    <span>{successMessage}</span>
 
                 </div>
-
             )}
 
 
@@ -702,22 +527,16 @@ const ProviderProfile = () => {
                     <div className="provider-profile-section-heading">
 
                         <div className="provider-profile-section-icon">
-
                             <Building2 size={19} />
-
                         </div>
 
                         <div>
-
-                            <h2>
-                                Business Information
-                            </h2>
+                            <h2>Business Information</h2>
 
                             <p>
                                 Tell customers about your
                                 service business.
                             </p>
-
                         </div>
 
                     </div>
@@ -735,12 +554,8 @@ const ProviderProfile = () => {
                                 id="businessName"
                                 name="businessName"
                                 type="text"
-                                value={
-                                    form.businessName
-                                }
-                                onChange={
-                                    handleChange
-                                }
+                                value={form.businessName}
+                                onChange={handleChange}
                                 placeholder="Your business name"
                                 required
                             />
@@ -751,21 +566,22 @@ const ProviderProfile = () => {
                         <div className="provider-profile-field provider-profile-field-full">
 
                             <label htmlFor="description">
-                                Description
+                                Business Description
                             </label>
 
                             <textarea
                                 id="description"
                                 name="description"
                                 rows="4"
-                                value={
-                                    form.description
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                placeholder="Describe your services and experience..."
+                                value={form.description}
+                                onChange={handleChange}
+                                placeholder="Describe your services, expertise and experience..."
                             />
+
+                            <span className="provider-profile-field-hint">
+                                A clear description helps customers
+                                understand what you offer.
+                            </span>
 
                         </div>
 
@@ -781,22 +597,16 @@ const ProviderProfile = () => {
                     <div className="provider-profile-section-heading">
 
                         <div className="provider-profile-section-icon">
-
                             <Phone size={19} />
-
                         </div>
 
                         <div>
-
-                            <h2>
-                                Contact Information
-                            </h2>
+                            <h2>Contact Information</h2>
 
                             <p>
-                                Contact details customers can
-                                use when necessary.
+                                Contact details customers can use
+                                when necessary.
                             </p>
-
                         </div>
 
                     </div>
@@ -818,12 +628,8 @@ const ProviderProfile = () => {
                                     id="phone"
                                     name="phone"
                                     type="tel"
-                                    value={
-                                        form.phone
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
+                                    value={form.phone}
+                                    onChange={handleChange}
                                     placeholder="Phone number"
                                 />
 
@@ -835,7 +641,7 @@ const ProviderProfile = () => {
                         <div className="provider-profile-field">
 
                             <label htmlFor="email">
-                                Email
+                                Business Email
                             </label>
 
                             <div className="provider-profile-input-icon">
@@ -846,12 +652,8 @@ const ProviderProfile = () => {
                                     id="email"
                                     name="email"
                                     type="email"
-                                    value={
-                                        form.email
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
+                                    value={form.email}
+                                    onChange={handleChange}
                                     placeholder="Business email"
                                 />
 
@@ -864,29 +666,23 @@ const ProviderProfile = () => {
                 </section>
 
 
-                {/* SERVICES & CATEGORIES */}
+                {/* CATEGORIES */}
 
                 <section className="provider-profile-card">
 
                     <div className="provider-profile-section-heading">
 
                         <div className="provider-profile-section-icon">
-
                             <Wrench size={19} />
-
                         </div>
 
                         <div>
-
-                            <h2>
-                                Supported Asset Categories
-                            </h2>
+                            <h2>Supported Asset Categories</h2>
 
                             <p>
                                 Select the types of assets your
                                 business can service.
                             </p>
-
                         </div>
 
                     </div>
@@ -894,69 +690,66 @@ const ProviderProfile = () => {
 
                     <div className="provider-category-grid">
 
-                        {CATEGORY_OPTIONS.map(
-                            (category) => {
+                        {CATEGORY_OPTIONS.map((category) => {
 
-                                const selected =
-                                    supportedCategories.includes(
-                                        category.value
-                                    );
+                            const selected =
+                                supportedCategories.includes(
+                                    category.value
+                                );
 
+                            return (
 
-                                return (
-
-                                    <button
-                                        key={
-                                            category.value
-                                        }
-                                        type="button"
-                                        className={`provider-category-option ${selected
+                                <button
+                                    key={category.value}
+                                    type="button"
+                                    className={`provider-category-option ${selected
                                             ? "provider-category-option-selected"
                                             : ""
-                                            }`}
-                                        onClick={() =>
-                                            toggleCategory(
-                                                category.value
-                                            )
-                                        }
-                                    >
+                                        }`}
+                                    onClick={() =>
+                                        toggleCategory(
+                                            category.value
+                                        )
+                                    }
+                                >
+
+                                    <div className="provider-category-top">
 
                                         <div
                                             className={`provider-category-checkbox ${selected
-                                                ? "provider-category-checkbox-selected"
-                                                : ""
+                                                    ? "provider-category-checkbox-selected"
+                                                    : ""
                                                 }`}
                                         >
-
                                             {selected && (
-                                                <Check
-                                                    size={15}
-                                                />
+                                                <Check size={14} />
                                             )}
-
                                         </div>
 
-
-                                        <div className="provider-category-content">
-
-                                            <strong>
-                                                {
-                                                    category.label
-                                                }
-                                            </strong>
-
-                                            <span>
-                                                {
-                                                    category.description
-                                                }
+                                        {selected && (
+                                            <span className="provider-category-selected-label">
+                                                Selected
                                             </span>
+                                        )}
 
-                                        </div>
+                                    </div>
 
-                                    </button>
-                                );
-                            }
-                        )}
+
+                                    <div className="provider-category-content">
+
+                                        <strong>
+                                            {category.label}
+                                        </strong>
+
+                                        <span>
+                                            {category.description}
+                                        </span>
+
+                                    </div>
+
+                                </button>
+                            );
+                        })}
 
                     </div>
 
@@ -983,22 +776,16 @@ const ProviderProfile = () => {
                     <div className="provider-profile-section-heading">
 
                         <div className="provider-profile-section-icon">
-
                             <Wrench size={19} />
-
                         </div>
 
                         <div>
-
-                            <h2>
-                                Professional Information
-                            </h2>
+                            <h2>Professional Information</h2>
 
                             <p>
                                 Configure your experience and
                                 service coverage.
                             </p>
-
                         </div>
 
                     </div>
@@ -1019,17 +806,12 @@ const ProviderProfile = () => {
                                     name="experienceYears"
                                     type="number"
                                     min="0"
-                                    value={
-                                        form.experienceYears
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
+                                    value={form.experienceYears}
+                                    onChange={handleChange}
+                                    placeholder="0"
                                 />
 
-                                <span>
-                                    years
-                                </span>
+                                <span>years</span>
 
                             </div>
 
@@ -1049,17 +831,12 @@ const ProviderProfile = () => {
                                     name="serviceRadiusKm"
                                     type="number"
                                     min="0"
-                                    value={
-                                        form.serviceRadiusKm
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
+                                    value={form.serviceRadiusKm}
+                                    onChange={handleChange}
+                                    placeholder="0"
                                 />
 
-                                <span>
-                                    km
-                                </span>
+                                <span>km</span>
 
                             </div>
 
@@ -1077,22 +854,16 @@ const ProviderProfile = () => {
                     <div className="provider-profile-section-heading">
 
                         <div className="provider-profile-section-icon">
-
                             <MapPin size={19} />
-
                         </div>
 
                         <div>
-
-                            <h2>
-                                Business Location
-                            </h2>
+                            <h2>Business Location</h2>
 
                             <p>
                                 Where your service business
                                 operates from.
                             </p>
-
                         </div>
 
                     </div>
@@ -1110,100 +881,43 @@ const ProviderProfile = () => {
                                 id="address"
                                 name="address"
                                 type="text"
-                                value={
-                                    form.address
-                                }
-                                onChange={
-                                    handleChange
-                                }
+                                value={form.address}
+                                onChange={handleChange}
                                 placeholder="Business address"
                             />
 
                         </div>
 
 
-                        <div className="provider-profile-field">
+                        {[
+                            ["city", "City"],
+                            ["state", "State"],
+                            ["country", "Country"],
+                            ["pincode", "Pincode"],
+                        ].map(([name, label]) => (
 
-                            <label htmlFor="city">
-                                City
-                            </label>
+                            <div
+                                className="provider-profile-field"
+                                key={name}
+                            >
 
-                            <input
-                                id="city"
-                                name="city"
-                                type="text"
-                                value={
-                                    form.city
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
+                                <label htmlFor={name}>
+                                    {label}
+                                </label>
 
-                        </div>
+                                <input
+                                    id={name}
+                                    name={name}
+                                    type="text"
+                                    value={form[name]}
+                                    onChange={handleChange}
+                                    placeholder={label}
+                                />
 
+                            </div>
 
-                        <div className="provider-profile-field">
+                        ))}
 
-                            <label htmlFor="state">
-                                State
-                            </label>
-
-                            <input
-                                id="state"
-                                name="state"
-                                type="text"
-                                value={
-                                    form.state
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
-
-                        </div>
-
-
-                        <div className="provider-profile-field">
-
-                            <label htmlFor="country">
-                                Country
-                            </label>
-
-                            <input
-                                id="country"
-                                name="country"
-                                type="text"
-                                value={
-                                    form.country
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
-
-                        </div>
-
-
-                        <div className="provider-profile-field">
-
-                            <label htmlFor="pincode">
-                                Pincode
-                            </label>
-
-                            <input
-                                id="pincode"
-                                name="pincode"
-                                type="text"
-                                value={
-                                    form.pincode
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
-
-                        </div>
 
                         <div className="provider-location-capture">
 
@@ -1220,20 +934,18 @@ const ProviderProfile = () => {
                                     </strong>
 
                                     <p>
-                                        Allow LifeOS to use your current location
-                                        to find nearby customer service requests.
+                                        Use your current location
+                                        to help LifeOS find nearby
+                                        customer requests.
                                     </p>
 
-                                    {provider?.location?.coordinates?.length === 2 &&
-                                        provider.location.coordinates.some(
-                                            (coordinate) => Number(coordinate) !== 0
-                                        ) && (
+                                    {hasSavedLocation && (
 
-                                            <span className="provider-location-saved">
-                                                <CheckCircle2 size={15} />
-                                                Location saved
-                                            </span>
-                                        )}
+                                        <span className="provider-location-saved">
+                                            <CheckCircle2 size={14} />
+                                            Location saved
+                                        </span>
+                                    )}
 
                                     {locationMessage && (
 
@@ -1250,7 +962,9 @@ const ProviderProfile = () => {
                             <button
                                 type="button"
                                 className="provider-location-button"
-                                onClick={handleUseCurrentLocation}
+                                onClick={
+                                    handleUseCurrentLocation
+                                }
                                 disabled={locationSaving}
                             >
 
@@ -1258,7 +972,7 @@ const ProviderProfile = () => {
 
                                 {locationSaving
                                     ? "Getting location..."
-                                    : "Use my current location"}
+                                    : "Use current location"}
 
                             </button>
 
@@ -1269,29 +983,23 @@ const ProviderProfile = () => {
                 </section>
 
 
-                {/* SYSTEM STATUS */}
+                {/* STATUS + AVAILABILITY */}
 
                 <section className="provider-profile-card">
 
                     <div className="provider-profile-section-heading">
 
                         <div className="provider-profile-section-icon">
-
                             <ShieldCheck size={19} />
-
                         </div>
 
                         <div>
-
-                            <h2>
-                                Provider Status
-                            </h2>
+                            <h2>Provider Status</h2>
 
                             <p>
-                                Your current LifeOS provider
-                                account status.
+                                Manage your current provider
+                                availability and account status.
                             </p>
-
                         </div>
 
                     </div>
@@ -1301,19 +1009,13 @@ const ProviderProfile = () => {
 
                         <div className="provider-profile-status-item">
 
-                            <span>
-                                Verification
-                            </span>
+                            <span>Verification</span>
 
                             <strong className="provider-profile-verification">
-
                                 <ShieldCheck size={16} />
 
-                                {
-                                    provider?.verificationStatus ||
-                                    "PENDING"
-                                }
-
+                                {provider?.verificationStatus ||
+                                    "PENDING"}
                             </strong>
 
                         </div>
@@ -1321,9 +1023,7 @@ const ProviderProfile = () => {
 
                         <div className="provider-profile-status-item">
 
-                            <span>
-                                Account
-                            </span>
+                            <span>Account</span>
 
                             <strong
                                 className={
@@ -1343,88 +1043,59 @@ const ProviderProfile = () => {
 
                         </div>
 
-                    </div>
 
-                </section>
+                        <div className="provider-profile-status-item provider-profile-availability-item">
+
+                            <div>
+
+                                <span>
+                                    Availability
+                                </span>
+
+                                <strong
+                                    className={`provider-profile-availability-value provider-profile-availability-${(
+                                        provider?.availability ||
+                                        "UNAVAILABLE"
+                                    ).toLowerCase()}`}
+                                >
+                                    <span className="provider-profile-status-dot" />
+
+                                    {provider?.availability ||
+                                        "UNAVAILABLE"}
+                                </strong>
+
+                            </div>
 
 
-                {/* AVAILABILITY */}
+                            <select
+                                value={
+                                    provider?.availability ||
+                                    "UNAVAILABLE"
+                                }
+                                onChange={
+                                    handleAvailabilityChange
+                                }
+                                disabled={
+                                    availabilitySaving
+                                }
+                            >
 
-                <section className="provider-profile-card">
+                                {AVAILABILITY_OPTIONS.map(
+                                    (option) => (
 
-                    <div className="provider-profile-section-heading">
+                                        <option
+                                            key={option.value}
+                                            value={option.value}
+                                        >
+                                            {option.label}
+                                        </option>
 
-                        <div className="provider-profile-section-icon">
+                                    )
+                                )}
 
-                            <Clock size={19} />
+                            </select>
 
                         </div>
-
-                        <div>
-
-                            <h2>
-                                Availability
-                            </h2>
-
-                            <p>
-                                Let LifeOS know whether you
-                                can currently accept requests.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div className="provider-profile-availability">
-
-                        <div>
-
-                            <strong>
-                                Current availability
-                            </strong>
-
-                            <span>
-                                Customers can see whether
-                                you're currently available.
-                            </span>
-
-                        </div>
-
-
-                        <select
-                            value={
-                                provider?.availability ||
-                                "UNAVAILABLE"
-                            }
-                            onChange={
-                                handleAvailabilityChange
-                            }
-                            disabled={
-                                availabilitySaving
-                            }
-                        >
-
-                            {AVAILABILITY_OPTIONS.map(
-                                (option) => (
-
-                                    <option
-                                        key={
-                                            option.value
-                                        }
-                                        value={
-                                            option.value
-                                        }
-                                    >
-                                        {
-                                            option.label
-                                        }
-                                    </option>
-
-                                )
-                            )}
-
-                        </select>
 
                     </div>
 
@@ -1435,6 +1106,19 @@ const ProviderProfile = () => {
 
                 <div className="provider-profile-actions">
 
+                    <div className="provider-profile-save-info">
+
+                        <span>
+                            {supportedCategories.length}{" "}
+                            {supportedCategories.length === 1
+                                ? "category"
+                                : "categories"}{" "}
+                            configured
+                        </span>
+
+                    </div>
+
+
                     <button
                         type="submit"
                         className="provider-profile-save-button"
@@ -1444,7 +1128,7 @@ const ProviderProfile = () => {
                         <Save size={17} />
 
                         {saving
-                            ? "Saving..."
+                            ? "Saving changes..."
                             : "Save Changes"}
 
                     </button>

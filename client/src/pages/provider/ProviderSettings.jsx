@@ -4,6 +4,7 @@ import {
     RefreshCw,
     Save,
     Settings,
+    Zap,
 } from "lucide-react";
 
 import {
@@ -32,29 +33,53 @@ const DEFAULT_SETTINGS = {
 };
 
 
+const NOTIFICATION_OPTIONS = [
+    {
+        key: "serviceRequests",
+        title: "Service requests",
+        description:
+            "Get notified when customers send new service requests.",
+    },
+    {
+        key: "appointmentReminders",
+        title: "Appointment reminders",
+        description:
+            "Receive reminders about upcoming service appointments.",
+    },
+    {
+        key: "serviceUpdates",
+        title: "Service updates",
+        description:
+            "Stay informed about important service status changes.",
+    },
+];
+
+
 const ProviderSettings = () => {
 
     const [
         settings,
         setSettings,
-    ] = useState(
-        DEFAULT_SETTINGS
-    );
+    ] = useState(DEFAULT_SETTINGS);
+
 
     const [
         loading,
         setLoading,
     ] = useState(true);
 
+
     const [
         saving,
         setSaving,
     ] = useState(false);
 
+
     const [
         error,
         setError,
     ] = useState("");
+
 
     const [
         success,
@@ -62,58 +87,58 @@ const ProviderSettings = () => {
     ] = useState("");
 
 
-    const loadSettings =
-        async () => {
+    const loadSettings = async () => {
 
-            try {
+        try {
 
-                setLoading(true);
-                setError("");
+            setLoading(true);
+            setError("");
 
-                const response =
-                    await getMyProvider();
+            const response =
+                await getMyProvider();
 
-                const provider =
-                    response?.data?.data ||
-                    response?.data?.provider ||
-                    response?.data;
+            const provider =
+                response?.data?.data ||
+                response?.data?.provider ||
+                response?.data;
 
-                const providerSettings =
-                    provider?.settings || {};
+            const providerSettings =
+                provider?.settings || {};
 
-                setSettings({
-                    notifications: {
-                        ...DEFAULT_SETTINGS.notifications,
-                        ...providerSettings.notifications,
-                    },
 
-                    requestPreferences: {
-                        ...DEFAULT_SETTINGS.requestPreferences,
-                        ...providerSettings.requestPreferences,
-                    },
-                });
+            setSettings({
+                notifications: {
+                    ...DEFAULT_SETTINGS.notifications,
+                    ...providerSettings.notifications,
+                },
 
-            } catch (requestError) {
+                requestPreferences: {
+                    ...DEFAULT_SETTINGS.requestPreferences,
+                    ...providerSettings.requestPreferences,
+                },
+            });
 
-                console.error(
-                    "Failed to load provider settings:",
-                    requestError
-                );
+        } catch (requestError) {
 
-                setError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to load your settings."
-                );
+            console.error(
+                "Failed to load provider settings:",
+                requestError
+            );
 
-            } finally {
+            setError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to load your settings."
+            );
 
-                setLoading(false);
+        } finally {
 
-            }
-        };
+            setLoading(false);
+
+        }
+    };
 
 
     useEffect(() => {
@@ -123,11 +148,18 @@ const ProviderSettings = () => {
     }, []);
 
 
+    const clearMessages = () => {
+
+        setError("");
+        setSuccess("");
+
+    };
+
+
     const handleNotificationChange =
         (field) => {
 
-            setSuccess("");
-            setError("");
+            clearMessages();
 
             setSettings(
                 (current) => ({
@@ -144,73 +176,69 @@ const ProviderSettings = () => {
         };
 
 
-    const handleAutoAcceptChange =
-        () => {
+    const handleAutoAcceptChange = () => {
 
-            setSuccess("");
+        clearMessages();
+
+        setSettings(
+            (current) => ({
+                ...current,
+
+                requestPreferences: {
+                    ...current.requestPreferences,
+
+                    autoAcceptRequests:
+                        !current
+                            .requestPreferences
+                            .autoAcceptRequests,
+                },
+            })
+        );
+    };
+
+
+    const handleSave = async () => {
+
+        try {
+
+            setSaving(true);
             setError("");
+            setSuccess("");
 
-            setSettings(
-                (current) => ({
-                    ...current,
-
-                    requestPreferences: {
-                        ...current.requestPreferences,
-
-                        autoAcceptRequests:
-                            !current
-                                .requestPreferences
-                                .autoAcceptRequests,
-                    },
-                })
+            await updateProviderSettings(
+                settings
             );
-        };
 
+            setSuccess(
+                "Settings updated successfully."
+            );
 
-    const handleSave =
-        async () => {
+        } catch (requestError) {
 
-            try {
+            console.error(
+                "Failed to update provider settings:",
+                requestError
+            );
 
-                setSaving(true);
-                setError("");
-                setSuccess("");
+            setError(
+                requestError
+                    ?.response
+                    ?.data
+                    ?.message ||
+                "Unable to update your settings."
+            );
 
-                await updateProviderSettings(
-                    settings
-                );
+        } finally {
 
-                setSuccess(
-                    "Settings updated successfully."
-                );
+            setSaving(false);
 
-            } catch (requestError) {
-
-                console.error(
-                    "Failed to update provider settings:",
-                    requestError
-                );
-
-                setError(
-                    requestError
-                        ?.response
-                        ?.data
-                        ?.message ||
-                    "Unable to update your settings."
-                );
-
-            } finally {
-
-                setSaving(false);
-
-            }
-        };
+        }
+    };
 
 
     if (loading) {
 
         return (
-
             <div className="provider-settings-page">
 
                 <div className="provider-settings-state">
@@ -225,8 +253,7 @@ const ProviderSettings = () => {
                     </h2>
 
                     <p>
-                        We're retrieving your
-                        provider preferences.
+                        Retrieving your provider preferences.
                     </p>
 
                 </div>
@@ -240,42 +267,43 @@ const ProviderSettings = () => {
 
         <div className="provider-settings-page">
 
-            <div className="provider-settings-header">
+            {/* HEADER */}
 
-                <div className="provider-settings-title">
+            <header className="provider-settings-header">
 
-                    <div className="provider-settings-title-icon">
+                <div className="provider-settings-title-icon">
+                    <Settings size={22} />
+                </div>
 
-                        <Settings
-                            size={23}
-                        />
+                <div>
 
-                    </div>
+                    <span className="provider-settings-eyebrow">
+                        Provider Workspace
+                    </span>
 
-                    <div>
+                    <h1>
+                        Settings
+                    </h1>
 
-                        <h1>
-                            Settings
-                        </h1>
-
-                        <p>
-                            Configure your provider
-                            account preferences.
-                        </p>
-
-                    </div>
+                    <p>
+                        Manage notifications and automate
+                        how you handle customer requests.
+                    </p>
 
                 </div>
 
-            </div>
+            </header>
 
+
+            {/* MESSAGES */}
 
             {error && (
 
-                <div className="provider-settings-message provider-settings-error">
-
+                <div
+                    className="provider-settings-message provider-settings-message-error"
+                    role="alert"
+                >
                     {error}
-
                 </div>
 
             )}
@@ -283,25 +311,30 @@ const ProviderSettings = () => {
 
             {success && (
 
-                <div className="provider-settings-message provider-settings-success">
+                <div
+                    className="provider-settings-message provider-settings-message-success"
+                    role="status"
+                >
 
                     <Check size={17} />
 
-                    {success}
+                    <span>
+                        {success}
+                    </span>
 
                 </div>
 
             )}
 
 
+            {/* NOTIFICATIONS */}
+
             <section className="provider-settings-card">
 
-                <div className="provider-settings-card-heading">
+                <div className="provider-settings-section-header">
 
-                    <div className="provider-settings-card-icon">
-
+                    <div className="provider-settings-section-icon">
                         <Bell size={19} />
-
                     </div>
 
                     <div>
@@ -311,8 +344,8 @@ const ProviderSettings = () => {
                         </h2>
 
                         <p>
-                            Choose which provider
-                            events you want to receive.
+                            Choose which events you want
+                            LifeOS to notify you about.
                         </p>
 
                     </div>
@@ -320,116 +353,79 @@ const ProviderSettings = () => {
                 </div>
 
 
-                <div className="provider-settings-options">
+                <div className="provider-settings-list">
 
-                    <label className="provider-settings-option">
+                    {NOTIFICATION_OPTIONS.map(
+                        (option) => {
 
-                        <div>
-
-                            <strong>
-                                Service requests
-                            </strong>
-
-                            <span>
-                                Notify me when customers
-                                send new service requests.
-                            </span>
-
-                        </div>
-
-                        <input
-                            type="checkbox"
-                            checked={
+                            const enabled =
                                 settings
                                     .notifications
-                                    .serviceRequests
-                            }
-                            onChange={() =>
-                                handleNotificationChange(
-                                    "serviceRequests"
-                                )
-                            }
-                        />
-
-                    </label>
+                                [option.key];
 
 
-                    <label className="provider-settings-option">
+                            return (
 
-                        <div>
+                                <div
+                                    key={option.key}
+                                    className={`provider-settings-row ${enabled
+                                            ? "provider-settings-row-enabled"
+                                            : ""
+                                        }`}
+                                >
 
-                            <strong>
-                                Appointment reminders
-                            </strong>
+                                    <div className="provider-settings-row-content">
 
-                            <span>
-                                Notify me about upcoming
-                                service appointments.
-                            </span>
+                                        <strong>
+                                            {option.title}
+                                        </strong>
 
-                        </div>
+                                        <span>
+                                            {option.description}
+                                        </span>
 
-                        <input
-                            type="checkbox"
-                            checked={
-                                settings
-                                    .notifications
-                                    .appointmentReminders
-                            }
-                            onChange={() =>
-                                handleNotificationChange(
-                                    "appointmentReminders"
-                                )
-                            }
-                        />
-
-                    </label>
+                                    </div>
 
 
-                    <label className="provider-settings-option">
+                                    <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={enabled}
+                                        aria-label={`Toggle ${option.title}`}
+                                        className={`provider-settings-toggle ${enabled
+                                                ? "provider-settings-toggle-on"
+                                                : ""
+                                            }`}
+                                        onClick={() =>
+                                            handleNotificationChange(
+                                                option.key
+                                            )
+                                        }
+                                    >
 
-                        <div>
+                                        <span />
 
-                            <strong>
-                                Service updates
-                            </strong>
+                                    </button>
 
-                            <span>
-                                Notify me about important
-                                service status changes.
-                            </span>
+                                </div>
 
-                        </div>
-
-                        <input
-                            type="checkbox"
-                            checked={
-                                settings
-                                    .notifications
-                                    .serviceUpdates
-                            }
-                            onChange={() =>
-                                handleNotificationChange(
-                                    "serviceUpdates"
-                                )
-                            }
-                        />
-
-                    </label>
+                            );
+                        }
+                    )}
 
                 </div>
 
             </section>
 
 
+            {/* REQUEST PREFERENCES */}
+
             <section className="provider-settings-card">
 
-                <div className="provider-settings-card-heading">
+                <div className="provider-settings-section-header">
 
-                    <div className="provider-settings-card-icon">
-
-                        <Settings size={19} />
-
+                    <div className="provider-settings-section-icon provider-settings-section-icon-automation">
+                        <Zap size={19} />
                     </div>
 
                     <div>
@@ -439,8 +435,8 @@ const ProviderSettings = () => {
                         </h2>
 
                         <p>
-                            Control how incoming
-                            requests are handled.
+                            Control how LifeOS handles
+                            incoming customer requests.
                         </p>
 
                     </div>
@@ -448,39 +444,77 @@ const ProviderSettings = () => {
                 </div>
 
 
-                <label className="provider-settings-option">
+                <div className="provider-settings-list">
 
-                    <div>
+                    <div
+                        className={`provider-settings-row ${settings
+                                .requestPreferences
+                                .autoAcceptRequests
+                                ? "provider-settings-row-enabled"
+                                : ""
+                            }`}
+                    >
 
-                        <strong>
-                            Automatically accept requests
-                        </strong>
+                        <div className="provider-settings-row-content">
 
-                        <span>
-                            Automatically accept eligible
-                            customer requests.
-                        </span>
+                            <strong>
+                                Automatically accept requests
+                            </strong>
+
+                            <span>
+                                Automatically accept eligible
+                                customer requests without
+                                manual approval.
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={
+                                settings
+                                    .requestPreferences
+                                    .autoAcceptRequests
+                            }
+                            aria-label="Toggle automatic request acceptance"
+                            className={`provider-settings-toggle ${settings
+                                    .requestPreferences
+                                    .autoAcceptRequests
+                                    ? "provider-settings-toggle-on"
+                                    : ""
+                                }`}
+                            onClick={
+                                handleAutoAcceptChange
+                            }
+                        >
+
+                            <span />
+
+                        </button>
 
                     </div>
 
-                    <input
-                        type="checkbox"
-                        checked={
-                            settings
-                                .requestPreferences
-                                .autoAcceptRequests
-                        }
-                        onChange={
-                            handleAutoAcceptChange
-                        }
-                    />
-
-                </label>
+                </div>
 
             </section>
 
 
-            <div className="provider-settings-footer">
+            {/* SAVE AREA */}
+
+            <div className="provider-settings-actions">
+
+                <div className="provider-settings-save-info">
+
+                    <span className="provider-settings-save-dot" />
+
+                    <span>
+                        Changes are saved when you click Save.
+                    </span>
+
+                </div>
+
 
                 <button
                     type="button"
@@ -498,7 +532,6 @@ const ProviderSettings = () => {
                             />
 
                             Saving...
-
                         </>
 
                     ) : (

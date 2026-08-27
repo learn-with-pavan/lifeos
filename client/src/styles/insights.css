@@ -1,19 +1,127 @@
+/* =========================================
+   INSIGHTS PAGE
+========================================= */
+
 .insights-page {
     width: 100%;
+    min-width: 0;
 }
 
 
-/* -------------------------------- */
-/* ERROR */
-/* -------------------------------- */
+/* =========================================
+   HEADER
+========================================= */
+
+.insights-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.insights-title-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.insights-title h1 {
+    margin: 0 0 5px;
+
+    color: #0f172a;
+
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.insights-title p {
+    margin: 0;
+
+    max-width: 620px;
+
+    color: #64748b;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.insights-refresh-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 38px;
+    padding: 0 13px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.insights-refresh-button:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.insights-refresh-button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.insights-refresh-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.insights-refresh-icon {
+    animation: insights-spin 1s linear infinite;
+}
+
+@keyframes insights-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
 
 .insights-error {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
 
-    padding: 12px 16px;
+    gap: 20px;
+
+    padding: 13px 16px;
     margin-bottom: 24px;
 
     border: 1px solid #fecaca;
@@ -22,23 +130,45 @@
     background: #fef2f2;
     color: #991b1b;
 
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.insights-error div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.insights-error strong {
+    font-size: 13px;
+}
+
+.insights-error span {
+    color: #b91c1c;
 }
 
 .insights-error button {
+    flex-shrink: 0;
+
     border: none;
     background: transparent;
 
     color: #991b1b;
 
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
+
     cursor: pointer;
 }
 
+.insights-error button:hover {
+    text-decoration: underline;
+}
 
-/* -------------------------------- */
-/* OVERVIEW */
-/* -------------------------------- */
+
+/* =========================================
+   OVERVIEW
+========================================= */
 
 .insights-overview-grid {
     display: grid;
@@ -48,10 +178,12 @@
 
     gap: 16px;
 
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .insight-stat-card {
+    min-width: 0;
+
     padding: 20px;
 
     border: 1px solid #e2e8f0;
@@ -61,27 +193,38 @@
 
     transition:
         transform 0.2s ease,
+        border-color 0.2s ease,
         box-shadow 0.2s ease;
 }
 
 .insight-stat-card:hover {
     transform: translateY(-2px);
 
+    border-color: #cbd5e1;
+
     box-shadow:
-        0 8px 24px
+        0 10px 28px
         rgba(15, 23, 42, 0.06);
 }
 
 .insight-stat-card-primary {
     border-color: #cbd5e1;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8fafc
+        );
 }
 
 .insight-stat-top {
     display: flex;
     align-items: center;
+
     gap: 10px;
 
-    margin-bottom: 18px;
+    margin-bottom: 17px;
 
     color: #64748b;
 
@@ -92,6 +235,8 @@
 .insight-stat-icon {
     width: 36px;
     height: 36px;
+
+    flex-shrink: 0;
 
     display: flex;
     align-items: center;
@@ -106,10 +251,16 @@
 .insight-stat-card h2 {
     margin: 0 0 6px;
 
+    overflow: hidden;
+
     color: #0f172a;
 
-    font-size: 26px;
+    font-size: 25px;
     font-weight: 700;
+    letter-spacing: -0.02em;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .insight-stat-card p {
@@ -117,13 +268,81 @@
 
     color: #64748b;
 
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 
-/* -------------------------------- */
-/* MAIN GRID */
-/* -------------------------------- */
+/* =========================================
+   NO DATA
+========================================= */
+
+.insights-no-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    min-height: 320px;
+
+    padding: 40px;
+
+    margin-bottom: 24px;
+
+    border: 1px dashed #cbd5e1;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+.insights-no-data-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 18px;
+
+    border-radius: 16px;
+
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.insights-no-data h2 {
+    margin: 0 0 8px;
+
+    color: #0f172a;
+
+    font-size: 18px;
+    font-weight: 650;
+}
+
+.insights-no-data p {
+    max-width: 470px;
+
+    margin: 0 0 22px;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.insights-no-data .primary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* =========================================
+   MAIN GRID
+========================================= */
 
 .insights-grid {
     display: grid;
@@ -135,9 +354,9 @@
 }
 
 
-/* -------------------------------- */
-/* PANELS */
-/* -------------------------------- */
+/* =========================================
+   PANELS
+========================================= */
 
 .insight-panel {
     min-width: 0;
@@ -148,6 +367,10 @@
     border-radius: 14px;
 
     background: #ffffff;
+
+    box-shadow:
+        0 1px 2px
+        rgba(15, 23, 42, 0.02);
 }
 
 .insight-panel-wide {
@@ -171,6 +394,7 @@
 
     font-size: 17px;
     font-weight: 650;
+    letter-spacing: -0.01em;
 }
 
 .insight-panel-header p {
@@ -178,33 +402,155 @@
 
     color: #64748b;
 
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.5;
 }
 
-.insight-panel-header > svg {
+.insight-panel-icon {
+    width: 34px;
+    height: 34px;
+
     flex-shrink: 0;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #f8fafc;
     color: #64748b;
 }
 
 
-/* -------------------------------- */
-/* LOADING / EMPTY */
-/* -------------------------------- */
+/* =========================================
+   LOADING
+========================================= */
 
 .insight-loading {
-    padding: 36px 0;
+    display: flex;
+    flex-direction: column;
 
-    text-align: center;
+    gap: 15px;
 
-    color: #64748b;
-
-    font-size: 14px;
+    padding: 10px 0;
 }
 
+.insight-loading-bar {
+    width: 100%;
+    height: 35px;
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f1f5f9 25%,
+            #e2e8f0 50%,
+            #f1f5f9 75%
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        insights-skeleton 1.4s infinite;
+}
+
+.insight-loading-row {
+    width: 100%;
+    height: 55px;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f1f5f9 25%,
+            #e2e8f0 50%,
+            #f1f5f9 75%
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        insights-skeleton 1.4s infinite;
+}
+
+@keyframes insights-skeleton {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+.insight-loading-chart {
+    min-height: 220px;
+}
+
+.insight-chart-skeleton {
+    height: 210px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+
+    gap: 15px;
+}
+
+.insight-chart-skeleton span {
+    width: 38px;
+
+    border-radius:
+        7px 7px 3px 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f1f5f9 25%,
+            #e2e8f0 50%,
+            #f1f5f9 75%
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        insights-skeleton 1.4s infinite;
+}
+
+.insight-chart-skeleton span:nth-child(1) {
+    height: 35%;
+}
+
+.insight-chart-skeleton span:nth-child(2) {
+    height: 60%;
+}
+
+.insight-chart-skeleton span:nth-child(3) {
+    height: 45%;
+}
+
+.insight-chart-skeleton span:nth-child(4) {
+    height: 80%;
+}
+
+.insight-chart-skeleton span:nth-child(5) {
+    height: 55%;
+}
+
+.insight-chart-skeleton span:nth-child(6) {
+    height: 70%;
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
 .insight-empty {
-    min-height: 140px;
+    min-height: 145px;
 
     display: flex;
     align-items: center;
@@ -214,6 +560,8 @@
     gap: 10px;
 
     color: #94a3b8;
+
+    text-align: center;
 }
 
 .insight-empty p {
@@ -223,9 +571,9 @@
 }
 
 
-/* -------------------------------- */
-/* HORIZONTAL BARS */
-/* -------------------------------- */
+/* =========================================
+   HORIZONTAL BARS
+========================================= */
 
 .insight-bars {
     display: flex;
@@ -239,6 +587,8 @@
     flex-direction: column;
 
     gap: 8px;
+
+    min-width: 0;
 }
 
 .insight-bar-label {
@@ -248,15 +598,29 @@
 
     gap: 16px;
 
-    color: #334155;
+    min-width: 0;
+
+    color: #475569;
 
     font-size: 13px;
 }
 
+.insight-bar-label span {
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .insight-bar-label strong {
+    flex-shrink: 0;
+
     color: #0f172a;
 
     font-size: 13px;
+    font-weight: 650;
 }
 
 .insight-bar-track {
@@ -278,42 +642,44 @@
     background: #334155;
 
     transition:
-        width 0.5s ease;
+        width 0.6s ease;
 }
 
 
-/* -------------------------------- */
-/* MONTHLY SPENDING */
-/* -------------------------------- */
+/* =========================================
+   MONTHLY SPENDING
+========================================= */
 
 .monthly-spending {
-    height: 260px;
+    height: 270px;
 
     display: flex;
     align-items: flex-end;
 
-    gap: 14px;
+    gap: 18px;
 
-    padding: 20px 4px 0;
+    padding: 12px 8px 0;
 
     overflow-x: auto;
+
+    scrollbar-width: thin;
 }
 
 .monthly-item {
-    min-width: 72px;
+    min-width: 76px;
     height: 100%;
 
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: flex-end;
+    flex-direction: column;
 
     gap: 7px;
 }
 
 .monthly-bar-area {
     width: 42px;
-    height: 170px;
+    height: 175px;
 
     display: flex;
     align-items: flex-end;
@@ -331,13 +697,20 @@
     background: #475569;
 
     transition:
-        height 0.4s ease;
+        height 0.5s ease,
+        opacity 0.2s ease;
+}
+
+.monthly-bar:hover {
+    opacity: 0.75;
 }
 
 .monthly-item strong {
     color: #334155;
 
     font-size: 11px;
+    font-weight: 650;
+
     white-space: nowrap;
 }
 
@@ -345,13 +718,14 @@
     color: #94a3b8;
 
     font-size: 11px;
+
     white-space: nowrap;
 }
 
 
-/* -------------------------------- */
-/* ASSET OWNERSHIP */
-/* -------------------------------- */
+/* =========================================
+   ASSET OWNERSHIP
+========================================= */
 
 .asset-ownership-list {
     display: flex;
@@ -359,16 +733,34 @@
 }
 
 .asset-ownership-row {
+    width: 100%;
+
     display: flex;
     align-items: center;
-    justify-content: space-between;
 
-    gap: 20px;
+    gap: 14px;
 
-    padding: 14px 0;
+    padding: 14px 4px;
 
-    border-bottom:
-        1px solid #f1f5f9;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+
+    background: transparent;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        padding 0.2s ease;
+}
+
+.asset-ownership-row:hover {
+    padding-left: 8px;
+    padding-right: 8px;
+
+    background: #f8fafc;
 }
 
 .asset-ownership-row:first-child {
@@ -384,6 +776,8 @@
 .asset-ownership-main {
     min-width: 0;
 
+    flex: 1;
+
     display: flex;
     align-items: center;
 
@@ -391,8 +785,8 @@
 }
 
 .asset-ownership-icon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
 
     flex-shrink: 0;
 
@@ -406,14 +800,24 @@
     color: #475569;
 }
 
+.asset-ownership-main > div:last-child {
+    min-width: 0;
+}
+
 .asset-ownership-main strong {
     display: block;
 
     margin-bottom: 3px;
 
+    overflow: hidden;
+
     color: #0f172a;
 
     font-size: 14px;
+    font-weight: 650;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .asset-ownership-main p {
@@ -433,8 +837,8 @@
     flex-shrink: 0;
 
     display: flex;
-    flex-direction: column;
     align-items: flex-end;
+    flex-direction: column;
 
     gap: 3px;
 }
@@ -443,18 +847,51 @@
     color: #0f172a;
 
     font-size: 14px;
+    font-weight: 650;
+
+    white-space: nowrap;
 }
 
 .asset-ownership-cost span {
     color: #94a3b8;
 
     font-size: 11px;
+
+    white-space: nowrap;
+}
+
+.asset-ownership-arrow {
+    flex-shrink: 0;
+
+    color: #94a3b8;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.asset-ownership-row:hover .asset-ownership-arrow {
+    color: #334155;
+
+    transform: translateX(2px);
 }
 
 
-/* -------------------------------- */
-/* RESPONSIVE */
-/* -------------------------------- */
+/* =========================================
+   FOCUS STATES
+========================================= */
+
+.insights-refresh-button:focus-visible,
+.insights-error button:focus-visible,
+.asset-ownership-row:focus-visible {
+    outline: 2px solid #334155;
+    outline-offset: 2px;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
 
 @media (max-width: 1100px) {
 
@@ -466,6 +903,10 @@
 }
 
 
+/* =========================================
+   SMALL TABLET
+========================================= */
+
 @media (max-width: 800px) {
 
     .insights-grid {
@@ -476,13 +917,54 @@
         grid-column: span 1;
     }
 
+    .insights-title h1 {
+        font-size: 24px;
+    }
+
 }
 
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 600px) {
 
     .insights-overview-grid {
         grid-template-columns: 1fr;
+    }
+
+    .insights-title {
+        gap: 10px;
+    }
+
+    .insights-title-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .insights-title h1 {
+        font-size: 22px;
+    }
+
+    .insights-title p {
+        font-size: 13px;
+    }
+
+    .insights-refresh-button {
+        padding: 0 10px;
+    }
+
+    .insights-refresh-button {
+        font-size: 0;
+    }
+
+    .insights-refresh-button svg {
+        margin: 0;
+    }
+
+    .insight-stat-card {
+        padding: 18px;
     }
 
     .insight-stat-card h2 {
@@ -491,6 +973,25 @@
 
     .insight-panel {
         padding: 18px;
+        border-radius: 12px;
+    }
+
+    .insight-panel-header {
+        margin-bottom: 20px;
+    }
+
+    .monthly-spending {
+        gap: 14px;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .monthly-item {
+        min-width: 68px;
+    }
+
+    .monthly-bar-area {
+        width: 36px;
     }
 
     .asset-ownership-row {
@@ -498,7 +999,46 @@
     }
 
     .asset-ownership-cost {
-        text-align: right;
+        align-items: flex-end;
+    }
+
+    .asset-ownership-arrow {
+        display: none;
+    }
+
+}
+
+
+/* =========================================
+   VERY SMALL MOBILE
+========================================= */
+
+@media (max-width: 400px) {
+
+    .insights-error {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .insight-bar-label {
+        gap: 8px;
+    }
+
+    .asset-ownership-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    .asset-ownership-main {
+        gap: 9px;
+    }
+
+    .asset-ownership-main strong {
+        font-size: 13px;
+    }
+
+    .asset-ownership-main p {
+        font-size: 11px;
     }
 
 }

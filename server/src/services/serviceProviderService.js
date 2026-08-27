@@ -1,5 +1,7 @@
+const Payment = require("../models/Payment");
 const ServiceProvider = require("../models/ServiceProvider");
 const ServiceRequest = require("../models/ServiceRequest");
+const { processEvent } = require("./automationService");
 const { emitServiceRequestEvent } = require("./serviceRequestAutomationService");
 
 const createServiceProvider = async (
@@ -290,40 +292,38 @@ const startProviderService = async (requestId, providerId) => {
 };
 
 const completeProviderService = async (requestId, providerId, completionData) => {
+    const request = await ServiceRequest.findOneAndUpdate(
+        {
+            _id: requestId,
+            serviceProvider: providerId,
+            status: "IN_PROGRESS",
+        },
+        {
+            $set: {
+                status: "COMPLETED",
 
-    const request =
-        await ServiceRequest.findOneAndUpdate(
-            {
-                _id: requestId,
-                serviceProvider: providerId,
-                status: "IN_PROGRESS",
-            },
-            {
-                $set: {
-                    status: "COMPLETED",
+                completion: {
+                    completedAt: new Date(),
 
-                    completion: {
-                        completedAt: new Date(),
+                    notes:
+                        completionData
+                            ?.completionNotes
+                            ?.trim() || "",
 
-                        notes:
-                            completionData
-                                ?.completionNotes
-                                ?.trim() || "",
+                    serviceCost: completionData?.serviceCost || 0,
 
-                        serviceCost,
-
-                        partsUsed:
-                            completionData
-                                ?.partsUsed
-                                ?.trim() || "",
-                    },
+                    partsUsed:
+                        completionData
+                            ?.partsUsed
+                            ?.trim() || "",
                 },
             },
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
 
     if (!request) {
 
@@ -338,7 +338,7 @@ const completeProviderService = async (requestId, providerId, completionData) =>
     }
 
 
-    if (serviceCost > 0) {
+    if (completionData?.serviceCost > 0) {
 
         let payment =
             await Payment.findOne({
@@ -348,53 +348,48 @@ const completeProviderService = async (requestId, providerId, completionData) =>
 
         if (!payment) {
 
-            payment =
-                await Payment.create({
+            payment = await Payment.create({
 
-                    user:
-                        request.user,
+                user:
+                    request.user,
 
-                    serviceRequest:
-                        request._id,
+                serviceRequest:
+                    request._id,
 
-                    serviceProvider:
-                        request.serviceProvider,
+                serviceProvider:
+                    request.serviceProvider,
 
-                    amount:
-                        serviceCost,
+                amount:
+                    completionData?.serviceCost,
 
-                    currency:
-                        "INR",
+                currency:
+                    "INR",
 
-                    status:
-                        "PENDING",
-                });
+                status:
+                    "PENDING",
+            });
         }
 
 
         await processEvent(
             "PAYMENT_CREATED",
             {
-                userId:
-                    request.user,
+                userId: request.user,
 
-                assetId:
-                    request.asset,
+                assetId: request.asset,
 
-                entityId:
-                    payment._id,
+                entityId: payment._id,
 
-                paymentId:
-                    payment._id,
+                paymentId: payment._id,
 
-                serviceRequestId:
-                    request._id,
+                serviceRequestId: request._id,
 
-                recipientRole:
-                    "CUSTOMER",
+                paymentAmount: completionData?.serviceCost,
+
+                recipientRole: "CUSTOMER",
 
                 message:
-                    `Payment of ₹${serviceCost} is due for your completed service.`,
+                    `Payment of ₹${completionData?.serviceCost} is due for your completed service.`,
             }
         );
     }

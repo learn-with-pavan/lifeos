@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Wrench } from "lucide-react";
 import { useState } from "react";
 import {
     registerProviderUser,
     loginUser,
 } from "../../services/authService";
 import { useToast } from "../../context/ToastContext";
+import logo from '../../assets/logo.svg'
 
 const INITIAL_FORM_DATA = {
     name: "",
@@ -192,7 +192,7 @@ function ProviderRegister() {
             <div className="auth-card">
                 <div className="auth-brand">
                     <div className="brand-icon">
-                        <Wrench size={24} />
+                        <img src={logo} alt="brand-icon" />
                     </div>
 
                     <div>

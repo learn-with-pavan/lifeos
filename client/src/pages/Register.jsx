@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { loginUser, registerUser } from "../services/authService";
 import { useToast } from "../context/ToastContext";
+import logo from '../assets/logo.svg';
 
 const INITIAL_FORM_DATA = {
     name: "",
@@ -170,7 +170,7 @@ function Register() {
             <div className="auth-card">
                 <div className="auth-brand">
                     <div className="brand-icon">
-                        <ShieldCheck size={24} />
+                        <img src={logo} alt="brand-icon" />
                     </div>
 
                     <div>

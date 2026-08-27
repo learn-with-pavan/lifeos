@@ -27,7 +27,7 @@ import {
 import "../../styles/provider/providerLayout.css";
 import { getNotificationIcon } from "../../utils/notificationUtils";
 import { useNotifications } from "../../context/NotificationContext";
-
+import logo from "../../assets/logo.svg";
 
 const ProviderLayout = () => {
 
@@ -243,7 +243,7 @@ const ProviderLayout = () => {
 
                     <div className="provider-brand-icon">
 
-                        <Wrench size={20} />
+                        <img src={logo} alt="brand-icon" />
 
                     </div>
 
