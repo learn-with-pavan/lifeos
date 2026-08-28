@@ -1,0 +1,489 @@
+
+/* =========================================================
+   LIFEOS REGISTER
+   Premium responsive registration experience
+   ========================================================= */
+
+.register-page {
+    --register-accent: #2563eb;
+}
+
+/* =========================================================
+   REGISTER SHOWCASE
+   ========================================================= */
+
+.register-showcase .showcase-copy {
+    margin-top: clamp(24px, 3.5vh, 42px);
+}
+
+.register-showcase .showcase-copy h1 {
+    font-size: clamp(32px, 3vw, 48px);
+}
+
+.register-showcase .showcase-copy p {
+    max-width: 560px;
+}
+
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
+
+.module-notifications {
+    right: 10%;
+    top: 15%;
+    animation-delay: 0.74s;
+}
+
+.connection-notifications {
+    width: 90px;
+    height: 58px;
+    right: 22%;
+    top: 19%;
+    border-right: 1px solid rgba(96, 165, 250, 0.15);
+    border-top: 1px solid rgba(96, 165, 250, 0.15);
+    border-radius: 0 28px 0 0;
+}
+
+.connection-notifications::before {
+    display: none;
+}
+
+.connection-notifications span {
+    right: -3px;
+    bottom: -3px;
+}
+
+/* =========================================================
+   REGISTER PANEL
+   ========================================================= */
+
+/*
+   IMPORTANT:
+   Do not force the register panel to exactly 100vh.
+   The form is taller than the login form.
+*/
+
+.register-panel {
+    min-height: 100vh;
+    height: auto;
+    padding: 24px 30px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    /* Allows scrolling without ugly scrollbar spacing */
+    scrollbar-width: thin;
+}
+
+/* =========================================================
+   REGISTER FORM SHELL
+   ========================================================= */
+
+.register-form-shell {
+    width: min(100%, 420px);
+    max-width: 420px;
+
+    padding: 25px 34px;
+
+    /*
+       Prevent the shell itself from becoming clipped.
+       The panel handles vertical scrolling.
+    */
+    margin: auto;
+}
+
+/* =========================================================
+   REGISTER HEADING
+   ========================================================= */
+
+.register-heading {
+    margin-bottom: 18px;
+}
+
+.register-heading h2 {
+    font-size: 27px;
+    line-height: 1.15;
+}
+
+.register-heading p {
+    max-width: 360px;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   REGISTER FORM
+   ========================================================= */
+
+.register-form {
+    gap: 11px;
+}
+
+
+.register-form .login-form-group label {
+    font-size: 14px;
+}
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.register-form .login-input-wrapper {
+    height: 45px;
+    min-height: 45px;
+}
+
+.register-form .login-input-wrapper input {
+    font-size: 13px;
+}
+
+.register-form .login-input-wrapper svg {
+    width: 17px;
+    height: 17px;
+}
+
+/* =========================================================
+   VALIDATION ERROR
+   ========================================================= */
+
+.register-form .login-form-error {
+    margin-top: 2px;
+    font-size: 10px;
+    line-height: 1.25;
+}
+
+/* =========================================================
+   PASSWORD NOTE
+   ========================================================= */
+
+.register-password-note {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 0;
+    padding: 7px 9px;
+
+    border-radius: 8px;
+
+    background: #f8fbff;
+    border: 1px solid #e8f0fa;
+
+    color: #7b8ba0;
+
+    font-size: 9px;
+    line-height: 1.35;
+}
+
+.register-password-note svg {
+    flex-shrink: 0;
+    color: #3b82f6;
+}
+
+/* =========================================================
+   REGISTER BUTTON
+   ========================================================= */
+
+.register-submit {
+    min-height: 43px;
+    height: 43px;
+    margin-top: 2px;
+}
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.register-form-shell .login-divider {
+    margin-top: 17px;
+    margin-bottom: 13px;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.register-footer {
+    gap: 5px;
+}
+
+.register-footer p {
+    line-height: 1.35;
+}
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+.register-form-shell .login-security {
+    margin-top: 14px;
+}
+
+/* =========================================================
+   AUTOFILL
+   ========================================================= */
+
+.register-form input:-webkit-autofill,
+.register-form input:-webkit-autofill:hover,
+.register-form input:-webkit-autofill:focus,
+.register-form input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+
+    -webkit-text-fill-color: #172033 !important;
+
+    caret-color: #172033;
+
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+/* =========================================================
+   DESKTOP SHORT-SCREEN FIX
+   ========================================================= */
+
+/*
+   This is the most important part.
+
+   On laptops with 768px / 800px height, the register form
+   cannot physically fit together with all supporting content.
+
+   Instead of hiding the top/bottom, the panel becomes scrollable.
+*/
+
+@media (min-width: 901px) and (max-height: 850px) {
+    .register-panel {
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+
+    .register-form-shell {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .register-heading {
+        margin-bottom: 14px;
+    }
+
+    .register-form {
+        gap: 10px;
+    }
+
+    .register-form .login-form-wrapper,
+    .register-form .login-input-wrapper {
+        height: 43px;
+        min-height: 43px;
+    }
+
+    .register-password-note {
+        padding: 6px 8px;
+    }
+
+    .register-submit {
+        height: 41px;
+        min-height: 41px;
+    }
+
+    .register-form-shell .login-divider {
+        margin-top: 12px;
+        margin-bottom: 9px;
+    }
+
+    .register-form-shell .login-security {
+        margin-top: 10px;
+    }
+}
+
+/* =========================================================
+   VERY SHORT DESKTOP SCREENS
+   ========================================================= */
+
+@media (min-width: 901px) and (max-height: 720px) {
+    .register-panel {
+        padding: 8px 24px;
+    }
+
+    .register-form-shell {
+        padding: 16px 30px;
+    }
+
+    .register-heading {
+        margin-bottom: 10px;
+    }
+
+    .register-heading h2 {
+        font-size: 24px;
+    }
+
+    .register-heading p {
+        font-size: 11px;
+    }
+
+    .register-form {
+        gap: 10px;
+    }
+
+    .register-form .login-form-group {
+        gap: 3px;
+    }
+
+    .register-form .login-input-wrapper {
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .register-submit {
+        height: 39px;
+        min-height: 39px;
+    }
+
+    .register-password-note {
+        display: none;
+    }
+
+    .register-form-shell .login-divider,
+    .register-form-shell .login-security {
+        margin-top: 8px;
+    }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1180px) {
+    .register-panel {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .register-form-shell {
+        padding: 24px 28px;
+    }
+
+    .module-notifications {
+        right: 5%;
+    }
+
+    .connection-notifications {
+        right: 17%;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .register-page {
+        min-height: 100dvh;
+        height: auto;
+    }
+
+    /*
+       Hide desktop showcase through the existing login styles.
+       Register panel becomes the complete mobile page.
+    */
+
+    .register-panel {
+        min-height: 100dvh;
+        height: auto;
+        padding: 24px 18px 30px;
+        overflow: visible;
+    }
+
+    .register-form-shell {
+        width: min(100%, 440px);
+        max-width: 440px;
+        padding: 28px 30px;
+        margin: 0 auto;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+    .register-panel {
+        padding: 16px 12px 24px;
+    }
+
+    .register-form-shell {
+        padding: 24px 19px;
+        border-radius: 20px;
+    }
+
+    .register-heading {
+        margin-bottom: 17px;
+    }
+
+    .register-heading h2 {
+        font-size: 24px;
+    }
+
+    .register-heading p {
+        font-size: 11px;
+    }
+
+    .register-form {
+        gap: 11px;
+    }
+
+    .register-form .login-input-wrapper {
+        height: 45px;
+        min-height: 45px;
+    }
+
+    .register-password-note {
+        font-size: 8.5px;
+    }
+
+    .register-submit {
+        height: 43px;
+        min-height: 43px;
+    }
+
+    .register-footer {
+        font-size: 10px;
+    }
+
+    .register-form-shell .login-security {
+        font-size: 9px;
+    }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+    .register-form-shell {
+        padding: 21px 16px;
+    }
+
+    .register-heading h2 {
+        font-size: 22px;
+    }
+
+    .register-form .login-input-wrapper {
+        height: 43px;
+        min-height: 43px;
+    }
+
+    .register-password-note {
+        font-size: 8px;
+    }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .register-page *,
+    .register-page *::before,
+    .register-page *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

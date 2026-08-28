@@ -492,11 +492,11 @@
 .provider-form-group input:focus,
 .provider-form-group textarea:focus {
     border-color: #818cf8;
-    box-shadow:
+    /* box-shadow:
         0 0 0 3px rgba(99,
             102,
             241,
-            0.08);
+            0.08); */
 }
 
 .provider-input-with-suffix {

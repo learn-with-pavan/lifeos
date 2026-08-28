@@ -1,0 +1,1315 @@
+
+/* =========================================================
+   LIFEOS PREMIUM PROVIDER REGISTER
+   ========================================================= */
+
+:root {
+    --provider-blue: #2563eb;
+    --provider-blue-light: #60a5fa;
+    --provider-page-bg: linear-gradient(
+        135deg,
+        #f8fbff 0%,
+        #eef6ff 46%,
+        #f8faff 100%
+    );
+    --provider-text: #172033;
+    --provider-secondary: #64748b;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.provider-register-page {
+    position: relative;
+    min-height: 100vh;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.42fr) minmax(390px, 0.88fr);
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--provider-page-bg);
+    color: var(--provider-text);
+}
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.provider-register-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--provider-page-bg);
+}
+
+.provider-background-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.25;
+    background-image:
+        linear-gradient(
+            rgba(100, 116, 139, 0.06) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(100, 116, 139, 0.06) 1px,
+            transparent 1px
+        );
+    background-size: 56px 56px;
+}
+
+.provider-background-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.42;
+    animation: providerAmbientFloat 12s ease-in-out infinite;
+}
+
+.provider-glow-one {
+    width: 420px;
+    height: 420px;
+    top: -180px;
+    left: 16%;
+    background: rgba(96, 165, 250, 0.15);
+}
+
+.provider-glow-two {
+    width: 360px;
+    height: 360px;
+    right: 4%;
+    bottom: -190px;
+    background: rgba(129, 140, 248, 0.12);
+    animation-delay: -5s;
+}
+
+.provider-background-line {
+    position: absolute;
+    width: 620px;
+    height: 620px;
+    border: 1px solid rgba(96, 165, 250, 0.08);
+    border-radius: 50%;
+}
+
+.provider-line-one {
+    top: -360px;
+    left: 43%;
+}
+
+.provider-line-two {
+    right: -400px;
+    bottom: -350px;
+}
+
+@keyframes providerAmbientFloat {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(0, -20px, 0);
+    }
+}
+
+/* =========================================================
+   SHOWCASE
+   ========================================================= */
+
+.provider-showcase {
+    position: relative;
+    min-width: 0;
+    height: 100vh;
+    padding: 34px clamp(42px, 5vw, 90px) 24px;
+    overflow: hidden;
+}
+
+.provider-showcase-inner {
+    position: relative;
+    width: 100%;
+    max-width: 850px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.provider-brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    flex-shrink: 0;
+    animation: providerFadeUp 0.7s ease both;
+}
+
+.provider-logo {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow:
+        0 12px 30px rgba(30, 64, 175, 0.09),
+        0 2px 5px rgba(15, 23, 42, 0.04);
+}
+
+.provider-logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.provider-brand-copy {
+    display: flex;
+    flex-direction: column;
+}
+
+.provider-brand-copy strong {
+    color: #172033;
+    font-size: 18px;
+    line-height: 1.1;
+    font-weight: 760;
+    letter-spacing: -0.5px;
+}
+
+.provider-brand-copy span {
+    margin-top: 4px;
+    color: #7b8ba2;
+    font-size: 10px;
+    letter-spacing: 0.35px;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.provider-showcase-copy {
+    width: min(100%, 620px);
+    margin-top: clamp(24px, 3.2vh, 38px);
+    animation: providerFadeUp 0.75s 0.08s ease both;
+}
+
+.provider-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #3b82f6;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+.provider-eyebrow i {
+    width: 23px;
+    height: 1px;
+    display: block;
+    background: #60a5fa;
+}
+
+.provider-showcase-copy h1 {
+    margin: 12px 0 0;
+    color: #172033;
+    font-size: clamp(32px, 3.1vw, 50px);
+    line-height: 1.07;
+    letter-spacing: -2.3px;
+    font-weight: 760;
+}
+
+.provider-showcase-copy h1 span {
+    color: #111c2e;
+}
+
+.provider-showcase-copy p {
+    max-width: 560px;
+    margin: 13px 0 0;
+    color: #66758b;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   PROVIDER VISUAL
+   ========================================================= */
+
+.provider-visual {
+    position: relative;
+    flex: 1;
+    min-height: 280px;
+    margin-top: 0;
+}
+
+/* =========================================================
+   HUB
+   ========================================================= */
+
+.provider-hub {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 150px;
+    height: 150px;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+}
+
+.provider-hub-core {
+    position: absolute;
+    inset: 17px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 50%;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.98),
+            rgba(246, 250, 255, 0.96)
+        );
+    border: 1px solid rgba(96, 165, 250, 0.32);
+    box-shadow:
+        0 24px 55px rgba(37, 99, 235, 0.13),
+        0 7px 18px rgba(15, 23, 42, 0.07),
+        inset 0 0 0 5px rgba(255, 255, 255, 0.65);
+}
+
+.provider-hub-logo {
+    width: 37px;
+    height: 37px;
+    margin-bottom: 7px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 13px rgba(37, 99, 235, 0.15);
+}
+
+.provider-hub-logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.provider-hub-core strong {
+    color: #172033;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 760;
+    letter-spacing: -0.5px;
+}
+
+.provider-hub-core span {
+    margin-top: 5px;
+    color: #91a0b3;
+    font-size: 8px;
+    letter-spacing: 0.3px;
+}
+
+.provider-hub-orbit {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(96, 165, 250, 0.15);
+    animation: providerHubRotate 20s linear infinite;
+}
+
+.provider-hub-orbit::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #60a5fa;
+    box-shadow: 0 0 12px rgba(96, 165, 250, 0.5);
+}
+
+.provider-orbit-one::after {
+    top: -2px;
+    left: 50%;
+}
+
+.provider-orbit-two {
+    inset: -12px;
+    animation-duration: 27s;
+    animation-direction: reverse;
+}
+
+.provider-orbit-two::after {
+    right: 18px;
+    bottom: 14px;
+    background: #93c5fd;
+}
+
+.provider-hub-pulse {
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    border: 1px solid rgba(96, 165, 250, 0.13);
+    animation: providerHubPulse 3.4s ease-in-out infinite;
+}
+
+@keyframes providerHubRotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes providerHubPulse {
+    0%,
+    100% {
+        transform: scale(0.98);
+        opacity: 0.45;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+/* =========================================================
+   CONNECTIONS
+   ========================================================= */
+
+.provider-connection {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.provider-connection span {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #60a5fa;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.55);
+    animation: providerConnectionFlow 3.5s linear infinite;
+}
+
+.provider-connection-top {
+    width: 1px;
+    height: 62px;
+    left: calc(50% - 0.5px);
+    top: 7%;
+    background: rgba(96, 165, 250, 0.18);
+}
+
+.provider-connection-top span {
+    left: -2px;
+    top: 0;
+}
+
+.provider-connection-left {
+    width: 130px;
+    height: 1px;
+    left: 6%;
+    top: calc(50% - 0.5px);
+    background: linear-gradient(
+        90deg,
+        rgba(96, 165, 250, 0.08),
+        rgba(96, 165, 250, 0.34),
+        rgba(96, 165, 250, 0.08)
+    );
+}
+
+.provider-connection-left span {
+    left: 0;
+    top: -2px;
+}
+
+.provider-connection-right {
+    width: 130px;
+    height: 1px;
+    right: 6%;
+    top: calc(50% - 0.5px);
+    background: linear-gradient(
+        90deg,
+        rgba(96, 165, 250, 0.08),
+        rgba(96, 165, 250, 0.34),
+        rgba(96, 165, 250, 0.08)
+    );
+}
+
+.provider-connection-right span {
+    right: 0;
+    top: -2px;
+}
+
+.provider-connection-bottom {
+    width: 1px;
+    height: 62px;
+    left: calc(50% - 0.5px);
+    bottom: 6%;
+    background: rgba(96, 165, 250, 0.18);
+}
+
+.provider-connection-bottom span {
+    left: -2px;
+    bottom: 0;
+}
+
+@keyframes providerConnectionFlow {
+    0% {
+        opacity: 0.1;
+        transform: scale(0.7);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.1;
+        transform: scale(0.7);
+    }
+}
+
+/* =========================================================
+   MODULE CARDS
+   ========================================================= */
+
+.provider-module {
+    position: absolute;
+    z-index: 4;
+    width: 190px;
+    height: 58px;
+    min-height: 58px;
+    max-height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    box-sizing: border-box;
+    border: 1px solid rgba(203, 213, 225, 0.85);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.91);
+    box-shadow:
+        0 12px 28px rgba(30, 64, 175, 0.07),
+        0 3px 8px rgba(15, 23, 42, 0.035);
+    backdrop-filter: blur(12px);
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+    animation: providerModuleEntrance 0.7s ease both;
+}
+
+.provider-module:hover {
+    transform: translateY(-3px);
+    border-color: rgba(96, 165, 250, 0.5);
+    box-shadow:
+        0 17px 35px rgba(37, 99, 235, 0.1),
+        0 5px 12px rgba(15, 23, 42, 0.05);
+}
+
+.provider-module-icon {
+    width: 33px;
+    height: 33px;
+    flex: 0 0 33px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.provider-module-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.provider-module-copy strong {
+    color: #273449;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.provider-module-copy span {
+    margin-top: 4px;
+    color: #8a98aa;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.provider-module-status {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 7px rgba(52, 211, 153, 0.55);
+}
+
+@keyframes providerModuleEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   MODULE POSITIONS
+   ========================================================= */
+
+.module-dashboard {
+    left: calc(50% - 79px);
+    top: 0;
+}
+
+.module-requests {
+    right: 3%;
+    top: 17%;
+}
+
+.module-schedules {
+    left: 2%;
+    top: 17%;
+}
+
+.module-profile {
+    left: 0;
+    top: calc(50% - 29px);
+}
+
+.module-settings {
+    right: 0;
+    top: calc(50% - 29px);
+}
+
+.module-earnings {
+    left: 7%;
+    bottom: 2%;
+}
+
+.provider-notifications {
+    right: 7%;
+    bottom: 2%;
+}
+
+/* =========================================================
+   SHOWCASE FOOTER
+   ========================================================= */
+
+.provider-showcase-footer {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 5px;
+    animation: providerFadeUp 0.8s 0.35s ease both;
+}
+
+.provider-security,
+.provider-platform-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #7f8da1;
+    font-size: 9px;
+}
+
+.provider-security span {
+    color: #3b82f6;
+    font-size: 13px;
+}
+
+.provider-platform-status i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 9px rgba(52, 211, 153, 0.65);
+}
+
+/* =========================================================
+   REGISTER PANEL
+   ========================================================= */
+
+.provider-register-panel {
+    position: relative;
+    min-width: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px clamp(24px, 4vw, 60px);
+}
+
+.provider-register-shell {
+    width: 100%;
+    max-width: 410px;
+    padding: 24px clamp(27px, 3vw, 38px);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(219, 229, 240, 0.9);
+    box-shadow:
+        0 30px 70px rgba(30, 64, 175, 0.08),
+        0 8px 20px rgba(15, 23, 42, 0.045);
+    animation: providerRegisterCardIn 0.7s 0.1s ease both;
+}
+
+@keyframes providerRegisterCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   MOBILE BRAND
+   ========================================================= */
+
+.provider-mobile-brand {
+    display: none;
+}
+
+/* =========================================================
+   HEADING
+   ========================================================= */
+
+.provider-register-heading {
+    margin-bottom: 16px;
+}
+
+.provider-register-welcome {
+    display: inline-block;
+    margin-bottom: 6px;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.9px;
+}
+
+.provider-register-heading h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 27px;
+    line-height: 1.16;
+    letter-spacing: -1px;
+    font-weight: 760;
+}
+
+.provider-register-heading p {
+    margin: 6px 0 0;
+    color: #718096;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.provider-register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.provider-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.provider-form-group label {
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   INPUT WRAPPER
+   ========================================================= */
+
+.provider-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 38px;
+    min-height: 38px;
+    border: 1px solid #dbe4ee;
+    border-radius: 10px;
+    background: #fff;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+/* Left field icon */
+
+.provider-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    width: 15px;
+    height: 15px;
+    transform: translateY(-50%);
+    flex-shrink: 0;
+    color: #94a3b8;
+    pointer-events: none;
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+/* Input */
+
+.provider-input-wrapper input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0 12px 0 38px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #172033;
+    font: inherit;
+    font-size: 14px;
+}
+
+/* Password inputs need space for eye button */
+
+.provider-input-wrapper:has(.provider-password-toggle) input {
+    padding-right: 42px;
+}
+
+.provider-input-wrapper input::placeholder {
+    color: #a7b1bf;
+}
+
+/* =========================================================
+   INPUT FOCUS
+   ========================================================= */
+
+.provider-input-wrapper:focus-within {
+    border-color: #60a5fa;
+    background: #fff;
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.08),
+        0 4px 12px rgba(37, 99, 235, 0.04);
+}
+
+.provider-input-wrapper:focus-within .provider-input-icon {
+    color: #2563eb;
+}
+
+/* =========================================================
+   PASSWORD EYE BUTTON
+   ========================================================= */
+
+.provider-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    margin: 0;
+    transform: translateY(-50%);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 7px;
+    outline: 0;
+
+    background: transparent;
+    color: #94a3b8;
+
+    cursor: pointer;
+
+    transition:
+        color 0.18s ease,
+        background-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.provider-password-toggle svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.9;
+    pointer-events: none;
+}
+
+.provider-password-toggle:hover {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.provider-password-toggle:active {
+    transform: translateY(-50%) scale(0.94);
+}
+
+.provider-password-toggle:focus-visible {
+    color: #2563eb;
+    background: #eff6ff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16);
+}
+
+.provider-input-wrapper:focus-within .provider-password-toggle {
+    color: #64748b;
+}
+
+.provider-input-wrapper:focus-within
+    .provider-password-toggle:hover {
+    color: #2563eb;
+}
+
+/* =========================================================
+   ERROR STATE
+   ========================================================= */
+
+.provider-input-wrapper.has-error {
+    border-color: #ef4444;
+}
+
+.provider-input-wrapper.has-error:focus-within {
+    border-color: #ef4444;
+    box-shadow:
+        0 0 0 3px rgba(239, 68, 68, 0.07),
+        0 4px 12px rgba(239, 68, 68, 0.04);
+}
+
+.provider-input-wrapper.has-error .provider-input-icon {
+    color: #ef4444;
+}
+
+.provider-input-wrapper.has-error
+    .provider-password-toggle {
+    color: #94a3b8;
+}
+
+.provider-input-wrapper.has-error
+    .provider-password-toggle:hover {
+    color: #ef4444;
+    background: #fef2f2;
+}
+
+.provider-form-error {
+    margin: 0;
+    color: #dc2626;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+/* =========================================================
+   DISABLED STATE
+   ========================================================= */
+
+.provider-input-wrapper:has(input:disabled) {
+    background: #f8fafc;
+    cursor: not-allowed;
+}
+
+.provider-input-wrapper input:disabled {
+    cursor: not-allowed;
+    color: #94a3b8;
+}
+
+.provider-password-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* =========================================================
+   AUTOFILL
+   ========================================================= */
+
+.provider-input-wrapper input:-webkit-autofill,
+.provider-input-wrapper input:-webkit-autofill:hover,
+.provider-input-wrapper input:-webkit-autofill:focus,
+.provider-input-wrapper input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #172033 !important;
+    caret-color: #172033;
+    transition:
+        background-color 9999s ease-in-out 0s,
+        color 9999s ease-in-out 0s;
+}
+
+/* =========================================================
+   SUBMIT
+   ========================================================= */
+
+.provider-register-submit {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    height: 40px;
+    min-height: 40px;
+    margin-top: 3px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 10px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 23px rgba(37, 99, 235, 0.2);
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.provider-register-submit::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.17) 50%,
+        transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+}
+
+.provider-register-submit span {
+    position: relative;
+    z-index: 1;
+}
+
+.provider-register-submit:hover {
+    transform: translateY(-1px);
+    background: #172033;
+    box-shadow:
+        0 13px 28px rgba(37, 99, 235, 0.24);
+}
+
+.provider-register-submit:hover::before {
+    transform: translateX(120%);
+}
+
+.provider-register-submit:active {
+    transform: translateY(0);
+}
+
+.provider-register-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.provider-register-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 13px 0 10px;
+}
+
+.provider-register-divider span {
+    flex: 1;
+    height: 1px;
+    background: #e8eef5;
+}
+
+.provider-register-divider small {
+    color: #a0abba;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.provider-register-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+}
+
+.provider-register-footer p {
+    margin: 0;
+    color: #7b8798;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.provider-register-footer a {
+    margin-left: 4px;
+    color: #2563eb;
+    font-weight: 680;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.provider-register-footer a:hover {
+    color: #1d4ed8;
+}
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+.provider-register-security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid #edf1f5;
+    color: #9aa6b6;
+    font-size: 12px;
+}
+
+.provider-register-security span {
+    color: #7c8da3;
+    font-size: 11px;
+}
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes providerFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1180px) {
+    .provider-register-page {
+        grid-template-columns:
+            minmax(0, 1.15fr)
+            minmax(370px, 0.85fr);
+    }
+
+    .provider-showcase {
+        padding-left: 42px;
+        padding-right: 35px;
+    }
+
+    .provider-showcase-copy h1 {
+        font-size: clamp(30px, 3.5vw, 44px);
+    }
+
+    .provider-module {
+        width: 145px;
+    }
+
+    .module-requests {
+        right: 0;
+    }
+
+    .module-schedules {
+        left: 0;
+    }
+
+    .module-earnings {
+        left: 0;
+    }
+
+    .provider-notifications {
+        right: 0;
+    }
+
+    .provider-connection-left,
+    .provider-connection-right {
+        width: 105px;
+    }
+}
+
+/* =========================================================
+   MOBILE / SMALL TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .provider-register-page {
+        height: auto;
+        min-height: 100vh;
+        display: block;
+        overflow: visible;
+    }
+
+    .provider-showcase {
+        display: none;
+    }
+
+    .provider-register-panel {
+        min-height: 100vh;
+        height: auto;
+        padding: 24px 18px;
+        background: var(--provider-page-bg);
+    }
+
+    .provider-register-shell {
+        max-width: 440px;
+    }
+
+    .provider-mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .provider-mobile-logo {
+        width: 42px;
+        height: 42px;
+        overflow: hidden;
+        border-radius: 11px;
+    }
+
+    .provider-mobile-logo img {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .provider-mobile-brand strong {
+        display: block;
+        color: #172033;
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    .provider-mobile-brand span {
+        display: block;
+        margin-top: 4px;
+        color: #8997aa;
+        font-size: 9px;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+    .provider-register-panel {
+        padding: 12px 10px;
+    }
+
+    .provider-register-shell {
+        padding: 21px 18px;
+        border-radius: 20px;
+    }
+
+    .provider-register-heading {
+        margin-bottom: 15px;
+    }
+
+    .provider-register-heading h2 {
+        font-size: 25px;
+    }
+
+    .provider-register-heading p {
+        font-size: 11px;
+    }
+
+    .provider-input-wrapper {
+        height: 38px;
+        min-height: 38px;
+    }
+
+    .provider-input-icon {
+        left: 11px;
+        width: 15px;
+        height: 15px;
+    }
+
+    .provider-input-wrapper input {
+        padding-left: 36px;
+    }
+
+    .provider-input-wrapper:has(.provider-password-toggle) input {
+        padding-right: 40px;
+    }
+
+    .provider-password-toggle {
+        right: 6px;
+        width: 28px;
+        height: 28px;
+    }
+
+    .provider-password-toggle svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .provider-register-submit {
+        height: 40px;
+        min-height: 40px;
+    }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
