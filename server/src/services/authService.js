@@ -25,6 +25,7 @@ const registerUser = async ({ name, email, password }) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        profileImage: user.profileImage
     };
 }
 
@@ -179,6 +180,7 @@ const loginUser = async ({ email, password }) => {
             name: user.name,
             email: user.email,
             role: user.role || "CUSTOMER",
+            profileImage: user.profileImage
         },
     };
 };

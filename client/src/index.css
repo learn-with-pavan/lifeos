@@ -344,6 +344,70 @@ button {
   min-width: 0;
 }
 
+.sidebar-profile {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+
+.sidebar-profile:hover {
+    background: rgba(127, 127, 127, 0.08);
+}
+
+
+.sidebar-profile-avatar {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #eef2ff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.sidebar-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.sidebar-profile-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+
+.sidebar-profile-info strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+
+.sidebar-profile-info span {
+    font-size: 11px;
+    opacity: 0.55;
+}
 .user-avatar {
   width: 36px;
   height: 36px;

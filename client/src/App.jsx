@@ -39,6 +39,7 @@ import ProviderProfile from "./pages/provider/ProviderProfile";
 import ProviderServices from "./pages/provider/ProviderServices";
 import ProviderSettings from "./pages/provider/ProviderSettings";
 import ProviderRegister from "./pages/provider/ProviderRegister";
+import Profile from "./pages/Profile";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -173,6 +174,10 @@ function App() {
               element={<Insights />}
             />
 
+            <Route
+              path="/profile"
+              element={<Profile />}
+            />
           </Route>
 
 
@@ -182,9 +187,9 @@ function App() {
             path="/provider"
             element={
               <ProtectedRoute>
-                  <NotificationProvider>
-                    <ProviderLayout />
-                  </NotificationProvider>
+                <NotificationProvider>
+                  <ProviderLayout />
+                </NotificationProvider>
               </ProtectedRoute>
             }
           >

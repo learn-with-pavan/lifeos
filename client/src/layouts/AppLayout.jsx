@@ -10,7 +10,6 @@ import {
     Package,
     Wrench,
     FileText,
-    User,
     LogOut,
     Bell,
     History,
@@ -21,7 +20,6 @@ import {
     X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { getNotifications, getUnreadNotificationCount, markNotificationAsRead } from "../services/notificationService";
 import { getNotificationIcon } from "../utils/notificationUtils";
 import { useNotifications } from "../context/NotificationContext";
 import { useToast } from "../context/ToastContext";
@@ -39,6 +37,32 @@ function AppLayout() {
     const [reviewRequestId, setReviewRequestId] = useState(null);
     const [paymentId, setPaymentId] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState(null);
+
+    const profileImageUrl = user.profileImage || "";
+
+    const getUserInitials = (name) => {
+
+        if (!name) {
+            return "U";
+        }
+
+        const parts =
+            name
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean);
+
+        if (parts.length === 1) {
+            return parts[0]
+                .charAt(0)
+                .toUpperCase();
+        }
+
+        return (
+            parts[0].charAt(0) +
+            parts[parts.length - 1].charAt(0)
+        ).toUpperCase();
+    };
 
     const pageTitles = [
         {
@@ -100,6 +124,11 @@ function AppLayout() {
             path: "/insights",
             title: "Insights",
             subtitle: "See patterns across your life data.",
+        },
+        {
+            path: "/profile",
+            title: "Profile",
+            subtitle: "Manage your personal information and profile photo.",
         },
     ];
 
@@ -383,7 +412,7 @@ function AppLayout() {
 
                 <div className="sidebar-bottom">
 
-                    <div className="sidebar-user">
+                    {/* <div className="sidebar-user">
                         <div className="user-avatar">
                             {user?.name?.charAt(0)?.toUpperCase() || "U"}
                         </div>
@@ -392,7 +421,51 @@ function AppLayout() {
                             <strong>{user?.name || "User"}</strong>
                             <span>{user?.email || ""}</span>
                         </div>
-                    </div>
+                    </div> */}
+                    <button
+                        type="button"
+                        className="sidebar-profile"
+                        onClick={() => {
+                            setMobileMenuOpen(false);
+                            navigate("/profile");
+                        }}
+                    >
+                        <div className="sidebar-profile-avatar">
+
+                            {profileImageUrl ? (
+
+                                <img
+                                    src={profileImageUrl}
+                                    alt={`${user.name || "User"} profile`}
+                                />
+
+                            ) : (
+
+                                <span>
+                                    {getUserInitials(
+                                        user.name
+                                    )}
+                                </span>
+
+                            )}
+
+                        </div>
+
+                        <div className="sidebar-profile-info">
+
+                            <strong>
+                                {user.name || "User"}
+                            </strong>
+
+                            <span>
+                                {user.email}
+                            </span>
+                            <span>
+                                {user.phone}
+                            </span>
+
+                        </div>
+                    </button>
 
                     <button
                         className="logout-button"

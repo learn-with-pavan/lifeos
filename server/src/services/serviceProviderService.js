@@ -103,7 +103,10 @@ const getMyServiceProvider = async (
     const provider =
         await ServiceProvider.findOne({
             user: userId,
-        });
+        }).populate(
+            "user",
+            "name email phone profileImage role"
+        );;
 
     if (!provider) {
         const error = new Error(

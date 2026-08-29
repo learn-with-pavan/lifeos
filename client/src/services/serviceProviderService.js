@@ -221,3 +221,21 @@ export const updateProviderLocation = async (latitude, longitude) => {
 
     return response
 };
+
+export const uploadProviderProfileImage = async (file) => {
+
+    const formData = new FormData();
+
+    formData.append(
+        "profileImage",
+        file
+    );
+
+    return axios.put(
+        `${API_URL}/users/profile/image`,
+        formData,
+        {
+            headers: getHeaders()
+        }
+    );
+};

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+
 const authRoutes = require("./routes/authRoutes");
 const assetRoutes = require("./routes/assetRoutes");
 const warrantyRoutes = require("./routes/warrantyRoutes");
@@ -15,6 +16,7 @@ const serviceProviderRoutes = require("./routes/serviceProviderRoutes");
 const serviceRequestRoutes = require("./routes/serviceRequestRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const errorMiddleware = require("./middleware/errorMiddleware");
 
@@ -50,6 +52,7 @@ app.use("/api/service-providers", serviceProviderRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(errorMiddleware);
 
