@@ -1,26 +1,8 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-    host:
-        process.env.SMTP_HOST ||
-        "smtp.gmail.com",
-
-    port:
-        Number(process.env.SMTP_PORT) ||
-        587,
-
-    secure:
-        process.env.SMTP_SECURE === "true",
-    family: 4,
-    auth: {
-        user:
-            process.env.SMTP_USER,
-
-        pass:
-            process.env.SMTP_PASSWORD,
-    },
-});
-
+const resend = new Resend(
+    process.env.RESEND_API_KEY
+);
 
 const escapeHtml = (value = "") => {
     return String(value)
@@ -31,7 +13,6 @@ const escapeHtml = (value = "") => {
         .replace(/'/g, "&#039;");
 };
 
-
 const sendOtpEmail = async ({
     email,
     otp,
@@ -41,32 +22,26 @@ const sendOtpEmail = async ({
     const isRegistration =
         purpose === "REGISTER";
 
-
     const subject =
         isRegistration
             ? "Verify your LifeOS account"
             : "Your LifeOS login verification code";
-
 
     const title =
         isRegistration
             ? "Verify your email"
             : "Verify your login";
 
-
     const description =
         isRegistration
             ? "Welcome to LifeOS. Use the verification code below to verify your email address and complete your account setup."
             : "We received a request to sign in to your LifeOS account. Use the verification code below to continue.";
 
-
     const safeOtp =
         escapeHtml(otp);
 
-
     const year =
         new Date().getFullYear();
-
 
     const text = `
 ${title}
@@ -85,7 +60,6 @@ If you did not request this code, you can safely ignore this email.
 
 © ${year} LifeOS. All rights reserved.
 `;
-
 
     const html = `
 <!DOCTYPE html>
@@ -120,7 +94,6 @@ If you did not request this code, you can safely ignore this email.
     </title>
 
 </head>
-
 
 <body
     style="
@@ -404,8 +377,7 @@ If you did not request this code, you can safely ignore this email.
                                             padding:
                                                 25px
                                                 20px;
-                                            background:
-                                                #f8faff;
+                                            background:#f8faff;
                                             border:
                                                 1px solid
                                                 #e5eaff;
@@ -600,9 +572,6 @@ If you did not request this code, you can safely ignore this email.
 
                 </table>
 
-                <!-- End main card -->
-
-
             </td>
 
         </tr>
@@ -614,28 +583,78 @@ If you did not request this code, you can safely ignore this email.
 </html>
 `;
 
+    if (!process.env.RESEND_API_KEY) {
+        throw new Error(
+            "RESEND_API_KEY is not configured."
+        );
+    }
 
-    await transporter.sendMail({
+    if (!process.env.EMAIL_FROM) {
+        throw new Error(
+            "EMAIL_FROM is not configured."
+        );
+    }
 
-        from:
-            process.env.SMTP_FROM ||
-            process.env.SMTP_USER,
+    try {
 
-        to:
-            email,
+        console.log(
+            `Sending ${purpose} OTP email to ${email}`
+        );
 
-        replyTo:
-            process.env.SMTP_REPLY_TO ||
-            process.env.SMTP_FROM ||
-            process.env.SMTP_USER,
+        const { data, error } =
+            await resend.emails.send({
 
-        subject,
+                from:
+                    process.env.EMAIL_FROM,
 
-        text,
+                to: [email],
 
-        html,
+                replyTo:
+                    process.env.EMAIL_REPLY_TO ||
+                    undefined,
 
-    });
+                subject,
+
+                text,
+
+                html,
+
+            });
+
+        if (error) {
+
+            console.error(
+                "Resend email error:",
+                error
+            );
+
+            const emailError =
+                new Error(
+                    error.message ||
+                    "Failed to send email."
+                );
+
+            emailError.statusCode = 502;
+
+            throw emailError;
+        }
+
+        console.log(
+            "OTP email sent successfully:",
+            data?.id
+        );
+
+        return data;
+
+    } catch (error) {
+
+        console.error(
+            "OTP email sending failed:",
+            error
+        );
+
+        throw error;
+    }
 };
 
 
