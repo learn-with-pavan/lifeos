@@ -82,7 +82,8 @@ const serviceProviderSchema = new mongoose.Schema(
             },
 
             coordinates: {
-                type: [Number]
+                type: [Number],
+                default: [0, 0]
             },
 
             address: {
