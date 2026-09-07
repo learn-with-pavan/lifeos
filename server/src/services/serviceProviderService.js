@@ -832,8 +832,8 @@ const updateProviderLocation = async (
         ...provider.location?.toObject?.(),
         type: "Point",
         coordinates: [
-            Number(latitude),
             Number(longitude),
+            Number(latitude),
         ],
     };
 
