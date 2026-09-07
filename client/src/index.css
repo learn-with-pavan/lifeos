@@ -1058,7 +1058,7 @@ textarea {
   margin-top: 20px;
 }
 
-.home-info-card {
+.asset-home-info-card {
   padding: 24px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -1066,12 +1066,12 @@ textarea {
 }
 
 .asset-info-card h2 {
-  margin-bottom: 24px;
+  margin-bottom: 10px;
   font-size: 17px;
 }
 
-.home-info-card h2 {
-  margin-bottom: 24px;
+.asset-home-info-card h2 {
+  margin-bottom: 10px;
   font-size: 17px;
 }
 

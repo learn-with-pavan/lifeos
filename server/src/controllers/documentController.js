@@ -5,62 +5,144 @@ const {
     getDocumentById,
     updateDocument,
     deleteDocument,
+    deleteDocumentFile,
 } = require("../services/documentService");
 
 
+// =====================================================
 // GET ALL DOCUMENTS
-const getAll = async (req, res, next) => {
+// =====================================================
+
+const getAll = async (
+    req,
+    res,
+    next
+) => {
     try {
-        const documents = await getAllDocuments(
-            req.userId
-        );
+
+        const documents =
+            await getAllDocuments(
+                req.userId
+            );
 
         res.status(200).json({
             success: true,
             documents,
         });
+
     } catch (error) {
         next(error);
     }
 };
 
 
+// =====================================================
 // CREATE DOCUMENT
-const create = async (req, res, next) => {
-    try {
-        const documentData = req.body || {};
-        const assetId = documentData.asset;
+// =====================================================
 
-        if (!assetId) {
-            const error = new Error(
-                "Asset is required to create a document"
-            );
+const create = async (
+    req,
+    res,
+    next
+) => {
+    try {
+
+        const {
+            asset,
+            type,
+            name,
+            description,
+            documentDate,
+            expiryDate,
+        } = req.body;
+
+
+        if (!asset) {
+            const error =
+                new Error(
+                    "Asset is required."
+                );
 
             error.statusCode = 400;
-
             throw error;
         }
 
-        const document = await createDocument(
-            req.userId,
-            assetId,
-            documentData
-        );
+
+        if (!type) {
+            const error =
+                new Error(
+                    "Document type is required."
+                );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+
+        if (!name?.trim()) {
+            const error =
+                new Error(
+                    "Document name is required."
+                );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+
+        if (
+            !req.files ||
+            req.files.length === 0
+        ) {
+            const error =
+                new Error(
+                    "At least one file is required."
+                );
+
+            error.statusCode = 400;
+            throw error;
+        }
+
+
+        const document =
+            await createDocument(
+                req.userId,
+                asset,
+                {
+                    type,
+                    name,
+                    description,
+                    documentDate,
+                    expiryDate,
+                },
+                req.files
+            );
+
 
         res.status(201).json({
             success: true,
-            message: "Document created successfully",
+            message:
+                "Document created successfully.",
             document,
         });
+
     } catch (error) {
         next(error);
     }
 };
 
 
+// =====================================================
 // GET DOCUMENTS BY ASSET
-const getByAsset = async (req, res, next) => {
+// =====================================================
+
+const getByAsset = async (
+    req,
+    res,
+    next
+) => {
     try {
+
         const documents =
             await getDocumentsByAsset(
                 req.userId,
@@ -71,15 +153,24 @@ const getByAsset = async (req, res, next) => {
             success: true,
             documents,
         });
+
     } catch (error) {
         next(error);
     }
 };
 
 
+// =====================================================
 // GET DOCUMENT BY ID
-const getById = async (req, res, next) => {
+// =====================================================
+
+const getById = async (
+    req,
+    res,
+    next
+) => {
     try {
+
         const document =
             await getDocumentById(
                 req.userId,
@@ -90,36 +181,63 @@ const getById = async (req, res, next) => {
             success: true,
             document,
         });
+
     } catch (error) {
         next(error);
     }
 };
 
 
+// =====================================================
 // UPDATE DOCUMENT
-const update = async (req, res, next) => {
+//
+// Supports:
+// - metadata update
+// - adding additional files
+// =====================================================
+
+const update = async (
+    req,
+    res,
+    next
+) => {
     try {
+
         const document =
             await updateDocument(
                 req.userId,
                 req.params.documentId,
-                req.body
+                req.body,
+                req.files || []
             );
+
 
         res.status(200).json({
             success: true,
-            message: "Document updated successfully",
+            message:
+                req.files?.length
+                    ? "Document updated and files added successfully."
+                    : "Document updated successfully.",
             document,
         });
+
     } catch (error) {
         next(error);
     }
 };
 
 
-// DELETE DOCUMENT
-const remove = async (req, res, next) => {
+// =====================================================
+// DELETE COMPLETE DOCUMENT
+// =====================================================
+
+const remove = async (
+    req,
+    res,
+    next
+) => {
     try {
+
         await deleteDocument(
             req.userId,
             req.params.documentId
@@ -127,8 +245,41 @@ const remove = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: "Document deleted successfully",
+            message:
+                "Document deleted successfully.",
         });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+// =====================================================
+// DELETE SINGLE FILE
+// =====================================================
+
+const deleteFile = async (
+    req,
+    res,
+    next
+) => {
+    try {
+
+        const document =
+            await deleteDocumentFile(
+                req.userId,
+                req.params.documentId,
+                req.params.fileId
+            );
+
+        res.status(200).json({
+            success: true,
+            message:
+                "Document file deleted successfully.",
+            document,
+        });
+
     } catch (error) {
         next(error);
     }
@@ -142,4 +293,5 @@ module.exports = {
     getById,
     update,
     remove,
+    deleteFile,
 };

@@ -15,6 +15,7 @@ import DocumentSection from "../components/DocumentSection";
 import { getHomes } from "../services/homeService";
 import { useToast } from "../context/ToastContext";
 import LoadingState from "../components/LoadingState";
+import { formatAddress } from "../utils/formatters";
 
 function AssetDetails() {
     const { id } = useParams();
@@ -510,7 +511,7 @@ function AssetDetails() {
 
             </div>
 
-            {selectedHome ? <div className="home-info-card">
+            {selectedHome ? <div className="asset-home-info-card">
 
                 <h2>Home information</h2>
 
@@ -544,7 +545,7 @@ function AssetDetails() {
                         <span>Address</span>
 
                         <strong>
-                            {selectedHome?.address ||
+                            {formatAddress(selectedHome?.address) ||
                                 "Not provided"}
                         </strong>
                     </div>
