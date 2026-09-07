@@ -1,7 +1,5 @@
 const nodemailer = require("nodemailer");
 
-const OTP_EXPIRY_SECONDS = 600;
-
 const transporter = nodemailer.createTransport({
     host:
         process.env.SMTP_HOST ||
@@ -13,7 +11,7 @@ const transporter = nodemailer.createTransport({
 
     secure:
         process.env.SMTP_SECURE === "true",
-
+    family: 4,
     auth: {
         user:
             process.env.SMTP_USER,
