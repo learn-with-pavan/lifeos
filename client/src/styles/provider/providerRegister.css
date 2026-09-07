@@ -1313,3 +1313,231 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* =========================================================
+   PROVIDER REGISTRATION OTP
+   ========================================================= */
+
+.provider-otp-heading {
+    position: relative;
+}
+
+.provider-otp-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.08);
+}
+
+.provider-otp-heading h2 {
+    margin-top: 3px;
+}
+
+.provider-otp-heading p strong {
+    color: #334155;
+    font-weight: 650;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   OTP INPUT
+   ========================================================= */
+
+.provider-otp-input-wrapper {
+    height: 48px;
+    min-height: 48px;
+}
+
+.provider-otp-input-wrapper input {
+    padding-left: 40px;
+    padding-right: 14px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 5px;
+}
+
+.provider-otp-input-wrapper input::placeholder {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.provider-otp-input-wrapper:focus-within {
+    border-color: #60a5fa;
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.09),
+        0 6px 15px rgba(37, 99, 235, 0.05);
+}
+
+
+/* =========================================================
+   OTP META
+   ========================================================= */
+
+.provider-otp-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 1px;
+    min-height: 22px;
+}
+
+.provider-otp-meta > span:first-child {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.provider-otp-countdown {
+    color: #64748b !important;
+    font-size: 10px !important;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.provider-resend-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 3px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.provider-resend-button:hover {
+    color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.provider-resend-button:active {
+    transform: translateY(0);
+}
+
+.provider-resend-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* =========================================================
+   CHANGE EMAIL
+   ========================================================= */
+
+.provider-change-email {
+    align-self: center;
+    margin-top: 3px;
+    padding: 2px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.18s ease;
+}
+
+.provider-change-email:hover {
+    color: #2563eb;
+}
+
+.provider-change-email:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   OTP FORM SPACING
+   ========================================================= */
+
+.provider-otp-form {
+    gap: 11px;
+}
+
+.provider-otp-form .provider-register-submit {
+    margin-top: 5px;
+}
+
+
+/* =========================================================
+   OTP ANIMATION
+   ========================================================= */
+
+.provider-otp-icon {
+    animation: providerOtpIconIn 0.45s ease both;
+}
+
+@keyframes providerOtpIconIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85) translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+
+/* =========================================================
+   MOBILE OTP
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .provider-otp-icon {
+        width: 41px;
+        height: 41px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    .provider-otp-heading p {
+        line-height: 1.55;
+    }
+
+    .provider-otp-input-wrapper {
+        height: 48px;
+        min-height: 48px;
+    }
+
+    .provider-otp-input-wrapper input {
+        padding-left: 38px;
+        font-size: 18px;
+        letter-spacing: 4px;
+    }
+
+    .provider-otp-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .provider-resend-button {
+        padding: 0;
+    }
+
+    .provider-change-email {
+        margin-top: 4px;
+    }
+}

@@ -487,3 +487,318 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* =========================================================
+   REGISTRATION OTP
+   ========================================================= */
+
+.register-otp-container {
+    width: 100%;
+    animation: registerOtpEnter 0.35s ease both;
+}
+
+.register-otp-icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 17px;
+
+    border-radius: 15px;
+
+    background: linear-gradient(
+        135deg,
+        #eff6ff,
+        #dbeafe
+    );
+
+    border: 1px solid #dbeafe;
+
+    color: #2563eb;
+
+    box-shadow:
+        0 8px 24px rgba(37, 99, 235, 0.10);
+}
+
+.register-otp-heading {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.register-otp-heading p {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.register-otp-heading strong {
+    color: #172033;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.register-otp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.register-otp-input-wrapper {
+    height: 52px !important;
+    min-height: 52px !important;
+
+    border-radius: 11px;
+}
+
+.register-otp-input-wrapper input {
+    text-align: center;
+
+    font-size: 19px !important;
+    font-weight: 600;
+
+    letter-spacing: 7px;
+
+    padding-left: 8px !important;
+}
+
+.register-otp-input-wrapper svg {
+    flex-shrink: 0;
+}
+
+.register-otp-input-wrapper input::placeholder {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.register-otp-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-top: 2px;
+
+    color: #8996a8;
+
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.register-otp-meta strong {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.register-otp-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 3px;
+}
+
+.register-resend-button,
+.register-change-email {
+    border: none;
+    background: transparent;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.register-resend-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 5px 8px;
+
+    color: #2563eb;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.register-resend-button:hover:not(:disabled) {
+    color: #1d4ed8;
+}
+
+.register-resend-button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.register-resend-button:disabled {
+    color: #9aa7b8;
+    cursor: not-allowed;
+}
+
+.register-change-email {
+    padding: 3px 8px;
+
+    color: #8996a8;
+
+    font-size: 10px;
+}
+
+.register-change-email:hover:not(:disabled) {
+    color: #172033;
+}
+
+.register-change-email:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.register-otp-form .login-form-error {
+    text-align: center;
+    margin-top: 2px;
+}
+
+@keyframes registerOtpEnter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   OTP RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+    .register-otp-icon {
+        width: 48px;
+        height: 48px;
+
+        margin-bottom: 14px;
+    }
+
+    .register-otp-heading {
+        margin-bottom: 19px;
+    }
+
+    .register-otp-heading h2 {
+        font-size: 24px;
+    }
+
+    .register-otp-heading p {
+        font-size: 11px;
+    }
+
+    .register-otp-input-wrapper {
+        height: 50px !important;
+        min-height: 50px !important;
+    }
+
+    .register-otp-input-wrapper input {
+        font-size: 18px !important;
+        letter-spacing: 6px;
+    }
+
+    .register-otp-meta {
+        font-size: 9px;
+    }
+
+    .register-resend-button {
+        font-size: 10px;
+    }
+}
+
+
+@media (max-width: 380px) {
+
+    .register-otp-heading h2 {
+        font-size: 22px;
+    }
+
+    .register-otp-input-wrapper {
+        height: 47px !important;
+        min-height: 47px !important;
+    }
+
+    .register-otp-input-wrapper input {
+        font-size: 17px !important;
+        letter-spacing: 5px;
+    }
+
+    .register-otp-meta {
+        font-size: 8px;
+    }
+}
+
+
+/* =========================================================
+   SHORT DESKTOP
+   ========================================================= */
+
+@media (min-width: 901px) and (max-height: 720px) {
+
+    .register-otp-icon {
+        width: 44px;
+        height: 44px;
+
+        margin-bottom: 10px;
+    }
+
+    .register-otp-heading {
+        margin-bottom: 14px;
+    }
+
+    .register-otp-heading h2 {
+        font-size: 23px;
+    }
+
+    .register-otp-heading p {
+        font-size: 10px;
+    }
+
+    .register-otp-input-wrapper {
+        height: 44px !important;
+        min-height: 44px !important;
+    }
+
+    .register-otp-input-wrapper input {
+        font-size: 17px !important;
+    }
+
+    .register-otp-meta {
+        font-size: 8px;
+    }
+
+    .register-otp-actions {
+        gap: 5px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .register-otp-container {
+        animation: none;
+    }
+}

@@ -1,15 +1,58 @@
 const express = require("express");
 
-const { register, login, registerProvider } = require("../controllers/authController");
-const authMiddleware = require("../middleware/authMiddleware");
+const {
+  register,
+  login,
+  registerProvider,
+  verifyRegistration,
+  sendRegistrationOtp,
+  sendLoginOtp,
+  verifyLoginOtp,
+} = require("../controllers/authController");
 
-const router = express.Router();
+const authMiddleware =
+  require("../middleware/authMiddleware");
 
-router.post("/register", register);
+const router =
+  express.Router();
 
-router.post("/provider/register", registerProvider);
 
-router.post("/login", login)
+router.post(
+  "/register",
+  register
+);
+
+router.post(
+  "/provider/register",
+  registerProvider
+);
+
+router.post(
+  "/register/verify-otp",
+  verifyRegistration
+);
+
+router.post(
+  "/register/send-otp",
+  sendRegistrationOtp
+);
+
+
+router.post(
+  "/login",
+  login
+);
+
+router.post(
+  "/login/send-otp",
+  sendLoginOtp
+);
+
+router.post(
+  "/login/verify-otp",
+  verifyLoginOtp
+);
+
 
 router.get(
   "/me",
@@ -28,4 +71,6 @@ router.get(
     });
   }
 );
+
+
 module.exports = router;

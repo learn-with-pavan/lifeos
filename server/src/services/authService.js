@@ -4,41 +4,60 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const ServiceProvider = require("../models/ServiceProvider");
 
-const registerUser = async ({ name, email, password }) => {
-    const existingUser = await User.findOne({ email });
+const {
+    sendOtp,
+    verifyOtp,
+} = require("./otpService");
 
-    if (existingUser) {
-        const error = new Error("User already exists");
-        error.statusCode = 409;
-        throw error;
-    }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+const createToken = (user) => {
 
-    const user = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-    });
+    return jwt.sign(
+        {
+            userId:
+                user._id.toString(),
+
+            role:
+                user.role || "CUSTOMER",
+        },
+
+        process.env.JWT_SECRET,
+
+        {
+            expiresIn: "7d",
+        }
+    );
+};
+
+
+const buildUserResponse = (user) => {
 
     return {
         id: user._id,
         name: user.name,
         email: user.email,
-        profileImage: user.profileImage
+        role: user.role || "CUSTOMER",
+        phone: user.phone,
+        profileImage: user.profileImage,
+        emailVerified: user.emailVerified,
+        phoneVerified: user.phoneVerified,
     };
-}
+};
 
-const registerProviderUser = async ({
+
+const registerUser = async ({
     name,
     email,
     password,
-    businessName,
+    phone = "",
 }) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
 
     const existingUser =
         await User.findOne({
-            email,
+            email: normalizedEmail,
         });
 
     if (existingUser) {
@@ -53,6 +72,73 @@ const registerProviderUser = async ({
         throw error;
     }
 
+    const hashedPassword =
+        await bcrypt.hash(
+            password,
+            10
+        );
+
+    const user =
+        await User.create({
+            name,
+            email: normalizedEmail,
+            password: hashedPassword,
+            phone,
+            emailVerified: false,
+        });
+
+    try {
+
+        await sendOtp({
+            identifier: normalizedEmail,
+            purpose: "REGISTER",
+        });
+
+    } catch (error) {
+
+        await User.findByIdAndDelete(
+            user._id
+        );
+
+        throw error;
+    }
+
+    return {
+        otpRequired: true,
+        user: buildUserResponse(user),
+        message:
+            "Verification code sent to your email.",
+    };
+};
+
+
+const registerProviderUser = async ({
+    name,
+    email,
+    password,
+    businessName,
+    phone = "",
+}) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
+
+    const existingUser =
+        await User.findOne({
+            email: normalizedEmail,
+        });
+
+    if (existingUser) {
+
+        const error =
+            new Error(
+                "User already exists"
+            );
+
+        error.statusCode = 409;
+
+        throw error;
+    }
 
     const hashedPassword =
         await bcrypt.hash(
@@ -60,44 +146,59 @@ const registerProviderUser = async ({
             10
         );
 
-
     const user =
         await User.create({
             name,
-            email,
+            email: normalizedEmail,
             password: hashedPassword,
             role: "PROVIDER",
+            phone,
+            emailVerified: false,
         });
-
 
     try {
 
         const provider =
             await ServiceProvider.create({
                 user: user._id,
-
                 businessName,
-
-                verificationStatus:
-                    "VERIFIED",
-
+                verificationStatus: "VERIFIED",
                 isActive: true,
-
-                availability:
-                    "AVAILABLE",
+                availability: "AVAILABLE",
             });
 
+        try {
+
+            await sendOtp({
+                identifier: normalizedEmail,
+                purpose: "REGISTER",
+            });
+
+        } catch (error) {
+
+            await ServiceProvider.findByIdAndDelete(
+                provider._id
+            );
+
+            await User.findByIdAndDelete(
+                user._id
+            );
+
+            throw error;
+        }
 
         return {
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-            },
+            otpRequired: true,
+
+            user:
+                buildUserResponse(
+                    user
+                ),
 
             provider: {
-                id: provider._id,
+                id:
+                    provider._id,
+
                 businessName:
                     provider.businessName,
 
@@ -107,6 +208,9 @@ const registerProviderUser = async ({
                 isActive:
                     provider.isActive,
             },
+
+            message:
+                "Verification code sent to your email.",
         };
 
     } catch (error) {
@@ -119,11 +223,67 @@ const registerProviderUser = async ({
     }
 };
 
-const loginUser = async ({ email, password }) => {
+
+const verifyRegistrationOtp = async ({
+    email,
+    otp,
+}) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
+
+    await verifyOtp({
+        identifier: normalizedEmail,
+        otp,
+        purpose: "REGISTER",
+    });
 
     const user =
         await User.findOne({
-            email,
+            email: normalizedEmail,
+        });
+
+    if (!user) {
+
+        const error =
+            new Error(
+                "Account no longer exists."
+            );
+
+        error.statusCode = 404;
+
+        throw error;
+    }
+
+    user.emailVerified = true;
+
+    await user.save();
+
+    const token =
+        createToken(user);
+
+    return {
+        token,
+
+        user:
+            buildUserResponse(
+                user
+            ),
+    };
+};
+
+
+const loginUser = async ({
+    email,
+    password,
+}) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
+
+    const user =
+        await User.findOne({
+            email: normalizedEmail,
         });
 
     if (!user) {
@@ -137,7 +297,6 @@ const loginUser = async ({ email, password }) => {
 
         throw error;
     }
-
 
     const isPasswordValid =
         await bcrypt.compare(
@@ -157,32 +316,144 @@ const loginUser = async ({ email, password }) => {
         throw error;
     }
 
-
-    const token =
-        jwt.sign(
-            {
-                userId: user._id.toString(),
-                role: user.role || "CUSTOMER",
-            },
-
-            process.env.JWT_SECRET,
-
-            {
-                expiresIn: "7d",
-            }
-        );
-
+    await sendOtp({
+        identifier: normalizedEmail,
+        purpose: "LOGIN",
+    });
 
     return {
-        token,
-        user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role || "CUSTOMER",
-            profileImage: user.profileImage
-        },
+        otpRequired: true,
+        message:
+            "Verification code sent to your email.",
     };
 };
 
-module.exports = { registerUser, registerProviderUser, loginUser }
+
+const sendLoginOtp = async ({
+    email,
+}) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
+
+    const user =
+        await User.findOne({
+            email: normalizedEmail,
+        });
+
+    if (!user) {
+
+        const error =
+            new Error(
+                "No account found with this email address."
+            );
+
+        error.statusCode = 404;
+
+        throw error;
+    }
+
+    return sendOtp({
+        identifier: normalizedEmail,
+        purpose: "LOGIN",
+    });
+};
+
+
+const sendRegistrationOtp = async ({
+    email,
+}) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
+
+    const user =
+        await User.findOne({
+            email: normalizedEmail,
+        });
+
+    if (!user) {
+
+        const error =
+            new Error(
+                "Account not found."
+            );
+
+        error.statusCode = 404;
+
+        throw error;
+    }
+
+    if (user.emailVerified) {
+
+        const error =
+            new Error(
+                "Email is already verified."
+            );
+
+        error.statusCode = 400;
+
+        throw error;
+    }
+
+    return sendOtp({
+        identifier: normalizedEmail,
+        purpose: "REGISTER",
+    });
+};
+
+
+const verifyLoginOtp = async ({
+    email,
+    otp,
+}) => {
+
+    const normalizedEmail =
+        email.trim().toLowerCase();
+
+    await verifyOtp({
+        identifier: normalizedEmail,
+        otp,
+        purpose: "LOGIN",
+    });
+
+    const user =
+        await User.findOne({
+            email: normalizedEmail,
+        });
+
+    if (!user) {
+
+        const error =
+            new Error(
+                "Account no longer exists."
+            );
+
+        error.statusCode = 404;
+
+        throw error;
+    }
+
+    const token =
+        createToken(user);
+
+    return {
+        token,
+
+        user:
+            buildUserResponse(
+                user
+            ),
+    };
+};
+
+
+module.exports = {
+    registerUser,
+    registerProviderUser,
+    verifyRegistrationOtp,
+    sendRegistrationOtp,
+    loginUser,
+    sendLoginOtp,
+    verifyLoginOtp,
+};

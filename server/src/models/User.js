@@ -45,6 +45,16 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    phoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     address: {
       addressLine1: {
         type: String,
