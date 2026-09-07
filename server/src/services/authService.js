@@ -79,12 +79,12 @@ const registerProviderUser = async ({
                 businessName,
 
                 verificationStatus:
-                    "PENDING",
+                    "VERIFIED",
 
-                isActive: false,
+                isActive: true,
 
                 availability:
-                    "UNAVAILABLE",
+                    "AVAILABLE",
             });
 
 
